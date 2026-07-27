@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_spacing.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
 
 /// Label above one advanced control. Layout only, so every row lines up.
 class AdvancedSettingRow extends StatelessWidget {

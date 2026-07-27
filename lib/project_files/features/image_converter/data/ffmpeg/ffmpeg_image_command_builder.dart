@@ -1,8 +1,8 @@
-import 'package:archonex/project_files/features/converter_shared/data/ffmpeg/ffmpeg_filters.dart';
-import 'package:archonex/project_files/features/image_converter/data/ffmpeg/ffmpeg_image_codecs.dart';
-import 'package:archonex/project_files/features/image_converter/data/ffmpeg/ffmpeg_image_target_spec.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_settings.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_format.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/data/ffmpeg/ffmpeg_filters.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/ffmpeg/ffmpeg_image_codecs.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/ffmpeg/ffmpeg_image_target_spec.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_settings.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
 
 /// Builds the FFmpeg argument list for one photo.
 ///

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_radius.dart';
-import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/core/utils/file_size_formatter.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/converted_file.dart';
+import 'package:archonex_converter/core/constants/app_radius.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
+import 'package:archonex_converter/core/utils/file_size_formatter.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/converted_file.dart';
 
 /// The finished file plus the way to get it off the device.
 class ConversionResultCard extends StatelessWidget {

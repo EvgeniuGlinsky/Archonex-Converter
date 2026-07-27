@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/section_title.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/section_title.dart';
 
 /// The quality steps a converter offers, plus a line saying what the current
 /// one costs.

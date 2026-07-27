@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/format_badge.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_format.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/format_badge.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
 
 /// Presentation details of an image format, kept out of the domain layer.
 extension ImageFormatUi on ImageFormat {

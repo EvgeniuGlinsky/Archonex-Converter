@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:archonex/core/router/app_router.dart';
-import 'package:archonex/core/theme/app_theme.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/language_selection/data/language_repo_impl.dart';
-import 'package:archonex/project_files/features/language_selection/domain/language_repo.dart';
-import 'package:archonex/project_files/features/language_selection/domain/models/app_language.dart';
+import 'package:archonex_converter/core/router/app_router.dart';
+import 'package:archonex_converter/core/theme/app_theme.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/language_selection/data/language_repo_impl.dart';
+import 'package:archonex_converter/project_files/features/language_selection/domain/language_repo.dart';
+import 'package:archonex_converter/project_files/features/language_selection/domain/models/app_language.dart';
 
 /// Application root.
 ///

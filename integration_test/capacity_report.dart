@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:archonex/core/constants/app_file_limits.dart';
+import 'package:archonex_converter/core/constants/app_file_limits.dart';
 
 import 'capacity_channel.dart';
 

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:archonex/core/router/app_route.dart';
-import 'package:archonex/core/widgets/app_screen_header.dart';
-import 'package:archonex/core/widgets/app_screen_layout.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/file_converters/domain/models/converter_tool.dart';
-import 'package:archonex/project_files/features/file_converters/ui/bloc/file_converters_bloc.dart';
-import 'package:archonex/project_files/features/file_converters/ui/mappers/converter_tool_ui.dart';
-import 'package:archonex/project_files/features/file_converters/ui/widgets/converter_tool_list.dart';
+import 'package:archonex_converter/core/router/app_route.dart';
+import 'package:archonex_converter/core/widgets/app_screen_header.dart';
+import 'package:archonex_converter/core/widgets/app_screen_layout.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/file_converters/domain/models/converter_tool.dart';
+import 'package:archonex_converter/project_files/features/file_converters/ui/bloc/file_converters_bloc.dart';
+import 'package:archonex_converter/project_files/features/file_converters/ui/mappers/converter_tool_ui.dart';
+import 'package:archonex_converter/project_files/features/file_converters/ui/widgets/converter_tool_list.dart';
 
 class FileConvertersView extends StatelessWidget {
   const FileConvertersView({super.key});

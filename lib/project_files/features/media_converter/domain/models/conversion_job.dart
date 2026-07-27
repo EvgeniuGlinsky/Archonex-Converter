@@ -1,4 +1,4 @@
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_update.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/conversion_update.dart';
 
 /// A conversion that is already running.
 ///

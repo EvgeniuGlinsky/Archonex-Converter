@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_file_limits.dart';
-import 'package:archonex/core/constants/app_radius.dart';
-import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/core/utils/file_size_formatter.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/format_badge.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
-import 'package:archonex/project_files/features/media_converter/ui/mappers/media_format_ui.dart';
+import 'package:archonex_converter/core/constants/app_file_limits.dart';
+import 'package:archonex_converter/core/constants/app_radius.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
+import 'package:archonex_converter/core/utils/file_size_formatter.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/format_badge.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/media_format.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/mappers/media_format_ui.dart';
 
 /// Upload slot: a call to action while empty, the picked file once filled.
 class SourceFileCard extends StatelessWidget {

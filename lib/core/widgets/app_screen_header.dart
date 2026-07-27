@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_spacing.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
 
 /// Title + supporting text pair used at the top of the flow screens.
 class AppScreenHeader extends StatelessWidget {

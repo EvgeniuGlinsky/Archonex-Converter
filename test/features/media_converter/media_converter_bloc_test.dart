@@ -1,19 +1,19 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:archonex/core/constants/app_file_limits.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
-import 'package:archonex/project_files/features/media_converter/data/use_cases/convert_media_use_case.dart';
-import 'package:archonex/project_files/features/media_converter/data/use_cases/discard_converted_file_use_case.dart';
-import 'package:archonex/project_files/features/media_converter/data/use_cases/get_converter_availability_use_case.dart';
-import 'package:archonex/project_files/features/media_converter/data/use_cases/pick_source_file_use_case.dart';
-import 'package:archonex/project_files/features/media_converter/data/use_cases/save_converted_file_use_case.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/audio_bitrate_option.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_quality.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/frame_rate_option.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/video_resolution.dart';
-import 'package:archonex/project_files/features/media_converter/ui/bloc/media_converter_bloc.dart';
+import 'package:archonex_converter/core/constants/app_file_limits.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/convert_media_use_case.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/discard_converted_file_use_case.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/get_converter_availability_use_case.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/pick_source_file_use_case.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/save_converted_file_use_case.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/audio_bitrate_option.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/conversion_quality.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/frame_rate_option.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/media_format.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/video_resolution.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/bloc/media_converter_bloc.dart';
 
 import 'fakes.dart';
 

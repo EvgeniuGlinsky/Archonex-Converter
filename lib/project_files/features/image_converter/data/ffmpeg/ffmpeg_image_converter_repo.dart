@@ -7,16 +7,16 @@ import 'package:ffmpeg_kit_flutter_new/log.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:flutter/services.dart';
 
-import 'package:archonex/project_files/features/converter_shared/data/ffmpeg/ffmpeg_error_classifier.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/converted_file.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
-import 'package:archonex/project_files/features/image_converter/data/ffmpeg/ffmpeg_image_command_builder.dart';
-import 'package:archonex/project_files/features/image_converter/domain/image_converter_repo.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_job.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_settings.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_update.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_format.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/data/ffmpeg/ffmpeg_error_classifier.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/converted_file.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/ffmpeg/ffmpeg_image_command_builder.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/image_converter_repo.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_job.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_settings.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_update.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
 
 /// Real conversion, backed by the FFmpeg binaries bundled with
 /// `ffmpeg_kit_flutter_new`.

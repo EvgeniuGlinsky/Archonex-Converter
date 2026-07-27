@@ -3,9 +3,9 @@ import 'package:ffmpeg_kit_flutter_new/ffmpeg_session.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
-import 'package:archonex/project_files/features/image_converter/data/ffmpeg/ffmpeg_image_codecs.dart';
-import 'package:archonex/project_files/features/image_converter/data/ffmpeg/ffmpeg_image_target_spec.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_format.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/ffmpeg/ffmpeg_image_codecs.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/ffmpeg/ffmpeg_image_target_spec.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
 
 /// Reports which encoders and decoders the bundled FFmpeg build actually has.
 ///

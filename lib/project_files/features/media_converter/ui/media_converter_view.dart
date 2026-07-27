@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:archonex/core/widgets/app_screen_header.dart';
-import 'package:archonex/core/widgets/app_screen_layout.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/media_converter/ui/bloc/media_converter_bloc.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/media_converter_actions.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/media_converter_body.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/media_converter_callbacks.dart';
+import 'package:archonex_converter/core/widgets/app_screen_header.dart';
+import 'package:archonex_converter/core/widgets/app_screen_layout.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/bloc/media_converter_bloc.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/widgets/media_converter_actions.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/widgets/media_converter_body.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/widgets/media_converter_callbacks.dart';
 
 /// Errors live in the body banner; this listener only announces a finished
 /// save, so the same problem is never reported twice.

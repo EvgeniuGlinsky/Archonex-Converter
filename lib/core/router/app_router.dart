@@ -1,11 +1,11 @@
 import 'package:go_router/go_router.dart';
 
-import 'package:archonex/core/router/app_route.dart';
-import 'package:archonex/project_files/features/file_converters/ui/file_converters_page.dart';
-import 'package:archonex/project_files/features/image_converter/ui/image_converter_page.dart';
-import 'package:archonex/project_files/features/language_selection/ui/language_selection_page.dart';
-import 'package:archonex/project_files/features/media_converter/ui/media_converter_page.dart';
-import 'package:archonex/project_files/features/splash/ui/splash_page.dart';
+import 'package:archonex_converter/core/router/app_route.dart';
+import 'package:archonex_converter/project_files/features/file_converters/ui/file_converters_page.dart';
+import 'package:archonex_converter/project_files/features/image_converter/ui/image_converter_page.dart';
+import 'package:archonex_converter/project_files/features/language_selection/ui/language_selection_page.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/media_converter_page.dart';
+import 'package:archonex_converter/project_files/features/splash/ui/splash_page.dart';
 
 /// Builds the application router.
 ///

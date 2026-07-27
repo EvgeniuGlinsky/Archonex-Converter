@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/audio_bitrate_option.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/audio_bitrate_option.dart';
 
 /// Copy for the audio bitrate options, kept out of the domain layer.
 extension AudioBitrateOptionUi on AudioBitrateOption {

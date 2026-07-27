@@ -1,11 +1,11 @@
 {
-    "name": "archonex",
-    "short_name": "archonex",
+    "name": "Archonex Converter",
+    "short_name": "Archonex",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "archonex corp project",
+    "description": "Archonex Converter — a free, limitless file converter for video, audio and images.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

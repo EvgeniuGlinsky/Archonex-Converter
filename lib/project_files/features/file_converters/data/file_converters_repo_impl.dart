@@ -1,5 +1,5 @@
-import 'package:archonex/project_files/features/file_converters/domain/file_converters_repo.dart';
-import 'package:archonex/project_files/features/file_converters/domain/models/converter_tool.dart';
+import 'package:archonex_converter/project_files/features/file_converters/domain/file_converters_repo.dart';
+import 'package:archonex_converter/project_files/features/file_converters/domain/models/converter_tool.dart';
 
 /// Static catalogue for now — becomes a remote or config driven source later.
 ///

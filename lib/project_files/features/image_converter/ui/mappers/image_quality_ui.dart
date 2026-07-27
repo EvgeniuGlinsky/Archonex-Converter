@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_quality.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_quality.dart';
 
 /// Copy for the image quality presets, kept out of the domain layer.
 extension ImageQualityUi on ImageQuality {

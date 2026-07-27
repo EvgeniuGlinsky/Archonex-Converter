@@ -1,4 +1,4 @@
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_update.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_update.dart';
 
 /// A batch conversion that is already running.
 ///

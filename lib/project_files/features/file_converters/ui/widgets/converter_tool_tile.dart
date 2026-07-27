@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_radius.dart';
-import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/file_converters/domain/models/converter_tool.dart';
-import 'package:archonex/project_files/features/file_converters/ui/mappers/converter_tool_ui.dart';
+import 'package:archonex_converter/core/constants/app_radius.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/file_converters/domain/models/converter_tool.dart';
+import 'package:archonex_converter/project_files/features/file_converters/ui/mappers/converter_tool_ui.dart';
 
 /// One converter row. A `null` [onTap] renders the upcoming state: dimmed copy
 /// and a "Soon" badge instead of the chevron.

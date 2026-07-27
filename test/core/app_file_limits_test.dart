@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:archonex/core/constants/app_file_limits.dart';
+import 'package:archonex_converter/core/constants/app_file_limits.dart';
 
 void main() {
   tearDown(() => debugDefaultTargetPlatformOverride = null);

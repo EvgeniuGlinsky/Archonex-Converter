@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/responsive_tile_grid.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/section_title.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/target_format_tile.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
-import 'package:archonex/project_files/features/media_converter/ui/mappers/media_format_ui.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/responsive_tile_grid.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/section_title.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/target_format_tile.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/media_format.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/mappers/media_format_ui.dart';
 
 typedef TargetFormatCallback = void Function(MediaFormat format);
 

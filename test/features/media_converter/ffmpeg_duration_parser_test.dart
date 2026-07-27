@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:archonex/project_files/features/media_converter/data/ffmpeg/ffmpeg_duration_parser.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/ffmpeg/ffmpeg_duration_parser.dart';
 
 void main() {
   late FfmpegDurationParser parser;

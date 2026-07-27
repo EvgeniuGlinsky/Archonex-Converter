@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 
-import 'package:archonex/project_files/features/media_converter/domain/models/audio_bitrate_option.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_quality.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/frame_rate_option.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/video_resolution.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/audio_bitrate_option.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/conversion_quality.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/frame_rate_option.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/media_format.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/video_resolution.dart';
 
 /// Everything the converter screen can be asked to do, in one bundle.
 ///

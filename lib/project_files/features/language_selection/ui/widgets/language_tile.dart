@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_durations.dart';
-import 'package:archonex/core/constants/app_radius.dart';
-import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/project_files/features/language_selection/domain/models/app_language.dart';
+import 'package:archonex_converter/core/constants/app_durations.dart';
+import 'package:archonex_converter/core/constants/app_radius.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
+import 'package:archonex_converter/project_files/features/language_selection/domain/models/app_language.dart';
 
 /// Single selectable language card.
 class LanguageTile extends StatelessWidget {

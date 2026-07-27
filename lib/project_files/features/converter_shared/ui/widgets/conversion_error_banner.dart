@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_radius.dart';
-import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/mappers/conversion_failure_ui.dart';
+import 'package:archonex_converter/core/constants/app_radius.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/mappers/conversion_failure_ui.dart';
 
 /// A screen's only error surface: every failure is rendered here.
 class ConversionErrorBanner extends StatelessWidget {

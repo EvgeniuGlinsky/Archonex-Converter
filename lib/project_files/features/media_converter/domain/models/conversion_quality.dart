@@ -1,4 +1,4 @@
-import 'package:archonex/project_files/features/converter_shared/domain/models/normalized_quality.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/normalized_quality.dart';
 
 /// The three quality presets offered on the screen.
 ///

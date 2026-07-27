@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/widgets/app_primary_button.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_format.dart';
-import 'package:archonex/project_files/features/image_converter/ui/bloc/image_converter_bloc.dart';
+import 'package:archonex_converter/core/widgets/app_primary_button.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
+import 'package:archonex_converter/project_files/features/image_converter/ui/bloc/image_converter_bloc.dart';
 
 /// The primary action of the screen. Disabled until photos and a target format
 /// are both chosen.

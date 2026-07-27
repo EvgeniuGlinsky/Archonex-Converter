@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_radius.dart';
-import 'package:archonex/core/constants/app_spacing.dart';
+import 'package:archonex_converter/core/constants/app_radius.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
 
 /// Minimal Material 3 theme shared by the whole launcher.
 class AppTheme {

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:archonex/core/router/app_route.dart';
-import 'package:archonex/core/widgets/app_primary_button.dart';
-import 'package:archonex/core/widgets/app_screen_header.dart';
-import 'package:archonex/core/widgets/app_screen_layout.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/language_selection/domain/models/app_language.dart';
-import 'package:archonex/project_files/features/language_selection/ui/bloc/language_selection_bloc.dart';
-import 'package:archonex/project_files/features/language_selection/ui/widgets/language_list.dart';
+import 'package:archonex_converter/core/router/app_route.dart';
+import 'package:archonex_converter/core/widgets/app_primary_button.dart';
+import 'package:archonex_converter/core/widgets/app_screen_header.dart';
+import 'package:archonex_converter/core/widgets/app_screen_layout.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/language_selection/domain/models/app_language.dart';
+import 'package:archonex_converter/project_files/features/language_selection/ui/bloc/language_selection_bloc.dart';
+import 'package:archonex_converter/project_files/features/language_selection/ui/widgets/language_list.dart';
 
 class LanguageSelectionView extends StatelessWidget {
   const LanguageSelectionView({super.key});

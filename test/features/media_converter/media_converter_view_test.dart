@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:archonex/core/theme/app_theme.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
-import 'package:archonex/project_files/features/media_converter/data/use_cases/convert_media_use_case.dart';
-import 'package:archonex/project_files/features/media_converter/data/use_cases/discard_converted_file_use_case.dart';
-import 'package:archonex/project_files/features/media_converter/data/use_cases/get_converter_availability_use_case.dart';
-import 'package:archonex/project_files/features/media_converter/data/use_cases/pick_source_file_use_case.dart';
-import 'package:archonex/project_files/features/media_converter/data/use_cases/save_converted_file_use_case.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
-import 'package:archonex/project_files/features/media_converter/ui/bloc/media_converter_bloc.dart';
-import 'package:archonex/project_files/features/media_converter/ui/media_converter_view.dart';
+import 'package:archonex_converter/core/theme/app_theme.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/convert_media_use_case.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/discard_converted_file_use_case.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/get_converter_availability_use_case.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/pick_source_file_use_case.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/save_converted_file_use_case.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/media_format.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/bloc/media_converter_bloc.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/media_converter_view.dart';
 
 import 'fakes.dart';
 

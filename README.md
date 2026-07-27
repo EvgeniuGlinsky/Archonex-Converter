@@ -1,6 +1,6 @@
 # Archonex Converter
 
-[![CI](https://github.com/EvgeniuGlinsky/Archonex/actions/workflows/ci.yml/badge.svg)](https://github.com/EvgeniuGlinsky/Archonex/actions/workflows/ci.yml)
+[![CI](https://github.com/EvgeniuGlinsky/Archonex-Converter/actions/workflows/ci.yml/badge.svg)](https://github.com/EvgeniuGlinsky/Archonex-Converter/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 A free, offline file converter with no artificial size limits — convert files at the full technical ceiling of the platform, not a discounted fraction of it. Today that means the **media converter** (audio, video and animation) and the **image converter** (photos, in batches); a **document converter** is on the catalogue but not built yet. Both built converters run entirely on-device, on a bundled FFmpeg binary.

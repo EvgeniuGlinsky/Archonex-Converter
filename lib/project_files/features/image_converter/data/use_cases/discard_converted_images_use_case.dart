@@ -1,5 +1,5 @@
-import 'package:archonex/project_files/features/converter_shared/domain/models/converted_file.dart';
-import 'package:archonex/project_files/features/image_converter/domain/image_converter_repo.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/converted_file.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/image_converter_repo.dart';
 
 /// Releases results the user will never see.
 ///

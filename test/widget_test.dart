@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:archonex/core/app/archonex_app.dart';
-import 'package:archonex/core/constants/app_durations.dart';
-import 'package:archonex/core/constants/app_file_limits.dart';
-import 'package:archonex/l10n/app_localizations.dart';
+import 'package:archonex_converter/core/app/archonex_app.dart';
+import 'package:archonex_converter/core/constants/app_durations.dart';
+import 'package:archonex_converter/core/constants/app_file_limits.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
 
 const Map<String, Size> _screenSizes = <String, Size>{
   'phone': Size(390, 844),

@@ -1,22 +1,22 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:archonex/core/constants/app_file_limits.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/save_result.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/convert_images_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/discard_converted_images_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/get_image_converter_availability_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/pick_source_images_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/save_all_converted_images_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/save_converted_image_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_background.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_item.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_dimension_limit.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_format.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_quality.dart';
-import 'package:archonex/project_files/features/image_converter/ui/bloc/image_converter_bloc.dart';
+import 'package:archonex_converter/core/constants/app_file_limits.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/save_result.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/convert_images_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/discard_converted_images_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/get_image_converter_availability_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/pick_source_images_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/save_all_converted_images_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/save_converted_image_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_background.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_item.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_dimension_limit.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_quality.dart';
+import 'package:archonex_converter/project_files/features/image_converter/ui/bloc/image_converter_bloc.dart';
 
 import 'fakes.dart';
 

@@ -1,8 +1,8 @@
-import 'package:archonex/project_files/features/converter_shared/domain/models/converted_file.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_job.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_settings.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/converted_file.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/conversion_job.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/conversion_settings.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/media_format.dart';
 
 /// Contract for the conversion engine.
 abstract interface class MediaConverterRepo {

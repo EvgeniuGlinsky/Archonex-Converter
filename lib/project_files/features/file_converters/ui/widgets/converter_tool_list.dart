@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/project_files/features/file_converters/domain/models/converter_tool.dart';
-import 'package:archonex/project_files/features/file_converters/ui/widgets/converter_tool_tile.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
+import 'package:archonex_converter/project_files/features/file_converters/domain/models/converter_tool.dart';
+import 'package:archonex_converter/project_files/features/file_converters/ui/widgets/converter_tool_tile.dart';
 
 typedef ConverterToolSelectedCallback = void Function(ConverterTool tool);
 

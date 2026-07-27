@@ -1,7 +1,7 @@
 ﻿import 'package:flutter_test/flutter_test.dart';
 
-import 'package:archonex/project_files/features/converter_shared/data/ffmpeg/ffmpeg_error_classifier.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/data/ffmpeg/ffmpeg_error_classifier.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
 
 void main() {
   late FfmpegErrorClassifier classifier;

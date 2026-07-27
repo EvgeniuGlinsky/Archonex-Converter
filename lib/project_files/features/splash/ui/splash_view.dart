@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:archonex/core/router/app_route.dart';
-import 'package:archonex/project_files/features/splash/ui/bloc/splash_bloc.dart';
-import 'package:archonex/project_files/features/splash/ui/widgets/splash_branding.dart';
-import 'package:archonex/project_files/features/splash/ui/widgets/splash_layout.dart';
+import 'package:archonex_converter/core/router/app_route.dart';
+import 'package:archonex_converter/project_files/features/splash/ui/bloc/splash_bloc.dart';
+import 'package:archonex_converter/project_files/features/splash/ui/widgets/splash_branding.dart';
+import 'package:archonex_converter/project_files/features/splash/ui/widgets/splash_layout.dart';
 
 class SplashView extends StatelessWidget {
   const SplashView({super.key});

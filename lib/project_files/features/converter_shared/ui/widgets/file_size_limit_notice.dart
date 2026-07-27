@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_spacing.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
 
 /// States a ceiling the screen enforces. Always visible, including before a
 /// pick, because a limit discovered after the fact reads as a bug.

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/router/app_route.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/file_converters/domain/models/converter_tool.dart';
+import 'package:archonex_converter/core/router/app_route.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/file_converters/domain/models/converter_tool.dart';
 
 /// Presentation details of a converter, kept out of the domain layer.
 extension ConverterToolTypeUi on ConverterToolType {
