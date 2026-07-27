@@ -1,0 +1,20 @@
+# Normalise line endings so Windows, macOS and the Linux CI runner agree.
+* text=auto eol=lf
+
+# Windows-only scripts have to keep CRLF or cmd.exe mis-parses them.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Never touch binaries.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.jar binary
+*.keystore binary
