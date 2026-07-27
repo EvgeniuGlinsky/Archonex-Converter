@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:archonex/core/constants/app_strings.dart';
 import 'package:archonex/core/widgets/app_screen_header.dart';
 import 'package:archonex/core/widgets/app_screen_layout.dart';
+import 'package:archonex/l10n/app_localizations.dart';
 import 'package:archonex/project_files/features/media_converter/ui/bloc/media_converter_bloc.dart';
 import 'package:archonex/project_files/features/media_converter/ui/widgets/media_converter_actions.dart';
 import 'package:archonex/project_files/features/media_converter/ui/widgets/media_converter_body.dart';
@@ -25,9 +25,10 @@ class MediaConverterView extends StatelessWidget {
         appBar: AppBar(),
         body: BlocBuilder<MediaConverterBloc, MediaConverterState>(
           builder: (context, state) => AppScreenLayout(
-            header: const AppScreenHeader(
-              title: AppStrings.mediaConverterTitle,
-              subtitle: AppStrings.mediaConverterScreenSubtitle,
+            header: AppScreenHeader(
+              title: AppLocalizations.of(context)!.mediaConverterTitle,
+              subtitle:
+                  AppLocalizations.of(context)!.mediaConverterScreenSubtitle,
             ),
             body: MediaConverterBody(
               state: state,
@@ -74,13 +75,12 @@ class MediaConverterView extends StatelessWidget {
 
   void _onSaved(BuildContext context, MediaConverterState state) {
     final String? location = state.savedLocation;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          location == null
-              ? AppStrings.downloadStarted
-              : AppStrings.savedTo(location),
+          location == null ? l10n.downloadStarted : l10n.savedTo(location),
         ),
       ),
     );

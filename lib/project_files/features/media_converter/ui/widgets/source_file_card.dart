@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
+import 'package:archonex/core/constants/app_file_limits.dart';
 import 'package:archonex/core/constants/app_radius.dart';
 import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/core/constants/app_strings.dart';
 import 'package:archonex/core/utils/file_size_formatter.dart';
+import 'package:archonex/l10n/app_localizations.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
+import 'package:archonex/project_files/features/converter_shared/ui/widgets/format_badge.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/source_file.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/format_badge.dart';
+import 'package:archonex/project_files/features/media_converter/ui/mappers/media_format_ui.dart';
 
 /// Upload slot: a call to action while empty, the picked file once filled.
 class SourceFileCard extends StatelessWidget {
@@ -66,7 +68,9 @@ class _EmptyState extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text(
-          AppStrings.chooseFileHint,
+          AppLocalizations.of(context)!.chooseFileHint(
+            AppFileLimits.maxUploadLabel,
+          ),
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -75,7 +79,7 @@ class _EmptyState extends StatelessWidget {
         OutlinedButton.icon(
           onPressed: isEnabled ? onPickPressed : null,
           icon: const Icon(Icons.upload_file_outlined),
-          label: const Text(AppStrings.chooseFileLabel),
+          label: Text(AppLocalizations.of(context)!.chooseFileLabel),
         ),
       ],
     );
@@ -97,7 +101,7 @@ class _SelectedState extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colors = theme.colorScheme;
-    final MediaFormat? format = file.format;
+    final MediaFormat? format = MediaFormat.fromExtension(file.extension);
 
     return Row(
       children: <Widget>[
@@ -131,7 +135,7 @@ class _SelectedState extends StatelessWidget {
                   ),
                   if (format != null) ...<Widget>[
                     const SizedBox(width: AppSpacing.sm),
-                    FormatBadge(format),
+                    FormatBadge(format.label, tone: format.kind.badgeTone),
                   ],
                 ],
               ),
@@ -141,7 +145,7 @@ class _SelectedState extends StatelessWidget {
         const SizedBox(width: AppSpacing.sm),
         IconButton(
           onPressed: isEnabled ? onRemovePressed : null,
-          tooltip: AppStrings.removeFileLabel,
+          tooltip: AppLocalizations.of(context)!.removeFileLabel,
           icon: const Icon(Icons.close_rounded),
         ),
       ],

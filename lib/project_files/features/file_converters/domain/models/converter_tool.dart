@@ -7,22 +7,18 @@ import 'package:equatable/equatable.dart';
 enum ConverterToolType { media, image, document }
 
 /// One entry of the converter catalogue.
+///
+/// Carries only the stable identity — its title and subtitle are localized
+/// copy resolved in the UI layer, see `ConverterToolTypeUi`.
 class ConverterTool extends Equatable {
-  const ConverterTool({
-    required this.type,
-    required this.title,
-    required this.subtitle,
-    required this.isAvailable,
-  });
+  const ConverterTool({required this.type, required this.isAvailable});
 
   final ConverterToolType type;
-  final String title;
-  final String subtitle;
 
   /// `false` while the converter is still on the roadmap. Such entries are
   /// listed, but cannot be opened.
   final bool isAvailable;
 
   @override
-  List<Object?> get props => <Object?>[type, title, subtitle, isAvailable];
+  List<Object?> get props => <Object?>[type, isAvailable];
 }

@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:archonex/core/constants/app_strings.dart';
 import 'package:archonex/core/theme/app_theme.dart';
+import 'package:archonex/l10n/app_localizations.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
 import 'package:archonex/project_files/features/media_converter/data/use_cases/convert_media_use_case.dart';
 import 'package:archonex/project_files/features/media_converter/data/use_cases/discard_converted_file_use_case.dart';
 import 'package:archonex/project_files/features/media_converter/data/use_cases/get_converter_availability_use_case.dart';
 import 'package:archonex/project_files/features/media_converter/data/use_cases/pick_source_file_use_case.dart';
 import 'package:archonex/project_files/features/media_converter/data/use_cases/save_converted_file_use_case.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/source_file.dart';
 import 'package:archonex/project_files/features/media_converter/ui/bloc/media_converter_bloc.dart';
 import 'package:archonex/project_files/features/media_converter/ui/media_converter_view.dart';
 
@@ -54,6 +54,11 @@ void main() {
   );
 
   late MediaConverterBloc bloc;
+  late AppLocalizations en;
+
+  setUpAll(() async {
+    en = await AppLocalizations.delegate.load(const Locale('en'));
+  });
 
   MediaConverterBloc createBloc({required bool isSupported}) {
     final FakeMediaFileRepo fileRepo = FakeMediaFileRepo(
@@ -85,6 +90,8 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light(),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<MediaConverterBloc>(
           create: (_) => bloc = createBloc(isSupported: isSupported),
           child: const MediaConverterView(),
@@ -113,10 +120,10 @@ void main() {
       (WidgetTester tester) async {
     await pumpScreen(tester, size: screenSizes['phone']!);
 
-    expect(find.text(AppStrings.chooseFileLabel), findsOneWidget);
-    expect(find.text(AppStrings.convertToTitle), findsNothing);
-    expect(find.text(AppStrings.qualityTitle), findsNothing);
-    expect(find.text(AppStrings.advancedTitle), findsNothing);
+    expect(find.text(en.chooseFileLabel), findsOneWidget);
+    expect(find.text(en.convertToTitle), findsNothing);
+    expect(find.text(en.qualityTitle), findsNothing);
+    expect(find.text(en.advancedTitle), findsNothing);
   });
 
   testWidgets('a pick reveals the targets, a target reveals the settings',
@@ -124,16 +131,16 @@ void main() {
     await pumpScreen(tester, size: tallScreen);
     await pickFile(tester);
 
-    expect(find.text(AppStrings.convertToTitle), findsOneWidget);
-    expect(find.text(AppStrings.videoTargetsTitle), findsOneWidget);
-    expect(find.text(AppStrings.audioTargetsTitle), findsOneWidget);
+    expect(find.text(en.convertToTitle), findsOneWidget);
+    expect(find.text(en.videoTargetsTitle), findsOneWidget);
+    expect(find.text(en.audioTargetsTitle), findsOneWidget);
     // Quality only makes sense once there is something to produce.
-    expect(find.text(AppStrings.qualityTitle), findsNothing);
+    expect(find.text(en.qualityTitle), findsNothing);
 
     await chooseTarget(tester, MediaFormat.mp4);
 
-    expect(find.text(AppStrings.qualityTitle), findsOneWidget);
-    expect(find.text(AppStrings.advancedTitle), findsOneWidget);
+    expect(find.text(en.qualityTitle), findsOneWidget);
+    expect(find.text(en.advancedTitle), findsOneWidget);
   });
 
   testWidgets('convert enables only once a target is chosen',
@@ -143,7 +150,7 @@ void main() {
 
     final Finder untargeted = find.widgetWithText(
       FilledButton,
-      AppStrings.convertLabel,
+      en.convertLabel,
     );
     expect(tester.widget<FilledButton>(untargeted).onPressed, isNull);
 
@@ -151,7 +158,7 @@ void main() {
 
     final Finder targeted = find.widgetWithText(
       FilledButton,
-      AppStrings.convertToLabel(MediaFormat.mp4.label),
+      en.convertToLabel(MediaFormat.mp4.label),
     );
     expect(tester.widget<FilledButton>(targeted).onPressed, isNotNull);
   });
@@ -163,32 +170,32 @@ void main() {
     await chooseTarget(tester, MediaFormat.mp4);
     await openAdvanced(tester);
 
-    expect(find.text(AppStrings.resolutionLabel), findsOneWidget);
-    expect(find.text(AppStrings.frameRateLabel), findsOneWidget);
-    expect(find.text(AppStrings.videoQualityLabel), findsOneWidget);
-    expect(find.text(AppStrings.keepAudioLabel), findsOneWidget);
+    expect(find.text(en.resolutionLabel), findsOneWidget);
+    expect(find.text(en.frameRateLabel), findsOneWidget);
+    expect(find.text(en.videoQualityLabel), findsOneWidget);
+    expect(find.text(en.keepAudioLabel), findsOneWidget);
 
     // MP3 has no picture to size, rate or grade.
     await chooseTarget(tester, MediaFormat.mp3);
 
-    expect(find.text(AppStrings.resolutionLabel), findsNothing);
-    expect(find.text(AppStrings.frameRateLabel), findsNothing);
-    expect(find.text(AppStrings.videoQualityLabel), findsNothing);
-    expect(find.text(AppStrings.keepAudioLabel), findsNothing);
-    expect(find.text(AppStrings.audioBitrateLabel), findsOneWidget);
+    expect(find.text(en.resolutionLabel), findsNothing);
+    expect(find.text(en.frameRateLabel), findsNothing);
+    expect(find.text(en.videoQualityLabel), findsNothing);
+    expect(find.text(en.keepAudioLabel), findsNothing);
+    expect(find.text(en.audioBitrateLabel), findsOneWidget);
 
     // A GIF keeps its size and rate but carries no sound at all.
     await chooseTarget(tester, MediaFormat.gif);
 
-    expect(find.text(AppStrings.resolutionLabel), findsOneWidget);
-    expect(find.text(AppStrings.frameRateLabel), findsOneWidget);
-    expect(find.text(AppStrings.videoQualityLabel), findsNothing);
-    expect(find.text(AppStrings.audioBitrateLabel), findsNothing);
+    expect(find.text(en.resolutionLabel), findsOneWidget);
+    expect(find.text(en.frameRateLabel), findsOneWidget);
+    expect(find.text(en.videoQualityLabel), findsNothing);
+    expect(find.text(en.audioBitrateLabel), findsNothing);
 
     // WAV is lossless, so a bitrate would be ignored.
     await chooseTarget(tester, MediaFormat.wav);
 
-    expect(find.text(AppStrings.audioBitrateLabel), findsNothing);
+    expect(find.text(en.audioBitrateLabel), findsNothing);
   });
 
   testWidgets('the unsupported banner stays and picking is dead',
@@ -199,11 +206,11 @@ void main() {
       isSupported: false,
     );
 
-    expect(find.text(AppStrings.conversionUnsupportedError), findsOneWidget);
+    expect(find.text(en.conversionUnsupportedError), findsOneWidget);
     expect(
       tester
           .widget<OutlinedButton>(
-            find.widgetWithText(OutlinedButton, AppStrings.chooseFileLabel),
+            find.widgetWithText(OutlinedButton, en.chooseFileLabel),
           )
           .onPressed,
       isNull,

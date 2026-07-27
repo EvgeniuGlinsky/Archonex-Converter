@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:archonex/core/constants/app_radius.dart';
 import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/core/constants/app_strings.dart';
+import 'package:archonex/l10n/app_localizations.dart';
 
 /// App mark, name and tagline shown while the splash timer runs.
 class SplashBranding extends StatelessWidget {
@@ -14,6 +14,7 @@ class SplashBranding extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -33,14 +34,14 @@ class SplashBranding extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.xl),
         Text(
-          AppStrings.appName,
+          l10n.appName,
           style: theme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w700,
           ),
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
-          AppStrings.appTagline,
+          l10n.appTagline,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),

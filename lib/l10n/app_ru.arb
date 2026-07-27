@@ -1,0 +1,137 @@
+{
+  "@@locale": "ru",
+
+  "appName": "Archonex Converter",
+  "appTagline": "Конвертируйте любые файлы любого размера. Без ограничений.",
+
+  "languageTitle": "Выберите язык",
+  "languageSubtitle": "Выберите язык, который вы хотите использовать в приложении.",
+  "continueLabel": "Продолжить",
+
+  "fileConvertersTitle": "Конвертеры файлов",
+  "fileConvertersScreenSubtitle": "Выберите конвертер, чтобы начать. Скоро появятся новые.",
+  "comingSoonBadge": "Скоро",
+
+  "converterMediaTitle": "Медиаконвертер",
+  "converterMediaSubtitle": "Видео, аудио и анимированные изображения",
+  "converterImageTitle": "Конвертер изображений",
+  "converterImageSubtitle": "JPG, PNG, WebP и другие",
+  "converterDocumentTitle": "Конвертер документов",
+  "converterDocumentSubtitle": "DOCX, PDF и TXT",
+
+  "mediaConverterTitle": "Медиаконвертер",
+  "mediaConverterScreenSubtitle": "Добавьте файл, выберите формат и конвертируйте его.",
+
+  "convertToTitle": "Конвертировать в",
+  "videoTargetsTitle": "Видео",
+  "animationTargetsTitle": "Анимация",
+  "audioTargetsTitle": "Аудио",
+
+  "convertToLabel": "Конвертировать в {format}",
+
+  "qualityTitle": "Качество",
+  "qualityHigh": "Высокое",
+  "qualityBalanced": "Сбалансированное",
+  "qualityCompact": "Компактное",
+  "qualityHighHint": "Лучшее качество, самый большой файл.",
+  "qualityBalancedHint": "Хорошее качество при разумном размере.",
+  "qualityCompactHint": "Самый маленький файл, качество ниже.",
+
+  "advancedTitle": "Дополнительно",
+  "advancedHint": "Переопределить пресет для этого файла.",
+  "resetToPresetLabel": "Сбросить к пресету",
+  "resolutionLabel": "Разрешение",
+  "frameRateLabel": "Частота кадров",
+  "videoQualityLabel": "Качество видео",
+  "qualitySmaller": "Меньший файл",
+  "qualityBetter": "Лучшее качество",
+  "audioBitrateLabel": "Битрейт аудио",
+  "keepAudioLabel": "Сохранить аудио",
+  "keepAudioHint": "Отключите, чтобы получить видео без звука.",
+
+  "maxFileSizeNotice": "Максимальный размер файла: {maxSize}",
+  "chooseFileLabel": "Выбрать файл",
+  "chooseFileHint": "Файл ещё не выбран. Принимаются файлы размером до {maxSize}.",
+  "removeFileLabel": "Удалить",
+  "convertLabel": "Конвертировать",
+  "convertingLabel": "Конвертация…",
+  "cancelLabel": "Отмена",
+  "downloadLabel": "Скачать",
+  "savingLabel": "Сохранение…",
+  "resultTitle": "Готовый файл",
+
+  "savedTo": "Сохранено в {location}",
+  "downloadStarted": "Загрузка начата.",
+
+  "imageConverterTitle": "Конвертер изображений",
+  "imageConverterScreenSubtitle": "Добавьте фото, выберите формат и конвертируйте их все сразу.",
+
+  "imageLimitsNotice": "До {maxBatch} фото, по {maxSize} каждое",
+
+  "addPhotosLabel": "Добавить фото",
+  "addMorePhotosLabel": "Добавить ещё",
+  "clearPhotosLabel": "Очистить всё",
+  "noPhotosHint": "Фото ещё не выбраны. Добавьте до {maxBatch} за раз.",
+
+  "photosSelected": "{count, plural, other{{count} фото · {totalSize}}}",
+
+  "convertAllToLabel": "{count, plural, one{Конвертировать в {format}} other{Конвертировать {count} фото в {format}}}",
+
+  "convertingCount": "Конвертация {done} из {total}…",
+
+  "saveLabel": "Сохранить",
+  "saveAllLabel": "Сохранить всё",
+  "resultsTitle": "Готово",
+
+  "savedFiles": "{count, plural, one{Сохранено в {location}} few{Сохранено {count} файла в {location}} many{Сохранено {count} файлов в {location}} other{Сохранено {count} файлов в {location}}}",
+
+  "photosConvertedAll": "Все {total} фото конвертированы.",
+  "photosConvertedProgress": "{done} из {total} фото конвертировано.",
+
+  "maxSideLabel": "Максимальный размер",
+  "imageQualityLabel": "Качество изображения",
+  "backgroundLabel": "Фон",
+  "backgroundWhite": "Белый",
+  "backgroundBlack": "Чёрный",
+  "keepMetadataLabel": "Сохранить метаданные",
+  "keepMetadataHint": "Данные EXIF, такие как модель камеры, дата и местоположение.",
+  "dimensionAuto": "Согласно пресету",
+  "dimensionOriginal": "Исходный размер",
+
+  "dimensionPixels": "{pixels} пикс.",
+
+  "imageQualityHighHint": "Полный размер, минимальное сжатие.",
+  "imageQualityBalancedHint": "Уменьшено для отправки, разница почти незаметна.",
+  "imageQualityCompactHint": "Достаточно маленький, чтобы отправить куда угодно.",
+
+  "fileTooLarge": "Размер файла {actualSize}. Максимально допустимый размер — {maxSize}.",
+
+  "tooManyFiles": "За один раз можно конвертировать не более {limit} файлов.",
+
+  "filesSkipped": "{count, plural, one{Пропущен 1 файл: он не поддерживается или превышает лимит размера.} few{Пропущено {count} файла: они не поддерживаются или превышают лимит размера.} many{Пропущено {count} файлов: они не поддерживаются или превышают лимит размера.} other{Пропущено {count} файлов: они не поддерживаются или превышают лимит размера.}}",
+
+  "unsupportedFormatNoExtension": "У этого файла нет расширения, поэтому его формат не удалось определить.",
+  "unsupportedFormatExtension": "Файлы .{extension} не поддерживаются этим конвертером.",
+
+  "incompatibleTarget": "{source} нельзя конвертировать в {target}.",
+
+  "noAudioTrackError": "В этом файле нет аудиодорожки, поэтому извлекать нечего.",
+  "corruptSourceError": "Не удалось прочитать этот файл. Возможно, он повреждён или использует кодек, который приложение не поддерживает.",
+
+  "unknownSize": "слишком большой",
+  "emptyFileError": "Выбранный файл пуст.",
+  "fileReadError": "Не удалось прочитать выбранный файл. Попробуйте другой.",
+  "conversionUnsupportedError": "Конвертация пока недоступна на этой платформе. Используйте приложение для Windows, macOS, Android или iOS.",
+  "conversionFailedError": "Не удалось выполнить конвертацию. Попробуйте ещё раз.",
+  "conversionCancelledError": "Конвертация отменена.",
+  "insufficientStorageError": "Недостаточно свободного места для сохранения результата.",
+  "savePermissionDeniedError": "Доступ к хранилищу запрещён. Разрешите его в системных настройках и попробуйте снова.",
+
+  "resultTooLargeToSave": "Конвертированный файл имеет размер {actualSize}, что превышает лимит {maxSize} на этой платформе. Попробуйте пресет «Компактное» или меньший размер.",
+
+  "saveFailedError": "Не удалось сохранить файл. Попробуйте другое место.",
+
+  "autoLabel": "Авто",
+  "originalLabel": "Оригинал",
+  "presetLabel": "Пресет"
+}

@@ -2,21 +2,22 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/converted_file.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/save_result.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
 import 'package:archonex/project_files/features/media_converter/data/use_cases/convert_media_use_case.dart';
 import 'package:archonex/project_files/features/media_converter/data/use_cases/discard_converted_file_use_case.dart';
 import 'package:archonex/project_files/features/media_converter/data/use_cases/get_converter_availability_use_case.dart';
 import 'package:archonex/project_files/features/media_converter/data/use_cases/pick_source_file_use_case.dart';
 import 'package:archonex/project_files/features/media_converter/data/use_cases/save_converted_file_use_case.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/audio_bitrate_option.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_failure.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/conversion_job.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/conversion_quality.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/conversion_settings.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/conversion_update.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/converted_file.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/frame_rate_option.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/source_file.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/video_resolution.dart';
 
 part 'media_converter_event.dart';
@@ -142,8 +143,9 @@ class MediaConverterBloc
   /// drops it otherwise, along with the settings that were tuned for it.
   MediaConverterState _withSource(SourceFile file) {
     final MediaFormat? target = state.target;
+    final MediaFormat? format = MediaFormat.fromExtension(file.extension);
     final bool keepsTarget =
-        target != null && (file.format?.targets.contains(target) ?? false);
+        target != null && (format?.targets.contains(target) ?? false);
 
     return state.copyWith(
       status: MediaConverterStatus.ready,

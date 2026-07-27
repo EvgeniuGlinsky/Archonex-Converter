@@ -16,10 +16,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
+      # Pinned rather than tracking `stable`, so a Flutter release cannot turn
+      # CI red on its own. Keep in step with the revision in .metadata; bump it
+      # deliberately, as its own commit, with the test run that proves it.
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: 3.41.2
           channel: stable
           cache: true
 

@@ -1,0 +1,137 @@
+{
+  "@@locale": "zh",
+
+  "appName": "Archonex Converter",
+  "appTagline": "转换任意文件，无论大小，无任何限制。",
+
+  "languageTitle": "选择语言",
+  "languageSubtitle": "选择您想在应用中使用的语言。",
+  "continueLabel": "继续",
+
+  "fileConvertersTitle": "文件转换器",
+  "fileConvertersScreenSubtitle": "选择一个转换器开始使用。更多功能即将推出。",
+  "comingSoonBadge": "即将推出",
+
+  "converterMediaTitle": "媒体转换器",
+  "converterMediaSubtitle": "视频、音频和动态图像",
+  "converterImageTitle": "图片转换器",
+  "converterImageSubtitle": "JPG、PNG、WebP 等更多格式",
+  "converterDocumentTitle": "文档转换器",
+  "converterDocumentSubtitle": "DOCX、PDF 和 TXT",
+
+  "mediaConverterTitle": "媒体转换器",
+  "mediaConverterScreenSubtitle": "添加文件，选择格式并进行转换。",
+
+  "convertToTitle": "转换为",
+  "videoTargetsTitle": "视频",
+  "animationTargetsTitle": "动画",
+  "audioTargetsTitle": "音频",
+
+  "convertToLabel": "转换为 {format}",
+
+  "qualityTitle": "质量",
+  "qualityHigh": "高",
+  "qualityBalanced": "均衡",
+  "qualityCompact": "紧凑",
+  "qualityHighHint": "最佳质量，文件最大。",
+  "qualityBalancedHint": "质量良好，大小适中。",
+  "qualityCompactHint": "文件最小，质量较低。",
+
+  "advancedTitle": "高级设置",
+  "advancedHint": "覆盖此文件的预设。",
+  "resetToPresetLabel": "重置为预设",
+  "resolutionLabel": "分辨率",
+  "frameRateLabel": "帧率",
+  "videoQualityLabel": "视频质量",
+  "qualitySmaller": "文件更小",
+  "qualityBetter": "质量更好",
+  "audioBitrateLabel": "音频比特率",
+  "keepAudioLabel": "保留音频",
+  "keepAudioHint": "关闭以生成无声视频。",
+
+  "maxFileSizeNotice": "最大文件大小：{maxSize}",
+  "chooseFileLabel": "选择文件",
+  "chooseFileHint": "尚未选择文件。接受最大 {maxSize} 的文件。",
+  "removeFileLabel": "移除",
+  "convertLabel": "转换",
+  "convertingLabel": "转换中…",
+  "cancelLabel": "取消",
+  "downloadLabel": "下载",
+  "savingLabel": "保存中…",
+  "resultTitle": "转换后的文件",
+
+  "savedTo": "已保存到 {location}",
+  "downloadStarted": "下载已开始。",
+
+  "imageConverterTitle": "图片转换器",
+  "imageConverterScreenSubtitle": "添加照片，选择格式，一次性全部转换。",
+
+  "imageLimitsNotice": "最多 {maxBatch} 张照片，每张最大 {maxSize}",
+
+  "addPhotosLabel": "添加照片",
+  "addMorePhotosLabel": "添加更多",
+  "clearPhotosLabel": "全部清除",
+  "noPhotosHint": "尚未选择照片。最多可一次添加 {maxBatch} 张。",
+
+  "photosSelected": "{count, plural, other{{count} 张照片 · {totalSize}}}",
+
+  "convertAllToLabel": "{count, plural, other{将 {count} 张照片转换为 {format}}}",
+
+  "convertingCount": "正在转换第 {done} 张，共 {total} 张…",
+
+  "saveLabel": "保存",
+  "saveAllLabel": "全部保存",
+  "resultsTitle": "已转换",
+
+  "savedFiles": "{count, plural, other{已将 {count} 个文件保存到 {location}}}",
+
+  "photosConvertedAll": "全部 {total} 张照片已转换完成。",
+  "photosConvertedProgress": "已转换 {done}／{total} 张照片。",
+
+  "maxSideLabel": "最大尺寸",
+  "imageQualityLabel": "图片质量",
+  "backgroundLabel": "背景",
+  "backgroundWhite": "白色",
+  "backgroundBlack": "黑色",
+  "keepMetadataLabel": "保留元数据",
+  "keepMetadataHint": "例如相机型号、日期和位置等 EXIF 数据。",
+  "dimensionAuto": "跟随预设",
+  "dimensionOriginal": "原始尺寸",
+
+  "dimensionPixels": "{pixels} 像素",
+
+  "imageQualityHighHint": "原始尺寸，几乎无压缩。",
+  "imageQualityBalancedHint": "已调整为适合分享的大小，几乎无法分辨差异。",
+  "imageQualityCompactHint": "足够小，可以发送到任何地方。",
+
+  "fileTooLarge": "此文件大小为 {actualSize}，允许的最大大小为 {maxSize}。",
+
+  "tooManyFiles": "一次最多只能转换 {limit} 个文件。",
+
+  "filesSkipped": "{count, plural, other{已跳过 {count} 个文件：格式不受支持或超出大小限制。}}",
+
+  "unsupportedFormatNoExtension": "该文件没有扩展名，因此无法检测其格式。",
+  "unsupportedFormatExtension": "此转换器不支持 .{extension} 文件。",
+
+  "incompatibleTarget": "{source} 无法转换为 {target}。",
+
+  "noAudioTrackError": "此文件没有音轨，因此没有可提取的内容。",
+  "corruptSourceError": "无法读取此文件。它可能已损坏，或使用了应用不支持的编解码器。",
+
+  "unknownSize": "过大",
+  "emptyFileError": "所选文件为空。",
+  "fileReadError": "无法读取所选文件。请尝试其他文件。",
+  "conversionUnsupportedError": "此平台暂不支持转换。请使用 Windows、macOS、Android 或 iOS 应用。",
+  "conversionFailedError": "转换失败，请重试。",
+  "conversionCancelledError": "转换已取消。",
+  "insufficientStorageError": "没有足够的可用空间来存储结果。",
+  "savePermissionDeniedError": "存储访问被拒绝。请在系统设置中允许访问后重试。",
+
+  "resultTooLargeToSave": "转换后的文件大小为 {actualSize}，超出此平台 {maxSize} 的限制。请尝试紧凑预设或更小的尺寸。",
+
+  "saveFailedError": "无法保存文件。请尝试其他位置。",
+
+  "autoLabel": "自动",
+  "originalLabel": "原始",
+  "presetLabel": "预设"
+}

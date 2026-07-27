@@ -54,7 +54,11 @@ final class MediaConverterState extends Equatable {
 
   /// Detected from the file name rather than stored, so it can never drift out
   /// of sync with [source].
-  MediaFormat? get sourceFormat => source?.format;
+  MediaFormat? get sourceFormat {
+    final SourceFile? file = source;
+
+    return file == null ? null : MediaFormat.fromExtension(file.extension);
+  }
 
   /// Formats reachable from the picked file. Empty until one is picked, which
   /// is also what keeps the target grid off the screen.

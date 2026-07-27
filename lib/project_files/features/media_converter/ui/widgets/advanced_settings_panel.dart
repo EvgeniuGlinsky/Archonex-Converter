@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_durations.dart';
-import 'package:archonex/core/constants/app_radius.dart';
 import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/core/constants/app_strings.dart';
+import 'package:archonex/l10n/app_localizations.dart';
+import 'package:archonex/project_files/features/converter_shared/ui/widgets/advanced_setting_row.dart';
+import 'package:archonex/project_files/features/converter_shared/ui/widgets/advanced_settings_shell.dart';
+import 'package:archonex/project_files/features/converter_shared/ui/widgets/quality_slider.dart';
+import 'package:archonex/project_files/features/converter_shared/ui/widgets/setting_dropdown.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/audio_bitrate_option.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/conversion_settings.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/frame_rate_option.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/video_resolution.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/advanced_setting_row.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/setting_dropdown.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/video_quality_slider.dart';
+import 'package:archonex/project_files/features/media_converter/ui/mappers/audio_bitrate_option_ui.dart';
+import 'package:archonex/project_files/features/media_converter/ui/mappers/frame_rate_option_ui.dart';
+import 'package:archonex/project_files/features/media_converter/ui/mappers/video_resolution_ui.dart';
 
 /// Manual overrides on top of the quality preset.
 ///
@@ -35,10 +37,7 @@ class AdvancedSettingsPanel extends StatelessWidget {
     super.key,
   });
 
-  static const double _padding = AppSpacing.lg;
   static const double _gap = AppSpacing.lg;
-  static const double _collapsedTurns = 0;
-  static const double _expandedTurns = 0.5;
 
   final MediaFormat target;
   final ConversionSettings settings;
@@ -54,51 +53,24 @@ class AdvancedSettingsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colors = Theme.of(context).colorScheme;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: colors.outlineVariant),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          _Header(isExpanded: isExpanded, onToggle: onToggle),
-          AnimatedCrossFade(
-            duration: AppDurations.shortAnimation,
-            crossFadeState: isExpanded
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-            firstChild: const SizedBox(width: double.infinity),
-            secondChild: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                _padding,
-                0,
-                _padding,
-                _padding,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: _fields(),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return AdvancedSettingsShell(
+      isExpanded: isExpanded,
+      onToggle: onToggle,
+      fields: _fields(context),
     );
   }
 
-  List<Widget> _fields() {
+  List<Widget> _fields(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+
     return <Widget>[
       if (target.supportsResolution) ...<Widget>[
         AdvancedSettingRow(
-          label: AppStrings.resolutionLabel,
+          label: l10n.resolutionLabel,
           child: SettingDropdown<VideoResolution>(
             value: settings.resolution,
             options: VideoResolution.values,
-            labelOf: (option) => option.label,
+            labelOf: (option) => option.label(context),
             isEnabled: isEnabled,
             onChanged: onResolutionChanged,
           ),
@@ -107,11 +79,11 @@ class AdvancedSettingsPanel extends StatelessWidget {
       ],
       if (target.supportsFrameRate) ...<Widget>[
         AdvancedSettingRow(
-          label: AppStrings.frameRateLabel,
+          label: l10n.frameRateLabel,
           child: SettingDropdown<FrameRateOption>(
             value: settings.frameRate,
             options: FrameRateOption.values,
-            labelOf: (option) => option.label,
+            labelOf: (option) => option.label(context),
             isEnabled: isEnabled,
             onChanged: onFrameRateChanged,
           ),
@@ -120,8 +92,8 @@ class AdvancedSettingsPanel extends StatelessWidget {
       ],
       if (target.supportsVideoQuality) ...<Widget>[
         AdvancedSettingRow(
-          label: AppStrings.videoQualityLabel,
-          child: VideoQualitySlider(
+          label: l10n.videoQualityLabel,
+          child: QualitySlider(
             value: settings.effectiveVideoQuality,
             isEnabled: isEnabled,
             onChanged: onVideoQualityChanged,
@@ -133,8 +105,8 @@ class AdvancedSettingsPanel extends StatelessWidget {
         SwitchListTile.adaptive(
           contentPadding: EdgeInsets.zero,
           value: settings.keepAudio,
-          title: const Text(AppStrings.keepAudioLabel),
-          subtitle: const Text(AppStrings.keepAudioHint),
+          title: Text(l10n.keepAudioLabel),
+          subtitle: Text(l10n.keepAudioHint),
           onChanged: isEnabled ? onKeepAudioChanged : null,
         ),
         const SizedBox(height: _gap),
@@ -142,11 +114,11 @@ class AdvancedSettingsPanel extends StatelessWidget {
       // A bitrate the output will not carry is not worth asking about.
       if (target.supportsAudioBitrate && settings.keepAudio) ...<Widget>[
         AdvancedSettingRow(
-          label: AppStrings.audioBitrateLabel,
+          label: l10n.audioBitrateLabel,
           child: SettingDropdown<AudioBitrateOption>(
             value: settings.audioBitrate,
             options: AudioBitrateOption.values,
-            labelOf: (option) => option.label,
+            labelOf: (option) => option.label(context),
             isEnabled: isEnabled,
             onChanged: onAudioBitrateChanged,
           ),
@@ -157,61 +129,9 @@ class AdvancedSettingsPanel extends StatelessWidget {
         alignment: Alignment.centerRight,
         child: TextButton(
           onPressed: isEnabled && !settings.isPresetOnly ? onReset : null,
-          child: const Text(AppStrings.resetToPresetLabel),
+          child: Text(l10n.resetToPresetLabel),
         ),
       ),
     ];
-  }
-}
-
-class _Header extends StatelessWidget {
-  const _Header({required this.isExpanded, required this.onToggle});
-
-  final bool isExpanded;
-  final VoidCallback onToggle;
-
-  @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
-    return InkWell(
-      onTap: onToggle,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      child: Padding(
-        padding: const EdgeInsets.all(AdvancedSettingsPanel._padding),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    AppStrings.advancedTitle,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    AppStrings.advancedHint,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            AnimatedRotation(
-              duration: AppDurations.shortAnimation,
-              turns: isExpanded
-                  ? AdvancedSettingsPanel._expandedTurns
-                  : AdvancedSettingsPanel._collapsedTurns,
-              child: const Icon(Icons.expand_more_rounded),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

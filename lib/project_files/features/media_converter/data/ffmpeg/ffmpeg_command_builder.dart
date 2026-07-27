@@ -1,3 +1,4 @@
+import 'package:archonex/project_files/features/converter_shared/data/ffmpeg/ffmpeg_filters.dart';
 import 'package:archonex/project_files/features/media_converter/data/ffmpeg/ffmpeg_codecs.dart';
 import 'package:archonex/project_files/features/media_converter/data/ffmpeg/ffmpeg_target_spec.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/conversion_settings.dart';
@@ -14,21 +15,11 @@ import 'package:archonex/project_files/features/media_converter/domain/models/me
 class FfmpegCommandBuilder {
   const FfmpegCommandBuilder._();
 
-  /// libx264 and friends reject odd dimensions in `yuv420p`, and sources —
-  /// GIFs above all — routinely have them.
-  static const String evenDimensionsFilter =
-      'scale=trunc(iw/2)*2:trunc(ih/2)*2';
+  static const String evenDimensionsFilter = FfmpegFilters.evenDimensions;
 
-  /// Single pass palettegen + paletteuse.
-  ///
-  /// A plain `-i in.mp4 out.gif` quantises to a generic 256 colour palette and
-  /// bands badly. Generating a palette from the clip itself and applying it in
-  /// the same graph costs nothing extra and looks far better.
-  static const String paletteGraph = 'split[a][b];'
-      '[a]palettegen=stats_mode=diff[p];'
-      '[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle';
+  static const String paletteGraph = FfmpegFilters.paletteGraph;
 
-  static const String _scaleFlags = 'flags=lanczos';
+  static const String _scaleFlags = FfmpegFilters.scaleFlags;
 
   static List<String> build({
     required String inputPath,

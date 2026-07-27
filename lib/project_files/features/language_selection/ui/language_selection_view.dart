@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:archonex/core/constants/app_strings.dart';
 import 'package:archonex/core/router/app_route.dart';
 import 'package:archonex/core/widgets/app_primary_button.dart';
 import 'package:archonex/core/widgets/app_screen_header.dart';
 import 'package:archonex/core/widgets/app_screen_layout.dart';
+import 'package:archonex/l10n/app_localizations.dart';
 import 'package:archonex/project_files/features/language_selection/domain/models/app_language.dart';
 import 'package:archonex/project_files/features/language_selection/ui/bloc/language_selection_bloc.dart';
 import 'package:archonex/project_files/features/language_selection/ui/widgets/language_list.dart';
@@ -16,14 +16,16 @@ class LanguageSelectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
+
     return BlocListener<LanguageSelectionBloc, LanguageSelectionState>(
       listenWhen: (previous, current) => previous.status != current.status,
       listener: _onStatusChanged,
       child: Scaffold(
         body: AppScreenLayout(
-          header: const AppScreenHeader(
-            title: AppStrings.languageTitle,
-            subtitle: AppStrings.languageSubtitle,
+          header: AppScreenHeader(
+            title: l10n.languageTitle,
+            subtitle: l10n.languageSubtitle,
           ),
           body: BlocBuilder<LanguageSelectionBloc, LanguageSelectionState>(
             builder: (context, state) => LanguageList(
@@ -36,7 +38,7 @@ class LanguageSelectionView extends StatelessWidget {
             ),
           ),
           bottom: AppPrimaryButton(
-            label: AppStrings.continueLabel,
+            label: l10n.continueLabel,
             onPressed: () => _onContinuePressed(context),
           ),
         ),
@@ -56,7 +58,7 @@ class LanguageSelectionView extends StatelessWidget {
 
   void _onStatusChanged(BuildContext context, LanguageSelectionState state) {
     if (state.status == LanguageSelectionStatus.submitted) {
-      context.goNamed(AppRoute.categorySelection.routeName);
+      context.goNamed(AppRoute.fileConverters.routeName);
     }
   }
 }

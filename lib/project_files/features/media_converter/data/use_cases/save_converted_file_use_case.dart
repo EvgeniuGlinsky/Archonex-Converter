@@ -1,20 +1,8 @@
 import 'package:archonex/core/constants/app_file_limits.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/converted_file.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/save_result.dart';
 import 'package:archonex/project_files/features/media_converter/domain/media_file_repo.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_failure.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/converted_file.dart';
-
-/// Outcome of a save attempt, so the caller can tell a cancelled dialog from a
-/// download that the platform cannot name.
-enum SaveOutcome { cancelled, savedToLocation, downloadStarted }
-
-class SaveResult {
-  const SaveResult({required this.outcome, this.location});
-
-  final SaveOutcome outcome;
-
-  /// Set only when [outcome] is [SaveOutcome.savedToLocation].
-  final String? location;
-}
 
 /// Hands the result to the platform: a save dialog, or a browser download.
 ///
@@ -43,10 +31,8 @@ class SaveConvertedFileUseCase {
     }
 
     // No location: the user backed out, unless the platform never reports one.
-    return SaveResult(
-      outcome: _repo.reportsSaveLocation
-          ? SaveOutcome.cancelled
-          : SaveOutcome.downloadStarted,
-    );
+    return _repo.reportsSaveLocation
+        ? const SaveResult.cancelled()
+        : const SaveResult(outcome: SaveOutcome.downloadStarted);
   }
 }

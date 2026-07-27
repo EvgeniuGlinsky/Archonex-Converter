@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:archonex/core/app/archonex_app.dart';
 import 'package:archonex/core/constants/app_durations.dart';
-import 'package:archonex/core/constants/app_strings.dart';
+import 'package:archonex/core/constants/app_file_limits.dart';
+import 'package:archonex/l10n/app_localizations.dart';
 
 const Map<String, Size> _screenSizes = <String, Size>{
   'phone': Size(390, 844),
@@ -12,90 +13,113 @@ const Map<String, Size> _screenSizes = <String, Size>{
 };
 
 void main() {
-  testWidgets('splash leads to language selection then a category page',
-      (WidgetTester tester) async {
+  late AppLocalizations en;
+  late AppLocalizations ru;
+
+  setUpAll(() async {
+    en = await AppLocalizations.delegate.load(const Locale('en'));
+    ru = await AppLocalizations.delegate.load(const Locale('ru'));
+  });
+
+  testWidgets(
+      'splash leads to language selection then straight to the converters '
+      'in that language', (WidgetTester tester) async {
     await tester.pumpWidget(const ArchonexApp());
 
-    expect(find.text(AppStrings.appTagline), findsOneWidget);
+    expect(find.text(en.appTagline), findsOneWidget);
 
     await tester.pump(AppDurations.splash);
     await tester.pumpAndSettle();
-    expect(find.text(AppStrings.languageTitle), findsOneWidget);
+    expect(find.text(en.languageTitle), findsOneWidget);
 
     await tester.tap(find.text(AppLanguageLabels.russian));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text(AppStrings.continueLabel));
+    // The continue button itself is still in English: the picked language
+    // only takes effect once it is confirmed.
+    await tester.tap(find.text(en.continueLabel));
     await tester.pumpAndSettle();
-    expect(find.text(AppStrings.categoryTitle), findsOneWidget);
 
-    await tester.tap(find.text(AppStrings.utilities));
-    await tester.pumpAndSettle();
-    expect(
-      find.descendant(
-        of: find.byType(AppBar),
-        matching: find.text(AppStrings.utilities),
-      ),
-      findsOneWidget,
-    );
+    // Picking Russian actually switches the app's locale, so every screen
+    // from here on renders in Russian.
+    expect(find.text(ru.fileConvertersTitle), findsOneWidget);
   });
 
   testWidgets('file converters lists the catalogue and opens the converter',
       (WidgetTester tester) async {
     await _setSurfaceSize(tester, _screenSizes['phone']!);
-    await _openCategories(tester);
+    await _openFileConverters(tester, en);
 
-    await tester.tap(find.text(AppStrings.fileConverters));
-    await tester.pumpAndSettle();
-
-    expect(find.text(AppStrings.fileConvertersTitle), findsOneWidget);
-    expect(find.text(AppStrings.mediaConverter), findsOneWidget);
-    expect(find.text(AppStrings.imageConverter), findsOneWidget);
-    expect(find.text(AppStrings.documentConverter), findsOneWidget);
+    expect(find.text(en.fileConvertersTitle), findsOneWidget);
+    expect(find.text(en.converterMediaTitle), findsOneWidget);
+    expect(find.text(en.converterImageTitle), findsOneWidget);
+    expect(find.text(en.converterDocumentTitle), findsOneWidget);
     // One badge per converter that is not built yet.
-    expect(find.text(AppStrings.comingSoonBadge), findsNWidgets(2));
+    expect(find.text(en.comingSoonBadge), findsOneWidget);
 
-    await tester.tap(find.text(AppStrings.mediaConverter));
+    await tester.tap(find.text(en.converterMediaTitle));
     await tester.pumpAndSettle();
 
-    expect(find.text(AppStrings.mediaConverterTitle), findsOneWidget);
-    expect(find.text(AppStrings.maxFileSizeNotice), findsOneWidget);
+    expect(find.text(en.mediaConverterTitle), findsOneWidget);
+    expect(
+      find.text(en.maxFileSizeNotice(AppFileLimits.maxUploadLabel)),
+      findsOneWidget,
+    );
     // Nothing below the file card exists until a file has been picked.
-    expect(find.text(AppStrings.convertToTitle), findsNothing);
-    expect(find.text(AppStrings.qualityTitle), findsNothing);
+    expect(find.text(en.convertToTitle), findsNothing);
+    expect(find.text(en.qualityTitle), findsNothing);
   });
 
   testWidgets('convert stays disabled until a file is picked',
       (WidgetTester tester) async {
     await _setSurfaceSize(tester, _screenSizes['phone']!);
-    await _openCategories(tester);
+    await _openFileConverters(tester, en);
 
-    await tester.tap(find.text(AppStrings.fileConverters));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(AppStrings.mediaConverter));
+    await tester.tap(find.text(en.converterMediaTitle));
     await tester.pumpAndSettle();
 
     final Finder convertButton = find.widgetWithText(
       FilledButton,
-      AppStrings.convertLabel,
+      en.convertLabel,
     );
 
     expect(tester.widget<FilledButton>(convertButton).onPressed, isNull);
   });
 
+  testWidgets('the image converter opens on an empty batch',
+      (WidgetTester tester) async {
+    await _setSurfaceSize(tester, _screenSizes['phone']!);
+    await _openFileConverters(tester, en);
+
+    await tester.tap(find.text(en.converterImageTitle));
+    await tester.pumpAndSettle();
+
+    expect(find.text(en.imageConverterTitle), findsOneWidget);
+    expect(
+      find.text(
+        en.imageLimitsNotice(
+          AppFileLimits.maxBatchFiles,
+          AppFileLimits.maxUploadLabel,
+        ),
+      ),
+      findsOneWidget,
+    );
+    // Nothing below the batch exists until photos have been added.
+    expect(find.text(en.convertToTitle), findsNothing);
+    expect(find.text(en.qualityTitle), findsNothing);
+  });
+
   testWidgets('upcoming converters cannot be opened',
       (WidgetTester tester) async {
     await _setSurfaceSize(tester, _screenSizes['phone']!);
-    await _openCategories(tester);
+    await _openFileConverters(tester, en);
 
-    await tester.tap(find.text(AppStrings.fileConverters));
+    await tester.tap(find.text(en.converterDocumentTitle));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text(AppStrings.imageConverter));
-    await tester.pumpAndSettle();
-
-    expect(find.text(AppStrings.fileConvertersTitle), findsOneWidget);
-    expect(find.text(AppStrings.mediaConverterScreenSubtitle), findsNothing);
+    expect(find.text(en.fileConvertersTitle), findsOneWidget);
+    expect(find.text(en.mediaConverterScreenSubtitle), findsNothing);
+    expect(find.text(en.imageConverterScreenSubtitle), findsNothing);
   });
 
   for (final MapEntry<String, Size> entry in _screenSizes.entries) {
@@ -107,22 +131,26 @@ void main() {
       await tester.pump(AppDurations.splash);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text(AppStrings.continueLabel));
+      await tester.tap(find.text(en.continueLabel));
       await tester.pumpAndSettle();
 
-      expect(find.text(AppStrings.fileConverters), findsOneWidget);
-      expect(find.text(AppStrings.newsApps), findsOneWidget);
+      expect(find.text(en.fileConvertersTitle), findsOneWidget);
+      expect(find.text(en.converterMediaTitle), findsOneWidget);
     });
   }
 }
 
-/// Runs the app up to the category hub, where the product flows branch off.
-Future<void> _openCategories(WidgetTester tester) async {
+/// Runs the app up to the file converters hub, where the product flows
+/// branch off.
+Future<void> _openFileConverters(
+  WidgetTester tester,
+  AppLocalizations en,
+) async {
   await tester.pumpWidget(const ArchonexApp());
   await tester.pump(AppDurations.splash);
   await tester.pumpAndSettle();
 
-  await tester.tap(find.text(AppStrings.continueLabel));
+  await tester.tap(find.text(en.continueLabel));
   await tester.pumpAndSettle();
 }
 

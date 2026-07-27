@@ -1,5 +1,5 @@
-import 'package:archonex/project_files/features/media_converter/domain/models/converted_file.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/source_file.dart';
+﻿import 'package:archonex/project_files/features/converter_shared/domain/models/converted_file.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
 
 /// Contract for getting files in from and out to the platform.
 abstract interface class MediaFileRepo {

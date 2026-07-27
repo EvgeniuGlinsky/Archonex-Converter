@@ -5,16 +5,11 @@
 enum AppRoute {
   splash(path: '/'),
   languageSelection(path: '/language'),
-  categorySelection(path: '/categories'),
-
-  // Children of [categorySelection] — paths are relative on purpose.
-  fileConverters(path: 'file-converters'),
-  utilities(path: 'utilities'),
-  libraryApps(path: 'library-apps'),
-  newsApps(path: 'news-apps'),
+  fileConverters(path: '/converters'),
 
   // Children of [fileConverters] — one entry per converter screen.
-  mediaConverter(path: 'media');
+  mediaConverter(path: 'media'),
+  imageConverter(path: 'image');
 
   const AppRoute({required this.path});
 

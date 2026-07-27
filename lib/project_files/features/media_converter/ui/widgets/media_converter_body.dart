@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 
+import 'package:archonex/core/constants/app_file_limits.dart';
 import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_failure.dart';
+import 'package:archonex/l10n/app_localizations.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex/project_files/features/converter_shared/ui/widgets/conversion_error_banner.dart';
+import 'package:archonex/project_files/features/converter_shared/ui/widgets/conversion_progress_indicator.dart';
+import 'package:archonex/project_files/features/converter_shared/ui/widgets/conversion_result_card.dart';
+import 'package:archonex/project_files/features/converter_shared/ui/widgets/file_size_limit_notice.dart';
+import 'package:archonex/project_files/features/converter_shared/ui/widgets/quality_preset_selector.dart';
+import 'package:archonex/project_files/features/media_converter/domain/models/conversion_quality.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
 import 'package:archonex/project_files/features/media_converter/ui/bloc/media_converter_bloc.dart';
+import 'package:archonex/project_files/features/media_converter/ui/mappers/conversion_quality_ui.dart';
 import 'package:archonex/project_files/features/media_converter/ui/widgets/advanced_settings_panel.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/conversion_error_banner.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/conversion_progress_indicator.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/conversion_result_card.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/file_size_limit_notice.dart';
 import 'package:archonex/project_files/features/media_converter/ui/widgets/media_converter_callbacks.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/quality_preset_selector.dart';
 import 'package:archonex/project_files/features/media_converter/ui/widgets/source_file_card.dart';
 import 'package:archonex/project_files/features/media_converter/ui/widgets/target_format_grid.dart';
 
@@ -35,10 +39,13 @@ class MediaConverterBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MediaFormat? target = state.target;
+    final AppLocalizations l10n = AppLocalizations.of(context)!;
 
     return ListView(
       children: <Widget>[
-        const FileSizeLimitNotice(),
+        FileSizeLimitNotice(
+          l10n.maxFileSizeNotice(AppFileLimits.maxUploadLabel),
+        ),
         if (!state.isSupported) ...<Widget>[
           const SizedBox(height: _gap),
           const ConversionErrorBanner(
@@ -63,8 +70,11 @@ class MediaConverterBody extends StatelessWidget {
         ],
         if (target != null) ...<Widget>[
           const SizedBox(height: _gap),
-          QualityPresetSelector(
+          QualityPresetSelector<ConversionQuality>(
+            options: ConversionQuality.values,
             selected: state.settings.quality,
+            labelOf: (quality) => quality.label(context),
+            hint: state.settings.quality.hint(context),
             isEnabled: state.canEditSettings,
             onChanged: callbacks.onQualityChanged,
           ),
@@ -90,6 +100,7 @@ class MediaConverterBody extends StatelessWidget {
         if (state.isConverting) ...<Widget>[
           const SizedBox(height: _gap),
           ConversionProgressIndicator(
+            label: l10n.convertingLabel,
             progress: state.progress,
             onCancelPressed: callbacks.onCancelPressed,
           ),

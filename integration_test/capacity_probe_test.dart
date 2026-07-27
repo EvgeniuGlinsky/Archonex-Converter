@@ -6,12 +6,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
 import 'package:archonex/core/constants/app_file_limits.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/converted_file.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
 import 'package:archonex/project_files/features/media_converter/data/ffmpeg/ffmpeg_media_converter_repo.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/conversion_settings.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/conversion_update.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/converted_file.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/source_file.dart';
 
 import 'capacity_channel.dart';
 import 'capacity_report.dart';

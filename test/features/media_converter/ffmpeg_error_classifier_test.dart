@@ -1,12 +1,16 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 
-import 'package:archonex/project_files/features/media_converter/data/ffmpeg/ffmpeg_error_classifier.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_failure.dart';
+import 'package:archonex/project_files/features/converter_shared/data/ffmpeg/ffmpeg_error_classifier.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
 
 void main() {
   late FfmpegErrorClassifier classifier;
 
-  setUp(() => classifier = FfmpegErrorClassifier());
+  setUp(
+    () => classifier = FfmpegErrorClassifier(
+      missingStreamFailure: const NoAudioTrackFailure(),
+    ),
+  );
 
   test('says nothing about output that reports no problem', () {
     classifier.add('frame=  100 fps=25 q=28.0 size=512kB');

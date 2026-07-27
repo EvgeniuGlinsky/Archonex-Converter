@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:archonex/core/constants/app_strings.dart';
 import 'package:archonex/core/router/app_router.dart';
 import 'package:archonex/core/theme/app_theme.dart';
+import 'package:archonex/l10n/app_localizations.dart';
 import 'package:archonex/project_files/features/language_selection/data/language_repo_impl.dart';
 import 'package:archonex/project_files/features/language_selection/domain/language_repo.dart';
+import 'package:archonex/project_files/features/language_selection/domain/models/app_language.dart';
 
 /// Application root.
 ///
@@ -29,12 +30,18 @@ class _ArchonexAppState extends State<ArchonexApp> {
   Widget build(BuildContext context) {
     return RepositoryProvider<LanguageRepo>.value(
       value: _languageRepo,
-      child: MaterialApp.router(
-        title: AppStrings.appName,
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light(),
-        darkTheme: AppTheme.dark(),
-        routerConfig: _router,
+      child: ValueListenableBuilder<AppLanguage>(
+        valueListenable: _languageRepo.selectedLanguageListenable,
+        builder: (context, language, _) => MaterialApp.router(
+          onGenerateTitle: (context) => AppLocalizations.of(context)!.appName,
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light(),
+          darkTheme: AppTheme.dark(),
+          locale: Locale(language.code),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: _router,
+        ),
       ),
     );
   }

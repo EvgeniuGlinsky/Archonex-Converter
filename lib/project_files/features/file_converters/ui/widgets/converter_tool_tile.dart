@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:archonex/core/constants/app_radius.dart';
 import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/core/constants/app_strings.dart';
+import 'package:archonex/l10n/app_localizations.dart';
 import 'package:archonex/project_files/features/file_converters/domain/models/converter_tool.dart';
 import 'package:archonex/project_files/features/file_converters/ui/mappers/converter_tool_ui.dart';
 
@@ -42,7 +42,10 @@ class ConverterToolTile extends StatelessWidget {
                 _Icon(icon: tool.type.icon),
                 const SizedBox(width: AppSpacing.lg),
                 Expanded(
-                  child: _Details(title: tool.title, subtitle: tool.subtitle),
+                  child: _Details(
+                    title: tool.type.title(context),
+                    subtitle: tool.type.subtitle(context),
+                  ),
                 ),
                 const SizedBox(width: AppSpacing.md),
                 if (isEnabled)
@@ -141,7 +144,7 @@ class _ComingSoonBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       child: Text(
-        AppStrings.comingSoonBadge,
+        AppLocalizations.of(context)!.comingSoonBadge,
         style: theme.textTheme.labelSmall?.copyWith(
           color: colors.onSecondaryContainer,
           fontWeight: FontWeight.w700,

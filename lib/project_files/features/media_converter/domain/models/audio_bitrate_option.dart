@@ -15,10 +15,4 @@ enum AudioBitrateOption {
 
   /// Bitrate in kbit/s, or `null` to follow the quality preset.
   final int? kbps;
-
-  /// `Preset`, `192 kbps` …
-  String get label => kbps == null ? _presetLabel : '$kbps $_unit';
-
-  static const String _presetLabel = 'Preset';
-  static const String _unit = 'kbps';
 }

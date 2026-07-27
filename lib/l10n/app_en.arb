@@ -1,0 +1,241 @@
+{
+  "@@locale": "en",
+
+  "appName": "Archonex Converter",
+  "appTagline": "Convert any file, any size. No limits.",
+
+  "languageTitle": "Choose your language",
+  "languageSubtitle": "Select the language you want to use in the app.",
+  "continueLabel": "Continue",
+
+  "fileConvertersTitle": "File converters",
+  "fileConvertersScreenSubtitle": "Pick a converter to get started. More are on the way.",
+  "comingSoonBadge": "Soon",
+
+  "converterMediaTitle": "Media converter",
+  "converterMediaSubtitle": "Video, audio and animated images",
+  "converterImageTitle": "Image converter",
+  "converterImageSubtitle": "JPG, PNG, WebP and more",
+  "converterDocumentTitle": "Document converter",
+  "converterDocumentSubtitle": "DOCX, PDF and TXT",
+
+  "mediaConverterTitle": "Media converter",
+  "mediaConverterScreenSubtitle": "Add a file, pick a format and convert it.",
+
+  "convertToTitle": "Convert to",
+  "videoTargetsTitle": "Video",
+  "animationTargetsTitle": "Animation",
+  "audioTargetsTitle": "Audio",
+
+  "convertToLabel": "Convert to {format}",
+  "@convertToLabel": {
+    "placeholders": {
+      "format": { "type": "String" }
+    }
+  },
+
+  "qualityTitle": "Quality",
+  "qualityHigh": "High",
+  "qualityBalanced": "Balanced",
+  "qualityCompact": "Compact",
+  "qualityHighHint": "Best quality, largest file.",
+  "qualityBalancedHint": "Good quality at a sensible size.",
+  "qualityCompactHint": "Smallest file, lower quality.",
+
+  "advancedTitle": "Advanced",
+  "advancedHint": "Override the preset for this file.",
+  "resetToPresetLabel": "Reset to preset",
+  "resolutionLabel": "Resolution",
+  "frameRateLabel": "Frame rate",
+  "videoQualityLabel": "Video quality",
+  "qualitySmaller": "Smaller file",
+  "qualityBetter": "Better quality",
+  "audioBitrateLabel": "Audio bitrate",
+  "keepAudioLabel": "Keep audio",
+  "keepAudioHint": "Turn off to produce a silent video.",
+
+  "maxFileSizeNotice": "Maximum file size: {maxSize}",
+  "@maxFileSizeNotice": {
+    "placeholders": {
+      "maxSize": { "type": "String" }
+    }
+  },
+  "chooseFileLabel": "Choose file",
+  "chooseFileHint": "No file selected yet. Files up to {maxSize} are accepted.",
+  "@chooseFileHint": {
+    "placeholders": {
+      "maxSize": { "type": "String" }
+    }
+  },
+  "removeFileLabel": "Remove",
+  "convertLabel": "Convert",
+  "convertingLabel": "Converting…",
+  "cancelLabel": "Cancel",
+  "downloadLabel": "Download",
+  "savingLabel": "Saving…",
+  "resultTitle": "Converted file",
+
+  "savedTo": "Saved to {location}",
+  "@savedTo": {
+    "placeholders": {
+      "location": { "type": "String" }
+    }
+  },
+  "downloadStarted": "Download started.",
+
+  "imageConverterTitle": "Image converter",
+  "imageConverterScreenSubtitle": "Add photos, pick a format and convert them all at once.",
+
+  "imageLimitsNotice": "Up to {maxBatch} photos, {maxSize} each",
+  "@imageLimitsNotice": {
+    "placeholders": {
+      "maxBatch": { "type": "int" },
+      "maxSize": { "type": "String" }
+    }
+  },
+
+  "addPhotosLabel": "Add photos",
+  "addMorePhotosLabel": "Add more",
+  "clearPhotosLabel": "Clear all",
+  "noPhotosHint": "No photos selected yet. Add up to {maxBatch} at once.",
+  "@noPhotosHint": {
+    "placeholders": {
+      "maxBatch": { "type": "int" }
+    }
+  },
+
+  "photosSelected": "{count, plural, one{1 photo · {totalSize}} other{{count} photos · {totalSize}}}",
+  "@photosSelected": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "totalSize": { "type": "String" }
+    }
+  },
+
+  "convertAllToLabel": "{count, plural, one{Convert to {format}} other{Convert {count} photos to {format}}}",
+  "@convertAllToLabel": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "format": { "type": "String" }
+    }
+  },
+
+  "convertingCount": "Converting {done} of {total}…",
+  "@convertingCount": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+
+  "saveLabel": "Save",
+  "saveAllLabel": "Save all",
+  "resultsTitle": "Converted",
+
+  "savedFiles": "{count, plural, one{Saved to {location}} other{Saved {count} files to {location}}}",
+  "@savedFiles": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "location": { "type": "String" }
+    }
+  },
+
+  "photosConvertedAll": "All {total} photos converted.",
+  "@photosConvertedAll": {
+    "placeholders": {
+      "total": { "type": "int" }
+    }
+  },
+  "photosConvertedProgress": "{done} of {total} photos converted.",
+  "@photosConvertedProgress": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+
+  "maxSideLabel": "Maximum size",
+  "imageQualityLabel": "Image quality",
+  "backgroundLabel": "Background",
+  "backgroundWhite": "White",
+  "backgroundBlack": "Black",
+  "keepMetadataLabel": "Keep metadata",
+  "keepMetadataHint": "EXIF data such as camera model, date and location.",
+  "dimensionAuto": "Follow preset",
+  "dimensionOriginal": "Original size",
+
+  "dimensionPixels": "{pixels} px",
+  "@dimensionPixels": {
+    "placeholders": {
+      "pixels": { "type": "int" }
+    }
+  },
+
+  "imageQualityHighHint": "Full size, barely any compression.",
+  "imageQualityBalancedHint": "Resized for sharing, hard to tell apart.",
+  "imageQualityCompactHint": "Small enough to send anywhere.",
+
+  "fileTooLarge": "This file is {actualSize}. The maximum allowed size is {maxSize}.",
+  "@fileTooLarge": {
+    "placeholders": {
+      "actualSize": { "type": "String" },
+      "maxSize": { "type": "String" }
+    }
+  },
+
+  "tooManyFiles": "Only {limit} files can be converted at once.",
+  "@tooManyFiles": {
+    "placeholders": {
+      "limit": { "type": "int" }
+    }
+  },
+
+  "filesSkipped": "{count, plural, one{1 file was skipped: it is unsupported or over the size limit.} other{{count} files were skipped: they are unsupported or over the size limit.}}",
+  "@filesSkipped": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "unsupportedFormatNoExtension": "That file has no extension, so its format could not be detected.",
+  "unsupportedFormatExtension": ".{extension} files are not supported by this converter.",
+  "@unsupportedFormatExtension": {
+    "placeholders": {
+      "extension": { "type": "String" }
+    }
+  },
+
+  "incompatibleTarget": "{source} cannot be converted to {target}.",
+  "@incompatibleTarget": {
+    "placeholders": {
+      "source": { "type": "String" },
+      "target": { "type": "String" }
+    }
+  },
+
+  "noAudioTrackError": "This file has no audio track, so there is nothing to extract.",
+  "corruptSourceError": "This file could not be read. It may be damaged or use a codec the app does not support.",
+
+  "unknownSize": "too large",
+  "emptyFileError": "The selected file is empty.",
+  "fileReadError": "Could not read the selected file. Try another one.",
+  "conversionUnsupportedError": "Converting is not available on this platform yet. Use the Windows, macOS, Android or iOS app.",
+  "conversionFailedError": "Conversion failed. Please try again.",
+  "conversionCancelledError": "Conversion cancelled.",
+  "insufficientStorageError": "Not enough free space to store the result.",
+  "savePermissionDeniedError": "Storage access was denied. Allow it in system settings and try again.",
+
+  "resultTooLargeToSave": "The converted file is {actualSize}, over the {maxSize} limit on this platform. Try the Compact preset or a smaller size.",
+  "@resultTooLargeToSave": {
+    "placeholders": {
+      "actualSize": { "type": "String" },
+      "maxSize": { "type": "String" }
+    }
+  },
+
+  "saveFailedError": "Could not save the file. Try a different location.",
+
+  "autoLabel": "Auto",
+  "originalLabel": "Original",
+  "presetLabel": "Preset"
+}

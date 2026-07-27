@@ -1,3 +1,5 @@
+import 'package:archonex/project_files/features/converter_shared/domain/models/normalized_quality.dart';
+
 /// The three quality presets offered on the screen.
 ///
 /// Every codec expresses quality on its own scale — CRF for x264, a different
@@ -37,10 +39,10 @@ enum ConversionQuality {
   });
 
   /// Lowest value the normalised scale accepts. Anything under this is grain.
-  static const int minVideoQuality = 0;
+  static const int minVideoQuality = NormalizedQuality.min;
 
   /// Highest value the normalised scale accepts.
-  static const int maxVideoQuality = 100;
+  static const int maxVideoQuality = NormalizedQuality.max;
 
   /// Normalised picture quality, higher is better.
   final int videoQuality;

@@ -1,14 +1,14 @@
 import 'dart:async';
 
+import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/converted_file.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
 import 'package:archonex/project_files/features/media_converter/domain/media_converter_repo.dart';
 import 'package:archonex/project_files/features/media_converter/domain/media_file_repo.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_failure.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/conversion_job.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/conversion_settings.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/conversion_update.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/converted_file.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/source_file.dart';
 
 /// Media file access driven entirely by the test.
 class FakeMediaFileRepo implements MediaFileRepo {

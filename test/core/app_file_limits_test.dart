@@ -9,13 +9,13 @@ void main() {
   void onPlatform(TargetPlatform platform) =>
       debugDefaultTargetPlatformOverride = platform;
 
-  group('the offered ceiling per platform', () {
-    test('Android gets 512 MB, well under the 2 GiB array limit', () {
+  group('the ceiling per platform', () {
+    test('Android gets the full 2 GiB array limit', () {
       onPlatform(TargetPlatform.android);
 
       expect(
         AppFileLimits.maxUploadBytes,
-        512 * AppFileLimits.bytesInMegabyte,
+        2 * AppFileLimits.bytesInGigabyte,
       );
       expect(
         AppFileLimits.technicalMaxBytes,
@@ -23,17 +23,21 @@ void main() {
       );
     });
 
-    test('iOS gets 1 GB, under the 4 GiB message codec limit', () {
+    test('iOS gets the full 4 GiB message codec limit', () {
       onPlatform(TargetPlatform.iOS);
 
-      expect(AppFileLimits.maxUploadBytes, AppFileLimits.bytesInGigabyte);
+      expect(
+        AppFileLimits.maxUploadBytes,
+        4 * AppFileLimits.bytesInGigabyte,
+      );
       expect(
         AppFileLimits.technicalMaxBytes,
         4 * AppFileLimits.bytesInGigabyte,
       );
     });
 
-    test('desktop gets 4 GB, and says out loud that it is a phantom limit', () {
+    test('desktop has no real ceiling, so it gets a figure no file reaches',
+        () {
       for (final TargetPlatform platform in <TargetPlatform>[
         TargetPlatform.windows,
         TargetPlatform.macOS,
@@ -42,12 +46,9 @@ void main() {
 
         expect(
           AppFileLimits.maxUploadBytes,
-          4 * AppFileLimits.bytesInGigabyte,
+          AppFileLimits.bytesInTerabyte,
           reason: '$platform',
         );
-        // Nothing in the desktop pipeline is bounded, so a paid tier drops the
-        // ceiling rather than raising it.
-        expect(AppFileLimits.isPhantomLimit, isTrue, reason: '$platform');
       }
     });
 
@@ -56,32 +57,49 @@ void main() {
 
       expect(AppFileLimits.maxUploadBytes, 0);
     });
+  });
 
-    test('only desktop is phantom — the mobile ceilings are real', () {
+  group('the batch ceiling', () {
+    test('mobile stays at a number the fallback save path can survive', () {
+      // If the chosen folder turns out to be unwritable the app falls back to
+      // one dialog per file, so the count has to stay tappable.
       for (final TargetPlatform platform in <TargetPlatform>[
         TargetPlatform.android,
         TargetPlatform.iOS,
       ]) {
         onPlatform(platform);
 
-        expect(AppFileLimits.isPhantomLimit, isFalse, reason: '$platform');
+        expect(AppFileLimits.maxBatchFiles, 30, reason: '$platform');
       }
     });
-  });
 
-  test('every ceiling stays at or under the free share of its maximum', () {
-    for (final TargetPlatform platform in TargetPlatform.values) {
-      onPlatform(platform);
+    test('desktop takes more, because it never needs that fallback', () {
+      onPlatform(TargetPlatform.windows);
 
-      final int offered = AppFileLimits.maxUploadBytes;
-      final int maximum = AppFileLimits.technicalMaxBytes;
+      expect(AppFileLimits.maxBatchFiles, 100);
+    });
 
-      expect(
-        offered,
-        lessThanOrEqualTo((maximum * AppFileLimits.freeTierShare).round()),
-        reason: '$platform offers more than the free share of its maximum',
-      );
-    }
+    test('a platform with no engine accepts no batch at all', () {
+      onPlatform(TargetPlatform.linux);
+
+      expect(AppFileLimits.maxBatchFiles, 0);
+    });
+
+    test('a platform that can convert can always take at least one file', () {
+      for (final TargetPlatform platform in TargetPlatform.values) {
+        onPlatform(platform);
+
+        if (AppFileLimits.maxUploadBytes == 0) {
+          continue;
+        }
+
+        expect(
+          AppFileLimits.maxBatchFiles,
+          greaterThan(0),
+          reason: '$platform accepts a file but not a batch',
+        );
+      }
+    });
   });
 
   test('the result ceiling matches the upload ceiling', () {
@@ -97,13 +115,13 @@ void main() {
   group('the label', () {
     test('is derived from the number, so copy cannot drift from the check', () {
       onPlatform(TargetPlatform.android);
-      expect(AppFileLimits.maxUploadLabel, '512 MB');
+      expect(AppFileLimits.maxUploadLabel, '2 GB');
 
       onPlatform(TargetPlatform.iOS);
-      expect(AppFileLimits.maxUploadLabel, '1 GB');
+      expect(AppFileLimits.maxUploadLabel, '4 GB');
 
       onPlatform(TargetPlatform.windows);
-      expect(AppFileLimits.maxUploadLabel, '4 GB');
+      expect(AppFileLimits.maxUploadLabel, '1 TB');
     });
 
     test('never shows a fraction — every ceiling is a round figure', () {

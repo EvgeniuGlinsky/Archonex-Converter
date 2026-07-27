@@ -5,10 +5,10 @@
 enum VideoResolution {
   /// Whatever the quality preset asks for. The default, so the panel can be
   /// opened and closed again without changing the outcome.
-  auto(height: null, followsPreset: true, label: 'Auto'),
+  auto(height: null, followsPreset: true),
 
   /// Keep the source size, whatever the preset says.
-  source(height: null, followsPreset: false, label: 'Original'),
+  source(height: null, followsPreset: false),
 
   uhd(height: 2160),
   qhd(height: 1440),
@@ -17,20 +17,11 @@ enum VideoResolution {
   sd(height: 480),
   low(height: 360);
 
-  const VideoResolution({
-    required this.height,
-    this.followsPreset = false,
-    String? label,
-  }) : _label = label;
+  const VideoResolution({required this.height, this.followsPreset = false});
 
   /// Height in pixels, or `null` when no cap applies.
   final int? height;
 
   /// `true` for the entry that defers to the quality preset.
   final bool followsPreset;
-
-  final String? _label;
-
-  /// `Auto`, `Original`, `1080p` …
-  String get label => _label ?? '${height}p';
 }

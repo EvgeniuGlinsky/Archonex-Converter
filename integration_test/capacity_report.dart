@@ -97,10 +97,7 @@ class CapacityReport {
           '${Platform.operatingSystemVersion}')
       ..writeln()
       ..writeln('Currently offered by the app on this platform: '
-          '${AppFileLimits.maxUploadLabel} '
-          '(${AppFileLimits.isPhantomLimit ? 'phantom' : 'real'} ceiling, '
-          'technical maximum '
-          '${_gb(AppFileLimits.technicalMaxBytes)})')
+          '${AppFileLimits.maxUploadLabel}')
       ..writeln()
       ..writeln('## Device')
       ..writeln();
@@ -142,9 +139,7 @@ class CapacityReport {
       ..writeln()
       ..writeln('- Largest result that can be saved: ${_transferVerdict()}')
       ..writeln('- Largest source converted: '
-          '${maxConversionMb == null ? 'none measured' : '$maxConversionMb MB'}')
-      ..writeln('- Free share (${(AppFileLimits.freeTierShare * 100).round()}%) '
-          'of the saveable ceiling: ${_freeShareVerdict()}');
+          '${maxConversionMb == null ? 'none measured' : '$maxConversionMb MB'}');
 
     return buffer.toString();
   }
@@ -199,17 +194,6 @@ class CapacityReport {
     }
 
     return maxTransferMb == null ? 'none measured' : '$maxTransferMb MB';
-  }
-
-  String _freeShareVerdict() {
-    if (_streamsToDisk) {
-      return 'n/a — the ceiling here is a product choice, not a limit';
-    }
-    if (maxTransferMb == null) {
-      return 'n/a';
-    }
-
-    return '${(maxTransferMb! * AppFileLimits.freeTierShare).round()} MB';
   }
 
   static String _mb(int? megabytes) =>

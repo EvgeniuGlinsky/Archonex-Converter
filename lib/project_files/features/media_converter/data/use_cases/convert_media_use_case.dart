@@ -1,10 +1,10 @@
 import 'package:archonex/core/constants/app_file_limits.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
 import 'package:archonex/project_files/features/media_converter/domain/media_converter_repo.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_failure.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/conversion_job.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/conversion_settings.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/source_file.dart';
 
 /// Starts a conversion, re-checking the format pair and the upload ceiling.
 ///
@@ -21,7 +21,8 @@ class ConvertMediaUseCase {
     required MediaFormat target,
     required ConversionSettings settings,
   }) {
-    final MediaFormat? sourceFormat = source.format;
+    final MediaFormat? sourceFormat =
+        MediaFormat.fromExtension(source.extension);
 
     if (sourceFormat == null) {
       throw UnsupportedFormatFailure(actualExtension: source.extension);

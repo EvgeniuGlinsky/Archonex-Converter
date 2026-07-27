@@ -1,4 +1,4 @@
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_quality.dart';
+import 'package:archonex/project_files/features/converter_shared/data/ffmpeg/ffmpeg_quality_scale.dart';
 
 /// The video encoders the bundled FFmpeg build can write with.
 ///
@@ -104,21 +104,11 @@ enum FfmpegVideoCodec {
   bool get needsEvenDimensions => pixelFormat == _yuv420p;
 
   /// Turns the normalised 0–100 quality into this encoder's own number.
-  ///
-  /// Linear between [bestValue] and [worstValue], which also covers the
-  /// inverted scales because nothing here assumes one end is larger.
-  int qualityArgument(int normalized) {
-    const int span = ConversionQuality.maxVideoQuality -
-        ConversionQuality.minVideoQuality;
-    final int clamped = normalized.clamp(
-      ConversionQuality.minVideoQuality,
-      ConversionQuality.maxVideoQuality,
-    );
-    final int distanceFromBest = ConversionQuality.maxVideoQuality - clamped;
-
-    return (bestValue + (worstValue - bestValue) * distanceFromBest / span)
-        .round();
-  }
+  int qualityArgument(int normalized) => ffmpegQualityArgument(
+        normalized: normalized,
+        bestValue: bestValue,
+        worstValue: worstValue,
+      );
 }
 
 /// The audio encoders the bundled FFmpeg build can write with.

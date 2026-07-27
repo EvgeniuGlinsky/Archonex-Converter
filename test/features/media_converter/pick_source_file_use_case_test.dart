@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:archonex/core/constants/app_file_limits.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
 import 'package:archonex/project_files/features/media_converter/data/use_cases/pick_source_file_use_case.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_failure.dart';
 import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/source_file.dart';
 
 import 'fakes.dart';
 
@@ -30,14 +30,20 @@ void main() {
 
       final SourceFile? file = await pickSourceFile();
 
-      expect(file?.format, format, reason: '${format.extension} was refused');
+      expect(
+        MediaFormat.fromExtension(file?.extension ?? ''),
+        format,
+        reason: '${format.extension} was refused',
+      );
     }
   });
 
   test('resolves the format whatever the case of the extension', () async {
     repo.pickResult = const SourceFile(name: 'CLIP.MOV', sizeInBytes: 1024);
 
-    expect((await pickSourceFile())?.format, MediaFormat.mov);
+    final SourceFile? file = await pickSourceFile();
+
+    expect(MediaFormat.fromExtension(file?.extension ?? ''), MediaFormat.mov);
   });
 
   test('refuses an extension it does not know', () async {
