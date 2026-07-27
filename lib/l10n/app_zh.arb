@@ -16,8 +16,8 @@
   "converterMediaSubtitle": "视频、音频和动态图像",
   "converterImageTitle": "图片转换器",
   "converterImageSubtitle": "JPG、PNG、WebP 等更多格式",
-  "converterDocumentTitle": "文档转换器",
-  "converterDocumentSubtitle": "DOCX、PDF 和 TXT",
+  "converterPdfTitle": "PDF 转换器",
+  "converterPdfSubtitle": "照片转 PDF，PDF 转图片",
 
   "mediaConverterTitle": "媒体转换器",
   "mediaConverterScreenSubtitle": "添加文件，选择格式并进行转换。",
@@ -116,12 +116,22 @@
   "incompatibleTarget": "{source} 无法转换为 {target}。",
 
   "noAudioTrackError": "此文件没有音轨，因此没有可提取的内容。",
-  "corruptSourceError": "无法读取此文件。它可能已损坏，或使用了应用不支持的编解码器。",
+  "corruptSourceError": "无法读取此文件。它可能已损坏，或采用了应用不支持的变体格式。",
+  "passwordProtectedError": "此文件受密码保护。请移除密码后重试。",
+
+  "unsupportedCharactersError": "文本中包含内置字体无法绘制的字符，例如 {sample}。目前尚不支持中文、日文和韩文。",
+  "@unsupportedCharactersError": {
+    "placeholders": {
+      "sample": { "type": "String" }
+    }
+  },
+
+  "mixedSourceKindsError": "请选择图片、PDF 或文本文件中的一类，不要混选。",
 
   "unknownSize": "过大",
   "emptyFileError": "所选文件为空。",
   "fileReadError": "无法读取所选文件。请尝试其他文件。",
-  "conversionUnsupportedError": "此平台暂不支持转换。请使用 Windows、macOS、Android 或 iOS 应用。",
+  "conversionUnsupportedError": "此转换器暂不支持当前平台。",
   "conversionFailedError": "转换失败，请重试。",
   "conversionCancelledError": "转换已取消。",
   "insufficientStorageError": "没有足够的可用空间来存储结果。",
@@ -133,5 +143,67 @@
 
   "autoLabel": "自动",
   "originalLabel": "原始",
-  "presetLabel": "预设"
+  "presetLabel": "预设",
+
+  "pdfConverterTitle": "PDF 转换器",
+  "pdfConverterScreenSubtitle": "将照片或文本合成 PDF，或将 PDF 拆分为图片。",
+
+  "pdfSourcesNotice": "最多 {maxBatch} 个文件，每个 {maxSize}",
+  "@pdfSourcesNotice": {
+    "placeholders": {
+      "maxBatch": { "type": "int" },
+      "maxSize": { "type": "String" }
+    }
+  },
+
+  "addFilesLabel": "添加文件",
+  "addMoreFilesLabel": "继续添加",
+  "clearFilesLabel": "全部清除",
+
+  "noFilesHint": "尚未选择文件。可添加图片、PDF 或文本文件，一次最多 {maxBatch} 个。",
+  "@noFilesHint": {
+    "placeholders": {
+      "maxBatch": { "type": "int" }
+    }
+  },
+
+  "filesSelected": "{count, plural, other{{count} 个文件 · {totalSize}}}",
+  "@filesSelected": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "totalSize": { "type": "String" }
+    }
+  },
+
+  "convertingPages": "正在处理第 {done} 页，共 {total} 页…",
+  "@convertingPages": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+
+  "pagesConverted": "{count, plural, other{已处理 {count} 页。}}",
+  "@pagesConverted": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "pageSizeLabel": "页面尺寸",
+  "pageSizeFitSource": "适应图片",
+  "pageSizeA4": "A4",
+  "pageSizeLetter": "Letter",
+  "marginLabel": "页边距",
+  "marginNone": "无",
+  "marginSmall": "较小",
+  "marginLarge": "较大",
+  "resolutionDpiLabel": "分辨率",
+
+  "dpiValue": "{dpi} dpi",
+  "@dpiValue": {
+    "placeholders": {
+      "dpi": { "type": "int" }
+    }
+  }
 }

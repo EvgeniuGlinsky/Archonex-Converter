@@ -38,9 +38,13 @@ void main() {
 
     test('desktop has no real ceiling, so it gets a figure no file reaches',
         () {
+      // Linux is here too. The tier answers how large a file can be saved, not
+      // which engines exist: its save path is the same OS-level copy, and the
+      // PDF converter needs no FFmpeg to run there.
       for (final TargetPlatform platform in <TargetPlatform>[
         TargetPlatform.windows,
         TargetPlatform.macOS,
+        TargetPlatform.linux,
       ]) {
         onPlatform(platform);
 
@@ -52,8 +56,8 @@ void main() {
       }
     });
 
-    test('a platform with no engine offers nothing', () {
-      onPlatform(TargetPlatform.linux);
+    test('a platform the app does not target offers nothing', () {
+      onPlatform(TargetPlatform.fuchsia);
 
       expect(AppFileLimits.maxUploadBytes, 0);
     });
@@ -79,8 +83,8 @@ void main() {
       expect(AppFileLimits.maxBatchFiles, 100);
     });
 
-    test('a platform with no engine accepts no batch at all', () {
-      onPlatform(TargetPlatform.linux);
+    test('a platform the app does not target accepts no batch at all', () {
+      onPlatform(TargetPlatform.fuchsia);
 
       expect(AppFileLimits.maxBatchFiles, 0);
     });

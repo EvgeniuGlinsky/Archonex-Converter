@@ -9,7 +9,8 @@ enum AppRoute {
 
   // Children of [fileConverters] — one entry per converter screen.
   mediaConverter(path: 'media'),
-  imageConverter(path: 'image');
+  imageConverter(path: 'image'),
+  pdfConverter(path: 'pdf');
 
   const AppRoute({required this.path});
 

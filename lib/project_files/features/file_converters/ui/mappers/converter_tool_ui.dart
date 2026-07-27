@@ -9,14 +9,14 @@ extension ConverterToolTypeUi on ConverterToolType {
   IconData get icon => switch (this) {
         ConverterToolType.media => Icons.movie_filter_outlined,
         ConverterToolType.image => Icons.image_outlined,
-        ConverterToolType.document => Icons.description_outlined,
+        ConverterToolType.pdf => Icons.picture_as_pdf_outlined,
       };
 
   /// Destination of the converter, or `null` while it is not built yet.
   AppRoute? get route => switch (this) {
         ConverterToolType.media => AppRoute.mediaConverter,
         ConverterToolType.image => AppRoute.imageConverter,
-        ConverterToolType.document => null,
+        ConverterToolType.pdf => AppRoute.pdfConverter,
       };
 
   String title(BuildContext context) {
@@ -25,7 +25,7 @@ extension ConverterToolTypeUi on ConverterToolType {
     return switch (this) {
       ConverterToolType.media => l10n.converterMediaTitle,
       ConverterToolType.image => l10n.converterImageTitle,
-      ConverterToolType.document => l10n.converterDocumentTitle,
+      ConverterToolType.pdf => l10n.converterPdfTitle,
     };
   }
 
@@ -35,7 +35,7 @@ extension ConverterToolTypeUi on ConverterToolType {
     return switch (this) {
       ConverterToolType.media => l10n.converterMediaSubtitle,
       ConverterToolType.image => l10n.converterImageSubtitle,
-      ConverterToolType.document => l10n.converterDocumentSubtitle,
+      ConverterToolType.pdf => l10n.converterPdfSubtitle,
     };
   }
 }

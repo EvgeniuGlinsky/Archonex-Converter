@@ -5,6 +5,7 @@ import 'package:archonex_converter/project_files/features/file_converters/ui/fil
 import 'package:archonex_converter/project_files/features/image_converter/ui/image_converter_page.dart';
 import 'package:archonex_converter/project_files/features/language_selection/ui/language_selection_page.dart';
 import 'package:archonex_converter/project_files/features/media_converter/ui/media_converter_page.dart';
+import 'package:archonex_converter/project_files/features/pdf_converter/ui/pdf_converter_page.dart';
 import 'package:archonex_converter/project_files/features/splash/ui/splash_page.dart';
 
 /// Builds the application router.
@@ -41,6 +42,11 @@ class AppRouter {
               path: AppRoute.imageConverter.path,
               name: AppRoute.imageConverter.routeName,
               builder: (context, state) => const ImageConverterPage(),
+            ),
+            GoRoute(
+              path: AppRoute.pdfConverter.path,
+              name: AppRoute.pdfConverter.routeName,
+              builder: (context, state) => const PdfConverterPage(),
             ),
           ],
         ),

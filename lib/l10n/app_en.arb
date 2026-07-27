@@ -16,8 +16,8 @@
   "converterMediaSubtitle": "Video, audio and animated images",
   "converterImageTitle": "Image converter",
   "converterImageSubtitle": "JPG, PNG, WebP and more",
-  "converterDocumentTitle": "Document converter",
-  "converterDocumentSubtitle": "DOCX, PDF and TXT",
+  "converterPdfTitle": "PDF converter",
+  "converterPdfSubtitle": "Photos to PDF, PDF to images",
 
   "mediaConverterTitle": "Media converter",
   "mediaConverterScreenSubtitle": "Add a file, pick a format and convert it.",
@@ -214,12 +214,22 @@
   },
 
   "noAudioTrackError": "This file has no audio track, so there is nothing to extract.",
-  "corruptSourceError": "This file could not be read. It may be damaged or use a codec the app does not support.",
+  "corruptSourceError": "This file could not be read. It may be damaged, or in a variant the app does not support.",
+  "passwordProtectedError": "This file is password protected. Remove the password and try again.",
+
+  "unsupportedCharactersError": "This text contains characters the built-in font cannot draw, such as {sample}. Chinese, Japanese and Korean are not supported yet.",
+  "@unsupportedCharactersError": {
+    "placeholders": {
+      "sample": { "type": "String" }
+    }
+  },
+
+  "mixedSourceKindsError": "Pick either images, or a PDF, or text files — not a mix of them.",
 
   "unknownSize": "too large",
   "emptyFileError": "The selected file is empty.",
   "fileReadError": "Could not read the selected file. Try another one.",
-  "conversionUnsupportedError": "Converting is not available on this platform yet. Use the Windows, macOS, Android or iOS app.",
+  "conversionUnsupportedError": "This converter is not available on this platform yet.",
   "conversionFailedError": "Conversion failed. Please try again.",
   "conversionCancelledError": "Conversion cancelled.",
   "insufficientStorageError": "Not enough free space to store the result.",
@@ -237,5 +247,67 @@
 
   "autoLabel": "Auto",
   "originalLabel": "Original",
-  "presetLabel": "Preset"
+  "presetLabel": "Preset",
+
+  "pdfConverterTitle": "PDF converter",
+  "pdfConverterScreenSubtitle": "Turn photos or text into a PDF, or a PDF back into images.",
+
+  "pdfSourcesNotice": "Up to {maxBatch} files, {maxSize} each",
+  "@pdfSourcesNotice": {
+    "placeholders": {
+      "maxBatch": { "type": "int" },
+      "maxSize": { "type": "String" }
+    }
+  },
+
+  "addFilesLabel": "Add files",
+  "addMoreFilesLabel": "Add more",
+  "clearFilesLabel": "Clear all",
+
+  "noFilesHint": "No files selected yet. Add images, a PDF, or text files — up to {maxBatch} at once.",
+  "@noFilesHint": {
+    "placeholders": {
+      "maxBatch": { "type": "int" }
+    }
+  },
+
+  "filesSelected": "{count, plural, one{1 file · {totalSize}} other{{count} files · {totalSize}}}",
+  "@filesSelected": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "totalSize": { "type": "String" }
+    }
+  },
+
+  "convertingPages": "Converting page {done} of {total}…",
+  "@convertingPages": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+
+  "pagesConverted": "{count, plural, one{1 page converted.} other{{count} pages converted.}}",
+  "@pagesConverted": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "pageSizeLabel": "Page size",
+  "pageSizeFitSource": "Fit the image",
+  "pageSizeA4": "A4",
+  "pageSizeLetter": "Letter",
+  "marginLabel": "Margin",
+  "marginNone": "None",
+  "marginSmall": "Small",
+  "marginLarge": "Large",
+  "resolutionDpiLabel": "Resolution",
+
+  "dpiValue": "{dpi} dpi",
+  "@dpiValue": {
+    "placeholders": {
+      "dpi": { "type": "int" }
+    }
+  }
 }

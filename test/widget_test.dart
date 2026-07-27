@@ -53,9 +53,9 @@ void main() {
     expect(find.text(en.fileConvertersTitle), findsOneWidget);
     expect(find.text(en.converterMediaTitle), findsOneWidget);
     expect(find.text(en.converterImageTitle), findsOneWidget);
-    expect(find.text(en.converterDocumentTitle), findsOneWidget);
-    // One badge per converter that is not built yet.
-    expect(find.text(en.comingSoonBadge), findsOneWidget);
+    expect(find.text(en.converterPdfTitle), findsOneWidget);
+    // Every converter in the catalogue is built, so nothing is badged.
+    expect(find.text(en.comingSoonBadge), findsNothing);
 
     await tester.tap(find.text(en.converterMediaTitle));
     await tester.pumpAndSettle();
@@ -109,17 +109,27 @@ void main() {
     expect(find.text(en.qualityTitle), findsNothing);
   });
 
-  testWidgets('upcoming converters cannot be opened',
+  testWidgets('the pdf converter opens on an empty selection',
       (WidgetTester tester) async {
     await _setSurfaceSize(tester, _screenSizes['phone']!);
     await _openFileConverters(tester, en);
 
-    await tester.tap(find.text(en.converterDocumentTitle));
+    await tester.tap(find.text(en.converterPdfTitle));
     await tester.pumpAndSettle();
 
-    expect(find.text(en.fileConvertersTitle), findsOneWidget);
-    expect(find.text(en.mediaConverterScreenSubtitle), findsNothing);
-    expect(find.text(en.imageConverterScreenSubtitle), findsNothing);
+    expect(find.text(en.pdfConverterTitle), findsOneWidget);
+    expect(
+      find.text(
+        en.pdfSourcesNotice(
+          AppFileLimits.maxBatchFiles,
+          AppFileLimits.maxUploadLabel,
+        ),
+      ),
+      findsOneWidget,
+    );
+    // The direction is only known once something is picked, so there is no
+    // target grid yet.
+    expect(find.text(en.convertToTitle), findsNothing);
   });
 
   for (final MapEntry<String, Size> entry in _screenSizes.entries) {

@@ -69,9 +69,36 @@ final class NoAudioTrackFailure extends ConversionFailure {
   const NoAudioTrackFailure();
 }
 
-/// FFmpeg could not make sense of the input at all.
+/// The engine could not make sense of the input at all.
 final class CorruptSourceFailure extends ConversionFailure {
   const CorruptSourceFailure();
+}
+
+/// The source is encrypted and no password was supplied.
+///
+/// Only PDFs reach this today. Kept separate from [CorruptSourceFailure]
+/// because the file is perfectly well formed and the user can act on it — the
+/// two would otherwise send them looking for damage that is not there.
+final class PasswordProtectedFailure extends ConversionFailure {
+  const PasswordProtectedFailure();
+}
+
+/// The text carries characters the embedded font cannot draw.
+///
+/// The bundled Noto Sans covers Latin, Greek and Cyrillic. Anything else — CJK
+/// above all — would come out as blank boxes, and the PDF writer will not fail
+/// on its own, so this is raised instead of handing back a silently broken
+/// document.
+final class UnsupportedCharactersFailure extends ConversionFailure {
+  const UnsupportedCharactersFailure({required this.sample});
+
+  /// A few of the offending characters, so the message can name them.
+  final String sample;
+}
+
+/// A batch mixes kinds that have no single direction, e.g. photos and a PDF.
+final class MixedSourceKindsFailure extends ConversionFailure {
+  const MixedSourceKindsFailure();
 }
 
 /// The picked file has no content.

@@ -16,8 +16,8 @@
   "converterMediaSubtitle": "Видео, аудио и анимированные изображения",
   "converterImageTitle": "Конвертер изображений",
   "converterImageSubtitle": "JPG, PNG, WebP и другие",
-  "converterDocumentTitle": "Конвертер документов",
-  "converterDocumentSubtitle": "DOCX, PDF и TXT",
+  "converterPdfTitle": "PDF-конвертер",
+  "converterPdfSubtitle": "Фото в PDF, PDF в картинки",
 
   "mediaConverterTitle": "Медиаконвертер",
   "mediaConverterScreenSubtitle": "Добавьте файл, выберите формат и конвертируйте его.",
@@ -116,12 +116,22 @@
   "incompatibleTarget": "{source} нельзя конвертировать в {target}.",
 
   "noAudioTrackError": "В этом файле нет аудиодорожки, поэтому извлекать нечего.",
-  "corruptSourceError": "Не удалось прочитать этот файл. Возможно, он повреждён или использует кодек, который приложение не поддерживает.",
+  "corruptSourceError": "Не удалось прочитать этот файл. Возможно, он повреждён или сохранён в разновидности, которую приложение не поддерживает.",
+  "passwordProtectedError": "Файл защищён паролем. Снимите пароль и попробуйте снова.",
+
+  "unsupportedCharactersError": "В тексте есть символы, которые встроенный шрифт не может отрисовать, например {sample}. Китайский, японский и корейский пока не поддерживаются.",
+  "@unsupportedCharactersError": {
+    "placeholders": {
+      "sample": { "type": "String" }
+    }
+  },
+
+  "mixedSourceKindsError": "Выберите либо картинки, либо PDF, либо текстовые файлы — но не всё сразу.",
 
   "unknownSize": "слишком большой",
   "emptyFileError": "Выбранный файл пуст.",
   "fileReadError": "Не удалось прочитать выбранный файл. Попробуйте другой.",
-  "conversionUnsupportedError": "Конвертация пока недоступна на этой платформе. Используйте приложение для Windows, macOS, Android или iOS.",
+  "conversionUnsupportedError": "Этот конвертер пока недоступен на данной платформе.",
   "conversionFailedError": "Не удалось выполнить конвертацию. Попробуйте ещё раз.",
   "conversionCancelledError": "Конвертация отменена.",
   "insufficientStorageError": "Недостаточно свободного места для сохранения результата.",
@@ -133,5 +143,67 @@
 
   "autoLabel": "Авто",
   "originalLabel": "Оригинал",
-  "presetLabel": "Пресет"
+  "presetLabel": "Пресет",
+
+  "pdfConverterTitle": "PDF-конвертер",
+  "pdfConverterScreenSubtitle": "Соберите PDF из фото или текста — или разберите PDF на картинки.",
+
+  "pdfSourcesNotice": "До {maxBatch} файлов, по {maxSize} каждый",
+  "@pdfSourcesNotice": {
+    "placeholders": {
+      "maxBatch": { "type": "int" },
+      "maxSize": { "type": "String" }
+    }
+  },
+
+  "addFilesLabel": "Добавить файлы",
+  "addMoreFilesLabel": "Добавить ещё",
+  "clearFilesLabel": "Очистить всё",
+
+  "noFilesHint": "Файлы пока не выбраны. Добавьте картинки, PDF или текстовые файлы — до {maxBatch} за раз.",
+  "@noFilesHint": {
+    "placeholders": {
+      "maxBatch": { "type": "int" }
+    }
+  },
+
+  "filesSelected": "{count, plural, one{{count} файл · {totalSize}} few{{count} файла · {totalSize}} many{{count} файлов · {totalSize}} other{{count} файла · {totalSize}}}",
+  "@filesSelected": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "totalSize": { "type": "String" }
+    }
+  },
+
+  "convertingPages": "Обработка страницы {done} из {total}…",
+  "@convertingPages": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+
+  "pagesConverted": "{count, plural, one{Обработана {count} страница.} few{Обработано {count} страницы.} many{Обработано {count} страниц.} other{Обработано {count} страницы.}}",
+  "@pagesConverted": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "pageSizeLabel": "Размер страницы",
+  "pageSizeFitSource": "По размеру картинки",
+  "pageSizeA4": "A4",
+  "pageSizeLetter": "Letter",
+  "marginLabel": "Поля",
+  "marginNone": "Без полей",
+  "marginSmall": "Небольшие",
+  "marginLarge": "Широкие",
+  "resolutionDpiLabel": "Разрешение",
+
+  "dpiValue": "{dpi} dpi",
+  "@dpiValue": {
+    "placeholders": {
+      "dpi": { "type": "int" }
+    }
+  }
 }
