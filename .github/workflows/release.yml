@@ -66,9 +66,10 @@ jobs:
       # secret, is written outside the working tree, and `key.properties` points at
       # it — the same file a developer writes by hand locally.
       #
-      # Without the secrets the build still runs and produces a debug-signed APK,
-      # which `build.gradle.kts` warns about in the log. That keeps this workflow
-      # honest before the key exists rather than red.
+      # A dispatch without the secrets still builds, debug-signed, so the workflow
+      # can be rehearsed before a key exists. A tag is held to a higher standard
+      # below: an artifact not signed with the upload key can never be updated,
+      # and learning that after publishing is the expensive way to learn it.
       - name: Prepare signing
         id: signing
         env:
@@ -94,6 +95,16 @@ jobs:
           } > android/key.properties
 
           echo "signed=true" >> "$GITHUB_OUTPUT"
+
+      # Until now `signed` was written and never read, so the guard it implies did
+      # not exist: secrets could go missing and a debug-signed release would be
+      # drafted on entirely green checkmarks. A tag is a release, so it fails here
+      # instead.
+      - name: Refuse an unsigned tag
+        if: startsWith(github.ref, 'refs/tags/v') && steps.signing.outputs.signed != 'true'
+        run: |
+          echo "::error::This tag would publish an unsigned build. Set ANDROID_KEYSTORE_BASE64 and ANDROID_KEYSTORE_PASSWORD."
+          exit 1
 
       # For Google Play. `ARCHONEX_DISTRIBUTION=store` is what turns the store
       # channel on: Play refuses billing to a build it did not install, so only
@@ -273,7 +284,10 @@ jobs:
   publish:
     name: Draft the release
     needs: [android, windows, linux]
-    if: startsWith(github.ref, 'refs/tags/v')
+    # `dry_run` is offered only on a manual dispatch and is absent — so never
+    # `true` — on a tag push. Until it was read here it was a checkbox promising
+    # something the workflow did not honour.
+    if: startsWith(github.ref, 'refs/tags/v') && inputs.dry_run != true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
