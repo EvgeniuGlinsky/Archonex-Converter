@@ -1,4 +1,4 @@
-﻿import 'package:archonex_converter/project_files/features/converter_shared/domain/models/converted_file.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/converted_file.dart';
 import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
 
 /// Contract for getting files in from and out to the platform.
