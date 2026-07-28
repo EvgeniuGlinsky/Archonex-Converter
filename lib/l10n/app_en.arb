@@ -351,6 +351,7 @@
 
   "paywallPeriodMonthly": "Monthly",
   "paywallPeriodYearly": "Yearly",
+  "paywallPeriodLifetime": "One-time, forever",
   "paywallSubscribeLabel": "Subscribe",
   "paywallRestoreLabel": "Restore purchases",
 
@@ -361,6 +362,7 @@
   "paywallBuyOnWebNotice": "The subscription is bought on the website. You are sent a key, and it is entered here.",
 
   "paywallNoPlansNotice": "Nothing is on sale right now. If that looks wrong, check your connection and try again.",
+  "paywallStoreBuildOnlyNotice": "This copy was not installed from the store, so it cannot take a payment. Install Archonex Converter from Google Play to subscribe — the free monthly count is the same in both.",
   "paywallActiveTitle": "Subscription active",
   "paywallActiveMessage": "This device converts without a monthly count.",
 

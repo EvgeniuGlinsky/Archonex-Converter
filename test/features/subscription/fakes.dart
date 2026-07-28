@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:archonex_converter/project_files/features/subscription/domain/checkout_launcher.dart';
+import 'package:archonex_converter/project_files/features/subscription/domain/store_billing.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/license_gateway.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/license_storage.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/checkout_offer.dart';
@@ -220,6 +223,102 @@ class FakeCheckoutLauncher implements CheckoutLauncher {
     lastUrl = url;
 
     return canOpen;
+  }
+}
+
+/// Store billing driven entirely by the test.
+///
+/// The stream is the point. A real store answers out of band, so a fake that
+/// returned results from [buy] would prove nothing about the code that actually
+/// ships — every outcome here has to be pushed through [report], exactly as Play
+/// would push it.
+class FakeStoreBilling implements StoreBilling {
+  FakeStoreBilling({
+    this.products = const <StoreProduct>[],
+    this.available = true,
+  });
+
+  List<StoreProduct> products;
+
+  /// `false` for a device with no store on it, or a build the store will not
+  /// serve.
+  bool available;
+
+  /// When set, `isAvailable`, `queryProducts`, `buy` and `restore` all throw —
+  /// standing in for a store that is present but broken.
+  bool isBroken = false;
+
+  /// What [buy] answers: whether the sheet opened, which is not whether anything
+  /// was bought.
+  bool opensSheet = true;
+
+  /// Pushed through the stream when [restore] is called, which is how a real
+  /// store answers one.
+  List<StorePurchase> ownedPurchases = const <StorePurchase>[];
+
+  int restoreCallCount = 0;
+  int queryCallCount = 0;
+  String? lastBoughtProductId;
+  final List<StorePurchase> completed = <StorePurchase>[];
+
+  final StreamController<List<StorePurchase>> _purchases =
+      StreamController<List<StorePurchase>>.broadcast();
+
+  @override
+  Stream<List<StorePurchase>> get purchases => _purchases.stream;
+
+  /// Pushes what the store has to say. Awaiting the returned future lets the
+  /// listener run before the test asserts.
+  Future<void> report(List<StorePurchase> purchases) async {
+    _purchases.add(purchases);
+
+    await Future<void>.delayed(Duration.zero);
+  }
+
+  @override
+  Future<bool> isAvailable() async {
+    _requireWorking();
+
+    return available;
+  }
+
+  @override
+  Future<List<StoreProduct>> queryProducts(Set<String> ids) async {
+    queryCallCount++;
+    _requireWorking();
+
+    return products.where((StoreProduct product) => ids.contains(product.id)).toList();
+  }
+
+  @override
+  Future<bool> buy(String productId) async {
+    lastBoughtProductId = productId;
+    _requireWorking();
+
+    return opensSheet;
+  }
+
+  @override
+  Future<void> restore() async {
+    restoreCallCount++;
+    _requireWorking();
+
+    if (ownedPurchases.isNotEmpty) {
+      await report(ownedPurchases);
+    }
+  }
+
+  @override
+  Future<void> complete(StorePurchase purchase) async {
+    completed.add(purchase);
+  }
+
+  Future<void> close() => _purchases.close();
+
+  void _requireWorking() {
+    if (isBroken) {
+      throw Exception('the store is unavailable');
+    }
   }
 }
 

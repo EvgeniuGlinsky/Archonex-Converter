@@ -56,6 +56,8 @@ class PaywallBody extends StatelessWidget {
     return <Widget>[
       if (state.showsPlans)
         ..._plans(context)
+      else if (state.showsStoreBuildNotice)
+        FileSizeLimitNotice(l10n.paywallStoreBuildOnlyNotice)
       else
         FileSizeLimitNotice(l10n.paywallNoPlansNotice),
       if (state.showsLicenseKeyField) ...<Widget>[

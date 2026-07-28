@@ -12,6 +12,7 @@ extension SubscriptionPeriodUi on SubscriptionPeriod {
     return switch (this) {
       SubscriptionPeriod.monthly => l10n.paywallPeriodMonthly,
       SubscriptionPeriod.yearly => l10n.paywallPeriodYearly,
+      SubscriptionPeriod.lifetime => l10n.paywallPeriodLifetime,
     };
   }
 }

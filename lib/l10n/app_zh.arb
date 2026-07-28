@@ -247,6 +247,7 @@
 
   "paywallPeriodMonthly": "按月",
   "paywallPeriodYearly": "按年",
+  "paywallPeriodLifetime": "一次性买断",
   "paywallSubscribeLabel": "订阅",
   "paywallRestoreLabel": "恢复购买",
 
@@ -257,6 +258,7 @@
   "paywallBuyOnWebNotice": "订阅在网站购买。您会收到一个密钥，在这里输入即可。",
 
   "paywallNoPlansNotice": "目前没有可购买的方案。如果这看起来不对，请检查网络连接后重试。",
+  "paywallStoreBuildOnlyNotice": "此副本并非从应用商店安装，因此无法完成付款。请从 Google Play 安装 Archonex Converter 以订阅——两个版本的免费月度额度完全相同。",
   "paywallActiveTitle": "订阅已生效",
   "paywallActiveMessage": "本设备的转换不再计入每月次数。",
 

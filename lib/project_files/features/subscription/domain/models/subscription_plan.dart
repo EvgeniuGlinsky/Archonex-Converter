@@ -1,7 +1,18 @@
 import 'package:equatable/equatable.dart';
 
-/// How often a plan renews.
-enum SubscriptionPeriod { monthly, yearly }
+/// How often a plan renews, or that it does not.
+enum SubscriptionPeriod {
+  monthly,
+  yearly,
+
+  /// Bought once, kept for good.
+  ///
+  /// For the platforms where a subscription is not worth the machinery it needs.
+  /// A store handles renewals, dunning and cancellation for free; anywhere else
+  /// all three would have to be built and run, and a one-time unlock has none of
+  /// them — nothing expires, so nothing has to be checked again.
+  lifetime,
+}
 
 /// One purchasable plan, as the store describes it.
 ///

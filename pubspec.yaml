@@ -51,9 +51,14 @@ dependencies:
   # accounts, so both can only be remembered on the device itself.
   shared_preferences: ^2.5.5
 
-  # The two halves of the licence route, and the only network the app makes:
-  # asking the licence service about a key, and handing the checkout page to
-  # the user's own browser. Converting itself never leaves the device.
+  # Play billing, which is how the paid tier is actually sold. Google is the
+  # merchant of record: it takes the payment, remits the tax and owns the
+  # entitlement, so nothing in this app has to.
+  in_app_purchase: ^3.3.0
+
+  # The licence route, reserved for the platforms a store cannot reach — see
+  # `LicenseGateway`. Unused until a desktop channel exists, and the only
+  # network the app would ever make. Converting never leaves the device.
   http: ^1.6.0
   url_launcher: ^6.3.2
 

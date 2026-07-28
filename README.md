@@ -60,35 +60,42 @@ Only files that actually made it through are counted. A cancelled run, a failed 
 
 The count lives on the device, in `shared_preferences`, because the app has no accounts and no server. A clock wound backwards is ignored — `QuotaRecord.lastSeen` wins — so a spent month cannot be replayed by changing the date. A clock wound *forwards* does grant a fresh count once; closing that needs a server, which an offline app does not have. Reinstalling also clears it. Both are known and accepted.
 
-The subscription is bought on the web and unlocked in the app with a licence key — on **every** platform, not only on desktop. That is a constraint rather than a preference: Google Play refuses to serve `BillingClient` to an app it did not install and sign, so a build downloaded from GitHub Releases could never complete a Play purchase, and no desktop platform offers billing Flutter can reach at all. One route that works everywhere beats a store sheet that works in one place and shows a dead button in the rest.
+### Who takes the money
 
-How a build charges therefore depends on how it was *distributed*, which is a different question from which platform it runs on. `data/platform/subscription_platform_io.dart` reads one define:
+The rule is deliberately unambitious: **where a store will sell for us, it sells; where none will, the paid tier is bought once and kept.** A store is the merchant of record — it takes the payment, remits the tax in every country it sells in, and owns the entitlement — so on those platforms there is no server to run and nothing to remember. Building that machinery ourselves for the platforms a store cannot reach would cost more than the first product is worth.
+
+| Platform | How it is sold | Why |
+| --- | --- | --- |
+| Android, from Google Play | Subscription, `$0.99`/month or `$7.99`/year | Google is merchant of record and owns the entitlement. No server, no keys |
+| Android, downloaded as an APK | Not sold — the paywall says where the paid version is | Play refuses billing to an app it did not install and sign |
+| Windows, Linux | One-time unlock, planned | No store billing Flutter can reach. Nothing expires, so nothing has to be checked again |
+| iOS, macOS | Subscription, when those builds exist | Same as Play. Neither can be built on Windows |
+| Web | Not sold | No converters there either |
+
+How a build charges depends on how it was **distributed**, which is a different question from which platform it runs on — and it cannot be detected at runtime, so it is declared at build time:
 
 ```bash
-flutter build apk                                          # licence key (the default)
-flutter build appbundle --dart-define=ARCHONEX_DISTRIBUTION=store   # reserved for a store upload
+flutter build apk                                                   # direct: not sold here
+flutter build appbundle --dart-define=ARCHONEX_DISTRIBUTION=store   # for Play: subscriptions live
 ```
 
-`PurchaseChannel.store` is kept for that second case and is unreachable until this binary is actually uploaded to a store.
+The default is the cautious answer. A build that says nothing about itself is assumed not to have come from a store, which produces an honest screen rather than a purchase that cannot complete.
 
-Behind the key sits `server/license/` — a Cloudflare Worker that mints keys when the payment provider reports a subscription, and answers whether a key is good. Paddle is the provider: it acts as merchant of record, which is the only practical way to sell to a hundred tax jurisdictions, and it has no licence-key feature of its own, which is why the Worker exists. The app never names it — `LicenseGateway` is the whole of what it knows — so replacing the provider changes one implementation and no shipped build.
+### The store route
 
-| Piece | Where | Responsibility |
-| --- | --- | --- |
-| `LicenseSubscriptionRepo` | `subscription/data/` | Every rule about clocks, expiry and silence |
-| `LicenseGateway` | `subscription/domain/` | Three questions: what is for sale, activate, validate |
-| `LicenseStorage` | `subscription/domain/` | Holds only what the rules produced |
-| `CheckoutLauncher` | `subscription/domain/` | Hands the checkout page to the user's browser |
+`StoreSubscriptionRepo` holds every rule; `StoreBilling` behind it carries none, which is what lets a purchase, a cancellation and a store that will not answer all be tested with no store present. Three things about it are worth knowing before touching it:
 
-The service host is compiled in, from `AppLicensePolicy.apiBaseUrl`. **It is still a placeholder** — the real one is `archonex-license.<subdomain>.workers.dev` and the subdomain belongs to a Cloudflare account that does not exist yet, so it has to be filled in before the first public release. A build that ships with the placeholder is not broken, it simply can never sell anything.
+- **Everything arrives out of band.** The store reports through one stream rather than by returning from the call that caused it, and it reports things the app never asked for — a renewal overnight, a purchase made on another device, a refund. So the entitlement is only ever set from that stream, and what `purchase` returns says how the attempt went and nothing more.
+- **A purchase must be acknowledged or it is reversed.** Google refunds a purchase the app never completes, within days. Every entitling purchase is acknowledged, including ones nothing was waiting for.
+- **A cancellation is only ever noticed by asking.** Nothing is pushed when a subscription lapses, so `refresh()` re-asks on every launch and waits `AppStorePolicy.restoreWindow` for an answer. A store that will not answer leaves the entitlement alone — silence is not evidence.
 
-Prices and checkout links are read from the service, never composed in the app. A price change is a dashboard edit rather than a release, and builds already downloaded start selling the day the service has something to sell. While it has nothing — which is the state that ships until the payment account is approved — the paywall says the shop is shut instead of inventing a number.
+The receipt is not verified against a server, because there is no server. A rooted device running a patched store client can claim a purchase that never happened; closing that would mean converting files somewhere other than the user's machine, which is the opposite of what this app is.
 
-Three honest limits on all of this:
+### The licence route, reserved
 
-- **Silence is not a refusal.** A confirmed licence is trusted for a day before the service is asked again, and keeps working for **14 days** with no answer at all. An unreachable service, a broken preferences file and a timeout all leave a paying user working; only the service saying *no* takes an entitlement away. The numbers and the reasoning are in `lib/core/constants/app_license_policy.dart`.
-- **The check runs on the user's machine.** Anyone willing to patch the binary can have the paid tier for free. Closing that would mean converting files on a server, which is the opposite of what this app is.
-- **Entitlements are per device.** With no accounts, one key activates up to three devices and that is the whole of the sharing model.
+`LicenseGateway`, `LicenseSubscriptionRepo`, `LicenseStorage` and `CheckoutLauncher` are a complete second route — bought outside the app, unlocked with a key, trusted for a day, honoured for fourteen days of silence. It is written, tested and currently **unreachable**: no build returns `PurchaseChannel.licenseKey`, because no provider that will pay out to this project's country also sells without a store.
+
+It is kept rather than deleted because it is exactly where the desktop one-time unlock lands, whichever channel turns out to work there. Nothing above it changes when that happens — one gateway implementation and one constant.
 
 ## Stack
 
@@ -101,7 +108,8 @@ Three honest limits on all of this:
 - [`pdf`](https://pub.dev/packages/pdf) + [`printing`](https://pub.dev/packages/printing) — the PDF engine: the first writes, the second rasterises through PDFium
 - [`image`](https://pub.dev/packages/image) — encoding rasterised pages to PNG or JPEG
 - [`shared_preferences`](https://pub.dev/packages/shared_preferences) — the monthly conversion count and the licence, the only state in the app that outlives the process
-- [`http`](https://pub.dev/packages/http) + [`url_launcher`](https://pub.dev/packages/url_launcher) — asking the licence service about a key, and opening the checkout page in the user's own browser. The only network the app makes; converting never leaves the device
+- [`in_app_purchase`](https://pub.dev/packages/in_app_purchase) — store billing, and how the paid tier is actually sold
+- [`http`](https://pub.dev/packages/http) + [`url_launcher`](https://pub.dev/packages/url_launcher) — the reserved licence route only. Converting never touches the network
 
 Both PDF packages are held one minor version below the latest: those require Dart 3.12, and the toolchain is pinned to the Flutter release that ships 3.11.
 
@@ -166,7 +174,7 @@ Routing has one source of truth: the `AppRoute` enum in `lib/core/router/app_rou
 
 Two features exist for the paid tier rather than for converting. `usage_quota/` owns the count: every rule about calendar months and device clocks lives in `UsageQuotaRepoImpl`, and `QuotaStorage` behind it only reads and writes what those rules produced — which is what lets the rules be tested without a platform plugin. `subscription/` owns the entitlement and the paywall screen, and repeats the same split for the licence: `LicenseSubscriptionRepo` holds every rule, while `LicenseGateway`, `LicenseStorage` and `CheckoutLauncher` behind it carry no decisions at all — which is what lets the offline grace period, a revoked key and a clock wound backwards all be tested with no network and no plugin. The two features meet in exactly one place, `WatchConversionAllowanceUseCase`, which hands the converters a single `ConversionAllowance`; no converter screen ever asks about subscriptions. Both repositories are app-wide singletons provided in `archonex_app.dart`, because the same count is spent from three screens.
 
-`server/license/` is not Dart and not part of the app: one Cloudflare Worker, documented in [its own README](server/license/README.md), holding the mapping from a paid subscription to a working key.
+There is no server anywhere in this project. On the platforms that sell, the store is the merchant of record and owns the entitlement; on the platforms that do not, nothing is sold yet. That is a deliberate ceiling on how much machinery the first release carries.
 
 A converter-specific model stays in its own feature: `MediaFormat`, `ImageFormat` and `PdfFormat` answer different questions and are deliberately not one enum. Adding a failure to the sealed `ConversionFailure` hierarchy will not compile until it is given copy in all three ARB files — that is the mechanism working, not an obstacle.
 

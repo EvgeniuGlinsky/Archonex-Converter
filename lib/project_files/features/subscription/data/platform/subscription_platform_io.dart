@@ -1,63 +1,52 @@
 import 'dart:io';
 
 import 'package:archonex_converter/project_files/features/subscription/data/free_only_subscription_repo.dart';
-import 'package:archonex_converter/project_files/features/subscription/data/license/http_license_gateway.dart';
-import 'package:archonex_converter/project_files/features/subscription/data/license_subscription_repo.dart';
-import 'package:archonex_converter/project_files/features/subscription/data/prefs_license_storage.dart';
-import 'package:archonex_converter/project_files/features/subscription/data/url_checkout_launcher.dart';
+import 'package:archonex_converter/project_files/features/subscription/data/store/in_app_purchase_billing.dart';
+import 'package:archonex_converter/project_files/features/subscription/data/store_subscription_repo.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_channel.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/subscription_repo.dart';
 
 /// Every platform that has a file system, and so a converter worth paying for.
+///
+/// Two questions decide what comes back, and they are not the same question.
+/// *Which platform* says whether a store exists here at all; *how this build was
+/// distributed* says whether that store will talk to it. Only when both answers
+/// are yes is there anything to sell.
 SubscriptionRepo createSubscriptionRepo() {
-  if (_isStoreBuild) {
-    // Reserved for the day this binary is uploaded to a store. Until then no
-    // store build exists, and pretending otherwise would put a purchase button
-    // on screen that the store would refuse.
-    return FreeOnlySubscriptionRepo(channel: PurchaseChannel.store);
+  if (!_hasStore) {
+    // Windows and Linux. Nothing to sell until a channel that needs no store
+    // exists — the licence seam in `LicenseGateway` is where that will land.
+    return FreeOnlySubscriptionRepo(channel: PurchaseChannel.unavailable);
   }
 
-  return LicenseSubscriptionRepo(
-    gateway: HttpLicenseGateway(),
-    storage: PrefsLicenseStorage(),
-    launcher: const UrlCheckoutLauncher(),
-    deviceName: _deviceName,
-  );
+  if (!_isStoreBuild) {
+    // An APK from GitHub Releases, or a local build. The store will not serve
+    // billing to it, so the paywall points at the version that can be paid for
+    // rather than offering a purchase that cannot complete.
+    return FreeOnlySubscriptionRepo(channel: PurchaseChannel.storeBuildOnly);
+  }
+
+  return StoreSubscriptionRepo(billing: InAppPurchaseBilling());
 }
 
-/// How this build reached the user — which is a different question from which
-/// platform it is running on, and the one that decides how it may charge.
+/// Whether this platform has store billing that Flutter can reach.
 ///
-/// The same Android binary can be a Play upload or a file downloaded from GitHub
-/// Releases, and only the first may use Play billing: `BillingClient` refuses to
-/// serve an app that Play did not install and sign, so a purchase button in a
-/// downloaded APK could never complete. Desktop has no store billing Flutter can
-/// reach at all.
+/// Windows and Linux do not. Microsoft's store has its own commerce API, but no
+/// Flutter plugin binds it, so from here it does not exist.
+bool get _hasStore =>
+    Platform.isAndroid || Platform.isIOS || Platform.isMacOS;
+
+/// Whether this build was installed by a store.
 ///
-/// So the default is the licence key, on every platform, and store billing has
-/// to be asked for explicitly at build time:
+/// It cannot be detected at runtime in any way worth trusting, so it is declared
+/// at build time. The default is the safe answer: a build that says nothing about
+/// itself is assumed not to have come from a store, which produces an honest
+/// screen rather than a broken purchase.
 ///
 /// ```
-/// flutter build appbundle --dart-define=ARCHONEX_DISTRIBUTION=store
+/// flutter build apk                                                  # direct
+/// flutter build appbundle --dart-define=ARCHONEX_DISTRIBUTION=store  # for Play
 /// ```
 const bool _isStoreBuild =
     String.fromEnvironment('ARCHONEX_DISTRIBUTION', defaultValue: 'direct') ==
         'store';
-
-/// What this device is called in the licence service's list of activations, so
-/// a subscriber can tell their laptop from their phone when they run out of
-/// slots.
-///
-/// The host name is what the user themselves named the machine, which beats a
-/// generated identifier nobody can recognise. Read defensively: it is not
-/// guaranteed to be readable on every platform, and a licence must not fail to
-/// activate over a label.
-String get _deviceName {
-  final String platform = Platform.operatingSystem;
-
-  try {
-    return '${Platform.localHostname} ($platform)';
-  } catch (_) {
-    return platform;
-  }
-}

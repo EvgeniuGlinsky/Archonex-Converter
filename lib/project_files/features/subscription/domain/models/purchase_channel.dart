@@ -8,10 +8,18 @@ enum PurchaseChannel {
   /// Google Play, the App Store or the Mac App Store handle the payment.
   store,
 
-  /// Bought on the web, unlocked in the app with a licence key. The only route
-  /// on Windows and Linux, where no store billing exists.
+  /// This platform can be paid for, but not by this copy of the app.
+  ///
+  /// A store will only serve billing to a build it installed and signed itself,
+  /// so an APK downloaded from GitHub can never complete a purchase. Saying where
+  /// the paid version lives is the one useful thing this screen can do, and it
+  /// beats a button that fails.
+  storeBuildOnly,
+
+  /// Bought outside the app, unlocked here with a licence key. Reserved for the
+  /// platforms no store reaches — see `LicenseGateway`.
   licenseKey,
 
-  /// Nothing to sell here — the web build, which has no converters either.
+  /// Nothing to sell here at all.
   unavailable,
 }

@@ -247,6 +247,7 @@
 
   "paywallPeriodMonthly": "Помесячно",
   "paywallPeriodYearly": "На год",
+  "paywallPeriodLifetime": "Разово, навсегда",
   "paywallSubscribeLabel": "Оформить подписку",
   "paywallRestoreLabel": "Восстановить покупки",
 
@@ -257,6 +258,7 @@
   "paywallBuyOnWebNotice": "Подписка оформляется на сайте. Вам придёт ключ — его нужно ввести здесь.",
 
   "paywallNoPlansNotice": "Сейчас ничего не продаётся. Если это выглядит неправильно, проверьте соединение и попробуйте снова.",
+  "paywallStoreBuildOnlyNotice": "Эта копия установлена не из магазина, поэтому принять оплату не может. Чтобы оформить подписку, установите Archonex Converter из Google Play — бесплатный месячный лимит в обеих версиях одинаковый.",
   "paywallActiveTitle": "Подписка активна",
   "paywallActiveMessage": "На этом устройстве конвертация идёт без месячного счётчика.",
 

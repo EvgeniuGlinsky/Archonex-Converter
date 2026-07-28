@@ -70,9 +70,15 @@ final class PaywallState extends Equatable {
 
   bool get showsLicenseKeyField => channel == PurchaseChannel.licenseKey;
 
+  /// Where to get the paid version, shown when this platform sells but this copy
+  /// of the app cannot buy.
+  bool get showsStoreBuildNotice => channel == PurchaseChannel.storeBuildOnly;
+
   /// Restoring makes sense wherever an earlier purchase could still be found: a
-  /// store keeps the receipt, and a licence key is kept on the device.
-  bool get showsRestore => channel != PurchaseChannel.unavailable;
+  /// store keeps the receipt, and a licence key is kept on the device. A build
+  /// the store will not talk to has nothing to ask.
+  bool get showsRestore =>
+      channel == PurchaseChannel.store || channel == PurchaseChannel.licenseKey;
 
   bool get canSubscribe =>
       isReady && !isSubscribed && selectedPlan != null;
