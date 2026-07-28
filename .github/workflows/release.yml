@@ -143,59 +143,66 @@ jobs:
       - run: flutter pub get
 
       # FFmpegKit ships its Windows DLLs as a zip the plugin's own CMakeLists
-      # downloads and unpacks. That unpack is `cmake -E tar` into the plugin
-      # directory, which Flutter reaches through
-      # `windows/flutter/ephemeral/.plugin_symlinks` — and libarchive refuses to
-      # extract through a symlink, so the build dies before compiling anything.
+      # downloads and unpacks with `cmake -E tar`. Flutter reaches the plugin
+      # through `windows/flutter/ephemeral/.plugin_symlinks`, and libarchive
+      # refuses to extract through a symlink — a defence against archives that
+      # escape their destination — so the build dies before compiling anything.
       #
-      # The plugin documents the way out: `FFMPEGKIT_LOCAL_DIR` points at an
-      # already-unpacked bundle, which it installs with `file(COPY)` instead.
-      # Variant and version are read back out of the plugin rather than pinned
-      # here, so a bump upstream cannot leave us shipping a different FFmpeg than
-      # the one the plugin expects.
-      - name: Fetch FFmpegKit
+      # Unpacking it here, into the plugin's real directory in the pub cache,
+      # avoids the symlink rather than arguing with it. The plugin records what it
+      # already has in a marker file and skips the download entirely when that
+      # matches what it wants, so writing the marker is what makes it stand down.
+      #
+      # Variant and version are read out of the plugin instead of pinned here: a
+      # bump upstream would otherwise leave us unpacking an FFmpeg it was never
+      # built against.
+      - name: Unpack FFmpegKit into the pub cache
         shell: bash
         run: |
           set -euo pipefail
 
-          cmakelists='windows/flutter/ephemeral/.plugin_symlinks/ffmpeg_kit_flutter_new/windows/CMakeLists.txt'
-          if [ ! -f "$cmakelists" ]; then
-            echo "::error::$cmakelists is missing — cannot tell which FFmpegKit the plugin wants."
+          # `dart pub cache list` rather than a guessed path — the cache location
+          # differs between runner images, and its JSON states it outright.
+          location="$(dart pub cache list \
+            | grep -o '"ffmpeg_kit_flutter_new":{"[^"]*":{"location":"[^"]*' \
+            | sed 's/.*"location":"//' \
+            | sed 's|\\\\\\\\|/|g')"
+          if [ -z "$location" ] || [ ! -d "$location" ]; then
+            echo "::error::ffmpeg_kit_flutter_new is not in the pub cache — nothing to unpack into."
             exit 1
           fi
 
+          cmakelists="$location/windows/CMakeLists.txt"
           default_of() {
             sed -n "s/^set($1 \"\([^\"]*\)\".*/\1/p" "$cmakelists" | head -1
           }
           version="$(default_of FFMPEGKIT_VERSION)"
           package="$(default_of FFMPEGKIT_PACKAGE)"
           if [ -z "$version" ] || [ -z "$package" ]; then
-            echo "::error::Could not read FFMPEGKIT_VERSION/FFMPEGKIT_PACKAGE out of $cmakelists."
+            echo "::error::could not read FFMPEGKIT_VERSION/FFMPEGKIT_PACKAGE from $cmakelists."
             exit 1
           fi
 
           zip="ffmpeg-kit-windows-x86_64-$package-$version.zip"
           url="https://github.com/sk3llo/ffmpeg_kit_flutter/releases/download/$version-$package/$zip"
+          prebuilt="$location/windows/ffmpeg-kit"
 
-          # `pwd -W` for a drive-letter path with forward slashes: CMake treats a
-          # backslash as an escape, and a Git Bash `/d/...` path means nothing to it.
-          dest="$(pwd -W)/.ffmpegkit"
-          rm -rf "$dest"
-          mkdir -p "$dest"
+          echo "Unpacking FFmpegKit $version ($package) into $prebuilt"
+          rm -rf "$prebuilt"
+          mkdir -p "$prebuilt"
+          curl -fsSL --retry 3 -o "$prebuilt/$zip" "$url"
+          7z x -y -o"$prebuilt" "$prebuilt/$zip" > /dev/null
+          rm -f "$prebuilt/$zip"
 
-          echo "Fetching FFmpegKit $version ($package)"
-          curl -fsSL --retry 3 -o "$dest/$zip" "$url"
-          7z x -y -o"$dest" "$dest/$zip" > /dev/null
-          rm -f "$dest/$zip"
-
-          # The same file the plugin checks for, so a layout change upstream fails
-          # here with a clear message instead of inside CMake.
-          if [ ! -f "$dest/bin/libffmpegkit.dll" ]; then
+          # The same file the plugin checks for, so a changed archive layout fails
+          # here with a clear message rather than deep inside CMake.
+          if [ ! -f "$prebuilt/bin/libffmpegkit.dll" ]; then
             echo "::error::$zip has no bin/libffmpegkit.dll — the archive layout changed."
             exit 1
           fi
 
-          echo "FFMPEGKIT_LOCAL_DIR=$dest" >> "$GITHUB_ENV"
+          # Marker format taken from the plugin itself: "<version>-<variant>".
+          printf '%s\n' "$version-$package" > "$prebuilt/bin/.ffmpegkit_variant"
 
       - name: Build
         shell: bash
