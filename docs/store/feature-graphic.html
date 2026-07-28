@@ -6,8 +6,9 @@
       --force-device-scale-factor=1 --window-size=1024,500 \
       --screenshot=feature-graphic.png feature-graphic.html
 
-  Colour and typeface come from the app itself — `AppTheme` seeds from #3A6BFF
-  and the bundled NotoSans is the font the screens are already set in — so the
+  The background is `feature-graphic-bg.png`, generated to leave its left side
+  calm and its detail on the right, which is why the type sits left. The
+  typeface is the bundled NotoSans the app screens are already set in, so the
   banner and the product cannot drift apart.
 
   Play's constraints, each of which shaped something below:
@@ -26,63 +27,70 @@
 
   html, body { width: 1024px; height: 500px; overflow: hidden; }
 
-  /* Opaque throughout: a feature graphic with transparency is rejected. */
+  /* The source is 2:1 and this is 2.048:1, so it is scaled to cover and centred
+     rather than squashed. Opaque throughout: alpha is rejected outright. */
   body {
-    background: linear-gradient(118deg, #23409E 0%, #3A6BFF 58%, #5B84FF 100%);
+    background-image: url('feature-graphic-bg.png');
+    background-size: cover;
+    background-position: center;
+    background-color: #041B4D;
     font-family: 'NotoSans', sans-serif;
     position: relative;
     display: flex;
     align-items: center;
   }
 
-  /* Depth without clutter, and nothing that could read as a device frame. */
-  .glow {
+  /* Guarantees contrast under the type instead of trusting the generated image
+     to stay dark on the left. Fades out before the ribbons begin. */
+  .scrim {
     position: absolute;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 70%);
+    inset: 0;
+    background: linear-gradient(96deg,
+      rgba(3, 18, 54, 0.94) 0%,
+      rgba(3, 18, 54, 0.86) 34%,
+      rgba(3, 18, 54, 0.28) 56%,
+      rgba(3, 18, 54, 0) 68%);
   }
-  .glow-a { width: 620px; height: 620px; right: -140px; top: -220px; }
-  .glow-b { width: 460px; height: 460px; right: 60px; bottom: -260px; }
 
   /* Centred rather than top-anchored, so the margins Play may crop are equal
-     above and below. */
+     above and below. Held to the left half, clear of the ribbons. */
   .content {
-    padding-left: 96px;
-    width: 856px;
+    position: relative;
+    padding-left: 84px;
+    width: 560px;
   }
 
   h1 {
-    font-size: 82px;
-    line-height: 1.02;
-    letter-spacing: -1.5px;
+    font-size: 70px;
+    line-height: 1.04;
+    letter-spacing: -1.2px;
     color: #FFFFFF;
   }
 
   p {
-    margin-top: 26px;
-    font-size: 27px;
-    line-height: 1.35;
-    color: #DCE5FF;
-    white-space: nowrap;
+    margin-top: 20px;
+    font-size: 23px;
+    line-height: 1.4;
+    color: #C6D5FF;
+    max-width: 430px;
   }
 
-  .chips { margin-top: 40px; display: flex; gap: 14px; }
+  .chips { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 11px; }
 
   /* Three conversions rather than a feature list: the shape of the product
      reads faster than a sentence about it. */
   .chip {
-    padding: 13px 24px;
-    border: 1px solid #7C9BFF;
+    padding: 10px 19px;
+    border: 1px solid rgba(163, 189, 255, 0.55);
     border-radius: 999px;
-    font-size: 23px;
+    font-size: 20px;
     color: #FFFFFF;
-    background: #3F6DF2;
+    background: rgba(58, 107, 255, 0.30);
     white-space: nowrap;
   }
 </style>
 
-<div class="glow glow-a"></div>
-<div class="glow glow-b"></div>
+<div class="scrim"></div>
 
 <div class="content">
   <h1>Archonex Converter</h1>
