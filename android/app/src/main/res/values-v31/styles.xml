@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12 replaced the launch screen with the SplashScreen API: it draws
+         the launcher icon itself, over `windowSplashScreenBackground` rather than
+         over `windowBackground`. Without this override the icon lands on white on
+         every device running 12 or later, whatever the drawable says.
+
+         The whole style is restated because a qualified folder replaces a style
+         rather than adding to it.
+
+         `windowSplashScreenAnimatedIcon` is left unset on purpose: the default is
+         the launcher icon, which is what belongs there. -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowSplashScreenBackground">@color/splash_background</item>
+        <item name="android:windowBackground">@drawable/launch_background</item>
+    </style>
+</resources>

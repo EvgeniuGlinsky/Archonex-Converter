@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Background of the launch screen, behind the launcher icon the system
+         draws on it. Chosen to sit inside the icon artwork's own background,
+         which runs from #171A25 at its edges to #272B37 at its corners, so the
+         icon does not read as a dark square pasted onto a lighter one.
+
+         Fixed rather than following the light/dark setting: the icon is dark in
+         both, so a light launch screen is wrong in both. -->
+    <color name="splash_background">#1B1F2A</color>
+</resources>
