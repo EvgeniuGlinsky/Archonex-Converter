@@ -1,0 +1,95 @@
+<!--
+  Source for the Play feature graphic. Rendered, not drawn, so the wording can
+  change without anyone reopening a design tool:
+
+    msedge --headless=new --disable-gpu --hide-scrollbars \
+      --force-device-scale-factor=1 --window-size=1024,500 \
+      --screenshot=feature-graphic.png feature-graphic.html
+
+  Colour and typeface come from the app itself — `AppTheme` seeds from #3A6BFF
+  and the bundled NotoSans is the font the screens are already set in — so the
+  banner and the product cannot drift apart.
+
+  Play's constraints, each of which shaped something below:
+    * exactly 1024x500, PNG or JPEG, and no alpha channel at all
+    * edges get cropped when the graphic is adapted, and a play button is
+      overlaid on the centre when a promo video exists
+    * no prices, no "#1", no superlatives, no device frames
+-->
+<style>
+  @font-face {
+    font-family: 'NotoSans';
+    src: url('../../assets/fonts/NotoSans-Regular.ttf') format('truetype');
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { width: 1024px; height: 500px; overflow: hidden; }
+
+  /* Opaque throughout: a feature graphic with transparency is rejected. */
+  body {
+    background: linear-gradient(118deg, #23409E 0%, #3A6BFF 58%, #5B84FF 100%);
+    font-family: 'NotoSans', sans-serif;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Depth without clutter, and nothing that could read as a device frame. */
+  .glow {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 70%);
+  }
+  .glow-a { width: 620px; height: 620px; right: -140px; top: -220px; }
+  .glow-b { width: 460px; height: 460px; right: 60px; bottom: -260px; }
+
+  /* Centred rather than top-anchored, so the margins Play may crop are equal
+     above and below. */
+  .content {
+    padding-left: 96px;
+    width: 856px;
+  }
+
+  h1 {
+    font-size: 82px;
+    line-height: 1.02;
+    letter-spacing: -1.5px;
+    color: #FFFFFF;
+  }
+
+  p {
+    margin-top: 26px;
+    font-size: 27px;
+    line-height: 1.35;
+    color: #DCE5FF;
+    white-space: nowrap;
+  }
+
+  .chips { margin-top: 40px; display: flex; gap: 14px; }
+
+  /* Three conversions rather than a feature list: the shape of the product
+     reads faster than a sentence about it. */
+  .chip {
+    padding: 13px 24px;
+    border: 1px solid #7C9BFF;
+    border-radius: 999px;
+    font-size: 23px;
+    color: #FFFFFF;
+    background: #3F6DF2;
+    white-space: nowrap;
+  }
+</style>
+
+<div class="glow glow-a"></div>
+<div class="glow glow-b"></div>
+
+<div class="content">
+  <h1>Archonex Converter</h1>
+  <p>Video, audio, images and PDF — converted on your device.</p>
+  <div class="chips">
+    <div class="chip">MP4 → MP3</div>
+    <div class="chip">HEIC → JPG</div>
+    <div class="chip">JPG → PDF</div>
+  </div>
+</div>
