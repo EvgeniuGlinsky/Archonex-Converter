@@ -9,5 +9,5 @@
 /// * `createMediaFileRepo()`
 library;
 
-export 'converter_platform_web.dart'
-    if (dart.library.io) 'converter_platform_io.dart';
+export 'media_converter_platform_web.dart'
+    if (dart.library.io) 'media_converter_platform_io.dart';

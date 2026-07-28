@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:archonex_converter/project_files/features/media_converter/data/platform/converter_platform.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/platform/media_converter_platform.dart';
 import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/convert_media_use_case.dart';
 import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/discard_converted_file_use_case.dart';
 import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/get_converter_availability_use_case.dart';
@@ -19,7 +19,7 @@ import 'package:archonex_converter/project_files/features/usage_quota/domain/usa
 /// Wires the media converter dependencies. No UI lives here.
 ///
 /// Which implementations arrive is decided by the platform boundary in
-/// `data/platform/converter_platform.dart`, not by this file.
+/// `data/platform/media_converter_platform.dart`, not by this file.
 class MediaConverterPage extends StatelessWidget {
   const MediaConverterPage({super.key});
 
