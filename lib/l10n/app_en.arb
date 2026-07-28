@@ -358,15 +358,17 @@
   "paywallLicenseKeyLabel": "Licence key",
   "paywallLicenseKeyHint": "Paste the key from your purchase email",
   "paywallRedeemLabel": "Activate",
-  "paywallBuyOnWebNotice": "On Windows and Linux the subscription is bought on the website, then unlocked here with a key.",
+  "paywallBuyOnWebNotice": "The subscription is bought on the website. You are sent a key, and it is entered here.",
 
-  "paywallNoPlansNotice": "Subscriptions are not open yet. This screen is ready for them.",
+  "paywallNoPlansNotice": "Nothing is on sale right now. If that looks wrong, check your connection and try again.",
   "paywallActiveTitle": "Subscription active",
   "paywallActiveMessage": "This device converts without a monthly count.",
 
   "purchaseSucceeded": "Subscription active. Convert as much as you like.",
   "purchaseCancelled": "Purchase cancelled.",
+  "purchaseCheckoutOpened": "Checkout is open in your browser. Come back with the key and enter it here.",
   "purchaseNothingToRestore": "No active subscription was found on this device.",
+  "purchaseSubscriptionLapsed": "That key's subscription is no longer active. Renew it to convert without a monthly count.",
   "purchaseInvalidLicenseKey": "That key is not valid for this app, or all of its activations are used up.",
   "purchaseUnavailable": "Purchases are not available in this build yet.",
   "purchaseFailed": "That did not go through. Please try again."

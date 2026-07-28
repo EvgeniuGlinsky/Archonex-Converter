@@ -60,12 +60,19 @@ final class PaywallState extends Equatable {
 
   bool get isReady => status == PaywallStatus.ready;
 
-  bool get showsPlans => channel == PurchaseChannel.store;
+  /// Plans are shown wherever there are plans, rather than only in a store
+  /// build.
+  ///
+  /// Both channels sell the same two subscriptions; all that differs is who
+  /// takes the money. A licence-key build that hid the prices would make the
+  /// user guess what they were about to pay.
+  bool get showsPlans => plans.isNotEmpty;
 
   bool get showsLicenseKeyField => channel == PurchaseChannel.licenseKey;
 
-  /// Restoring only makes sense where a store keeps the receipt.
-  bool get showsRestore => channel == PurchaseChannel.store;
+  /// Restoring makes sense wherever an earlier purchase could still be found: a
+  /// store keeps the receipt, and a licence key is kept on the device.
+  bool get showsRestore => channel != PurchaseChannel.unavailable;
 
   bool get canSubscribe =>
       isReady && !isSubscribed && selectedPlan != null;

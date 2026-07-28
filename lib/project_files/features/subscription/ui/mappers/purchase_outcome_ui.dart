@@ -14,7 +14,9 @@ extension PurchaseOutcomeUi on PurchaseOutcome {
     return switch (this) {
       PurchaseOutcome.succeeded => l10n.purchaseSucceeded,
       PurchaseOutcome.cancelled => l10n.purchaseCancelled,
+      PurchaseOutcome.checkoutOpened => l10n.purchaseCheckoutOpened,
       PurchaseOutcome.nothingToRestore => l10n.purchaseNothingToRestore,
+      PurchaseOutcome.subscriptionLapsed => l10n.purchaseSubscriptionLapsed,
       PurchaseOutcome.invalidLicenseKey => l10n.purchaseInvalidLicenseKey,
       PurchaseOutcome.unavailable => l10n.purchaseUnavailable,
       PurchaseOutcome.failed => l10n.purchaseFailed,

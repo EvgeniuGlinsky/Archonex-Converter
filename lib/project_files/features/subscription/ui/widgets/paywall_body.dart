@@ -14,11 +14,16 @@ import 'package:archonex_converter/project_files/features/subscription/ui/widget
 
 /// Everything between the header and the primary action.
 ///
-/// Three shapes, one per [PaywallState.channel]: a list of store plans, a
-/// licence key field, or — where neither exists yet — a plain statement that
-/// there is nothing to buy. The last one is not a placeholder to be tidied
-/// away later: a screen that offers a purchase it cannot take is worse than
-/// one that admits the shop is closed.
+/// Two independent questions, not one choice of three: whether there is
+/// anything on sale, and whether this build takes a licence key. On the licence
+/// channel both are true, so the plans and the key field appear together — the
+/// user buys in a browser and comes back to the same screen to paste what they
+/// were sent.
+///
+/// When there is nothing on sale the screen says so plainly. That is not a
+/// placeholder to be tidied away later: offering a purchase that cannot be taken
+/// is worse than admitting the shop is shut. The key field stays either way,
+/// because a key bought yesterday still has to be redeemable today.
 class PaywallBody extends StatelessWidget {
   const PaywallBody({
     required this.state,
@@ -48,8 +53,13 @@ class PaywallBody extends StatelessWidget {
   List<Widget> _offer(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context)!;
 
-    if (state.showsLicenseKeyField) {
-      return <Widget>[
+    return <Widget>[
+      if (state.showsPlans)
+        ..._plans(context)
+      else
+        FileSizeLimitNotice(l10n.paywallNoPlansNotice),
+      if (state.showsLicenseKeyField) ...<Widget>[
+        const SizedBox(height: _gap),
         FileSizeLimitNotice(l10n.paywallBuyOnWebNotice),
         const SizedBox(height: _gap),
         LicenseKeyField(
@@ -58,13 +68,11 @@ class PaywallBody extends StatelessWidget {
           onChanged: callbacks.onLicenseKeyChanged,
           onSubmitted: callbacks.onRedeemPressed,
         ),
-      ];
-    }
+      ],
+    ];
+  }
 
-    if (state.plans.isEmpty) {
-      return <Widget>[FileSizeLimitNotice(l10n.paywallNoPlansNotice)];
-    }
-
+  List<Widget> _plans(BuildContext context) {
     return <Widget>[
       for (final SubscriptionPlan plan in state.plans) ...<Widget>[
         PlanOptionTile(

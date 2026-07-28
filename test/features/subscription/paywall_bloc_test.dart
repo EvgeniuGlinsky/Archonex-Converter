@@ -131,13 +131,31 @@ void main() {
       repo = FakeSubscriptionRepo(channel: PurchaseChannel.licenseKey);
     });
 
-    test('a desktop build asks for a key instead of showing plans', () async {
+    test('a licence build asks for a key and offers to re-check it', () async {
       buildBloc();
       await settle();
 
       expect(bloc.state.showsLicenseKeyField, isTrue);
+      // This fake sells nothing, so there is no price to show.
       expect(bloc.state.showsPlans, isFalse);
-      expect(bloc.state.showsRestore, isFalse);
+      // Restoring re-asks the service about the key already on this device,
+      // which is how a renewal after a lapse is picked up.
+      expect(bloc.state.showsRestore, isTrue);
+    });
+
+    test('a licence build prices what it sells, next to the key field',
+        () async {
+      repo = FakeSubscriptionRepo(
+        channel: PurchaseChannel.licenseKey,
+        plans: <SubscriptionPlan>[monthly, yearly],
+      );
+      buildBloc();
+      await settle();
+
+      // Both halves of one flow: buy in a browser, come back and paste the key.
+      expect(bloc.state.showsPlans, isTrue);
+      expect(bloc.state.showsLicenseKeyField, isTrue);
+      expect(bloc.state.selectedPlanId, yearly.id);
     });
 
     test('an empty field cannot be submitted', () async {

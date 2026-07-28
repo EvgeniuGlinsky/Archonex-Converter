@@ -85,17 +85,12 @@ void main() {
     await pumpScreen(tester, repo: FakeSubscriptionRepo());
 
     expect(find.text(en.paywallNoPlansNotice), findsOneWidget);
-    expect(
-      tester
-          .widget<FilledButton>(
-            find.widgetWithText(FilledButton, en.paywallSubscribeLabel),
-          )
-          .onPressed,
-      isNull,
-    );
+    // No button at all rather than a dead one: there is nothing for it to do,
+    // and a permanently greyed-out call to action only invites tapping.
+    expect(find.text(en.paywallSubscribeLabel), findsNothing);
   });
 
-  testWidgets('a desktop build asks for a licence key instead',
+  testWidgets('a licence build asks for a key and offers to re-check it',
       (WidgetTester tester) async {
     await pumpScreen(
       tester,
@@ -105,8 +100,33 @@ void main() {
     expect(find.text(en.paywallLicenseKeyTitle), findsOneWidget);
     expect(find.text(en.paywallBuyOnWebNotice), findsOneWidget);
     expect(find.text(en.paywallRedeemLabel), findsOneWidget);
-    // Nothing to restore from a key that was never entered.
-    expect(find.text(en.paywallRestoreLabel), findsNothing);
+    // Restoring re-asks the service about the key already on this device.
+    expect(find.text(en.paywallRestoreLabel), findsOneWidget);
+  });
+
+  testWidgets('a licence build sells and activates on the same screen',
+      (WidgetTester tester) async {
+    await pumpScreen(
+      tester,
+      repo: FakeSubscriptionRepo(
+        channel: PurchaseChannel.licenseKey,
+        plans: const <SubscriptionPlan>[monthly],
+      ),
+    );
+
+    expect(find.text(r'$0.79'), findsOneWidget);
+    expect(find.byType(TextField), findsOneWidget);
+
+    // Buying leads, because that is what someone who has not paid came for;
+    // activating is the quieter button for whoever already holds a key.
+    expect(
+      find.widgetWithText(FilledButton, en.paywallSubscribeLabel),
+      findsOneWidget,
+    );
+    expect(
+      find.widgetWithText(OutlinedButton, en.paywallRedeemLabel),
+      findsOneWidget,
+    );
   });
 
   testWidgets('typing a key wakes the activate button up',

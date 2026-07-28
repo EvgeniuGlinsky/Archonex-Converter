@@ -32,7 +32,7 @@ Not built, in rough order of how well each fits what is already here:
 | Subtitle converter | SRT ↔ VTT ↔ ASS. Nearly free: FFmpeg is already bundled and already does this. |
 | Data format converter | CSV ↔ JSON ↔ XML ↔ YAML. Trivial in pure Dart, but aimed at developers rather than at the audience the rest of the app serves. |
 
-The paid tier itself is built and described below; what is still missing is the billing behind it.
+The paid tier is built, billed and described below. What is still missing there is delivery of a licence key by email — today the key is shown on the page the buyer returns to after paying.
 
 ## Platform support
 
@@ -60,14 +60,35 @@ Only files that actually made it through are counted. A cancelled run, a failed 
 
 The count lives on the device, in `shared_preferences`, because the app has no accounts and no server. A clock wound backwards is ignored — `QuotaRecord.lastSeen` wins — so a spent month cannot be replayed by changing the date. A clock wound *forwards* does grant a fresh count once; closing that needs a server, which an offline app does not have. Reinstalling also clears it. Both are known and accepted.
 
-`SubscriptionRepo` is the seam where money will arrive, and today's implementation is `FreeOnlySubscriptionRepo`: nothing is entitled and nothing is for sale. The paywall screen is real and says so out loud rather than displaying a price no checkout would honour. Two implementations will replace it, chosen by the platform boundary in `data/platform/`:
+The subscription is bought on the web and unlocked in the app with a licence key — on **every** platform, not only on desktop. That is a constraint rather than a preference: Google Play refuses to serve `BillingClient` to an app it did not install and sign, so a build downloaded from GitHub Releases could never complete a Play purchase, and no desktop platform offers billing Flutter can reach at all. One route that works everywhere beats a store sheet that works in one place and shows a dead button in the rest.
 
-| Platform | Route | Why |
+How a build charges therefore depends on how it was *distributed*, which is a different question from which platform it runs on. `data/platform/subscription_platform_io.dart` reads one define:
+
+```bash
+flutter build apk                                          # licence key (the default)
+flutter build appbundle --dart-define=ARCHONEX_DISTRIBUTION=store   # reserved for a store upload
+```
+
+`PurchaseChannel.store` is kept for that second case and is unreachable until this binary is actually uploaded to a store.
+
+Behind the key sits `server/license/` — a Cloudflare Worker that mints keys when the payment provider reports a subscription, and answers whether a key is good. Paddle is the provider: it acts as merchant of record, which is the only practical way to sell to a hundred tax jurisdictions, and it has no licence-key feature of its own, which is why the Worker exists. The app never names it — `LicenseGateway` is the whole of what it knows — so replacing the provider changes one implementation and no shipped build.
+
+| Piece | Where | Responsibility |
 | --- | --- | --- |
-| Android, iOS, macOS | Store billing (`in_app_purchase`) | The only way the stores permit charging for a digital subscription |
-| Windows, Linux | Licence key bought on the web | No store billing reaches Flutter there. Microsoft takes **no cut at all** from apps that bring their own payments |
+| `LicenseSubscriptionRepo` | `subscription/data/` | Every rule about clocks, expiry and silence |
+| `LicenseGateway` | `subscription/domain/` | Three questions: what is for sale, activate, validate |
+| `LicenseStorage` | `subscription/domain/` | Holds only what the rules produced |
+| `CheckoutLauncher` | `subscription/domain/` | Hands the checkout page to the user's browser |
 
-Entitlements are **per platform and per device**: with no accounts, a subscription bought in one store cannot be seen from another. That is a decision, not an oversight.
+The service host is compiled in, from `AppLicensePolicy.apiBaseUrl`. **It is still a placeholder** — the real one is `archonex-license.<subdomain>.workers.dev` and the subdomain belongs to a Cloudflare account that does not exist yet, so it has to be filled in before the first public release. A build that ships with the placeholder is not broken, it simply can never sell anything.
+
+Prices and checkout links are read from the service, never composed in the app. A price change is a dashboard edit rather than a release, and builds already downloaded start selling the day the service has something to sell. While it has nothing — which is the state that ships until the payment account is approved — the paywall says the shop is shut instead of inventing a number.
+
+Three honest limits on all of this:
+
+- **Silence is not a refusal.** A confirmed licence is trusted for a day before the service is asked again, and keeps working for **14 days** with no answer at all. An unreachable service, a broken preferences file and a timeout all leave a paying user working; only the service saying *no* takes an entitlement away. The numbers and the reasoning are in `lib/core/constants/app_license_policy.dart`.
+- **The check runs on the user's machine.** Anyone willing to patch the binary can have the paid tier for free. Closing that would mean converting files on a server, which is the opposite of what this app is.
+- **Entitlements are per device.** With no accounts, one key activates up to three devices and that is the whole of the sharing model.
 
 ## Stack
 
@@ -79,7 +100,8 @@ Entitlements are **per platform and per device**: with no accounts, a subscripti
 - [`ffmpeg_kit_flutter_new`](https://pub.dev/packages/ffmpeg_kit_flutter_new) — the media and image engine
 - [`pdf`](https://pub.dev/packages/pdf) + [`printing`](https://pub.dev/packages/printing) — the PDF engine: the first writes, the second rasterises through PDFium
 - [`image`](https://pub.dev/packages/image) — encoding rasterised pages to PNG or JPEG
-- [`shared_preferences`](https://pub.dev/packages/shared_preferences) — the monthly conversion count, and the only state in the app that outlives the process
+- [`shared_preferences`](https://pub.dev/packages/shared_preferences) — the monthly conversion count and the licence, the only state in the app that outlives the process
+- [`http`](https://pub.dev/packages/http) + [`url_launcher`](https://pub.dev/packages/url_launcher) — asking the licence service about a key, and opening the checkout page in the user's own browser. The only network the app makes; converting never leaves the device
 
 Both PDF packages are held one minor version below the latest: those require Dart 3.12, and the toolchain is pinned to the Flutter release that ships 3.11.
 
@@ -142,7 +164,9 @@ Routing has one source of truth: the `AppRoute` enum in `lib/core/router/app_rou
 - `data/file_access/` — the picker and the writer, including the batch save that falls back to one dialog per file when a chosen folder turns out to be unwritable
 - `ui/` — the failure-to-copy mapper and the widgets every screen renders
 
-Two features exist for the paid tier rather than for converting. `usage_quota/` owns the count: every rule about calendar months and device clocks lives in `UsageQuotaRepoImpl`, and `QuotaStorage` behind it only reads and writes what those rules produced — which is what lets the rules be tested without a platform plugin. `subscription/` owns the entitlement and the paywall screen. They meet in exactly one place, `WatchConversionAllowanceUseCase`, which hands the converters a single `ConversionAllowance`; no converter screen ever asks about subscriptions. Both repositories are app-wide singletons provided in `archonex_app.dart`, because the same count is spent from three screens.
+Two features exist for the paid tier rather than for converting. `usage_quota/` owns the count: every rule about calendar months and device clocks lives in `UsageQuotaRepoImpl`, and `QuotaStorage` behind it only reads and writes what those rules produced — which is what lets the rules be tested without a platform plugin. `subscription/` owns the entitlement and the paywall screen, and repeats the same split for the licence: `LicenseSubscriptionRepo` holds every rule, while `LicenseGateway`, `LicenseStorage` and `CheckoutLauncher` behind it carry no decisions at all — which is what lets the offline grace period, a revoked key and a clock wound backwards all be tested with no network and no plugin. The two features meet in exactly one place, `WatchConversionAllowanceUseCase`, which hands the converters a single `ConversionAllowance`; no converter screen ever asks about subscriptions. Both repositories are app-wide singletons provided in `archonex_app.dart`, because the same count is spent from three screens.
+
+`server/license/` is not Dart and not part of the app: one Cloudflare Worker, documented in [its own README](server/license/README.md), holding the mapping from a paid subscription to a working key.
 
 A converter-specific model stays in its own feature: `MediaFormat`, `ImageFormat` and `PdfFormat` answer different questions and are deliberately not one enum. Adding a failure to the sealed `ConversionFailure` hierarchy will not compile until it is given copy in all three ARB files — that is the mechanism working, not an obstacle.
 
@@ -153,7 +177,7 @@ flutter analyze
 flutter test
 ```
 
-`test/` holds unit and widget tests, concentrated on the three converters: the FFmpeg command builders, the duration parser and error classifier, every use case, every BLoC, the format and settings models, and a view test each. The paid tier is covered alongside them: month rollover, a clock wound backwards, overlapping counts, what each converter charges for, and the paywall in both of its forms. Fakes are hand written, one file per feature (`test/features/<feature>/fakes.dart`) — there is no mocking package.
+`test/` holds unit and widget tests, concentrated on the three converters: the FFmpeg command builders, the duration parser and error classifier, every use case, every BLoC, the format and settings models, and a view test each. The paid tier is covered alongside them: month rollover, a clock wound backwards, overlapping counts, what each converter charges for, and the paywall in both of its forms. The licence gets the same treatment — a revoked key, a used-up key, an unreachable service inside and outside the grace window, and the rule that a refusal arrives as `200` while an outage does not. Fakes are hand written, one file per feature (`test/features/<feature>/fakes.dart`) — there is no mocking package.
 
 `integration_test/` is separate and is **not** part of CI — it needs a real device:
 

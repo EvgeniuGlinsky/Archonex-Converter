@@ -47,9 +47,15 @@ dependencies:
   printing: ^5.14.3
   image: ^4.8.0
 
-  # Backs the monthly conversion counter. The app has no accounts and no
-  # server, so the free tier can only be remembered on the device itself.
+  # Backs the monthly conversion counter and the licence. The app has no
+  # accounts, so both can only be remembered on the device itself.
   shared_preferences: ^2.5.5
+
+  # The two halves of the licence route, and the only network the app makes:
+  # asking the licence service about a key, and handing the checkout page to
+  # the user's own browser. Converting itself never leaves the device.
+  http: ^1.6.0
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
