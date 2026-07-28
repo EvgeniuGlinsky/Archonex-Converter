@@ -1,0 +1,229 @@
+name: Release
+
+# Driven by a tag, so what was built is always recoverable from the tag it was
+# built at. Never on a branch push: a release is a decision, not a side effect of
+# committing.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Build the artifacts but publish nothing'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  # Kept in step with .github/workflows/ci.yml and the revision in .metadata.
+  # Bump all three together, deliberately.
+  FLUTTER_VERSION: 3.41.2
+
+jobs:
+  # Nothing is built until the same gate CI uses has passed. A red release is
+  # worse than a late one.
+  verify:
+    name: Analyze and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+  android:
+    name: Android
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      # The keystore never lives in the repository. It arrives base64 encoded in a
+      # secret, is written outside the working tree, and `key.properties` points at
+      # it — the same file a developer writes by hand locally.
+      #
+      # Without the secrets the build still runs and produces a debug-signed APK,
+      # which `build.gradle.kts` warns about in the log. That keeps this workflow
+      # honest before the key exists rather than red.
+      - name: Prepare signing
+        id: signing
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$STORE_PASSWORD" ]; then
+            echo "::warning::Android signing secrets are not set — building unsigned. See android/key.properties.example."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          keystore="$RUNNER_TEMP/archonex-upload.jks"
+          printf '%s' "$KEYSTORE_BASE64" | base64 -d > "$keystore"
+
+          {
+            echo "storeFile=$keystore"
+            echo "storePassword=$STORE_PASSWORD"
+            echo "keyAlias=${KEY_ALIAS:-archonex}"
+            echo "keyPassword=${KEY_PASSWORD:-$STORE_PASSWORD}"
+          } > android/key.properties
+
+          echo "signed=true" >> "$GITHUB_OUTPUT"
+
+      # For Google Play. `ARCHONEX_DISTRIBUTION=store` is what turns the store
+      # channel on: Play refuses billing to a build it did not install, so only
+      # this artifact may offer a purchase.
+      - name: Build app bundle for Play
+        run: |
+          flutter build appbundle --release \
+            --dart-define=ARCHONEX_DISTRIBUTION=store \
+            --build-name=${GITHUB_REF_NAME#v} \
+            --build-number=${GITHUB_RUN_NUMBER}
+
+      # For GitHub Releases. Deliberately built *without* the store define: this
+      # copy can never take a payment, and its paywall says where the paid version
+      # lives instead of showing a button that fails.
+      - name: Build APK for direct download
+        run: |
+          flutter build apk --release \
+            --build-name=${GITHUB_REF_NAME#v} \
+            --build-number=${GITHUB_RUN_NUMBER}
+
+      - name: Name the artifacts
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk "dist/archonex-converter-$version-android.apk"
+          cp build/app/outputs/bundle/release/app-release.aab "dist/archonex-converter-$version-play.aab"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: dist/*
+          if-no-files-found: error
+
+  windows:
+    name: Windows
+    needs: verify
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Build
+        shell: bash
+        run: |
+          flutter build windows --release \
+            --build-name=${GITHUB_REF_NAME#v} \
+            --build-number=${GITHUB_RUN_NUMBER}
+
+      # A zip of the whole bundle, not just the exe: the Flutter runner needs the
+      # DLLs and `data/` beside it, and an exe on its own would fail to start in a
+      # way that looks like a corrupt download.
+      - name: Package
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          mkdir -p dist
+          cd build/windows/x64/runner/Release
+          7z a -tzip "$GITHUB_WORKSPACE/dist/archonex-converter-$version-windows-x64.zip" ./*
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/*
+          if-no-files-found: error
+
+  linux:
+    name: Linux
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      # What the Flutter Linux runner links against. `libmpv` is absent because no
+      # FFmpeg engine ships on Linux — only the PDF converter runs there, and it
+      # needs none.
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+
+      - run: flutter pub get
+
+      - name: Build
+        run: |
+          flutter build linux --release \
+            --build-name=${GITHUB_REF_NAME#v} \
+            --build-number=${GITHUB_RUN_NUMBER}
+
+      - name: Package
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          mkdir -p dist
+          tar -czf "dist/archonex-converter-$version-linux-x64.tar.gz" \
+            -C build/linux/x64/release/bundle .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: dist/*
+          if-no-files-found: error
+
+  publish:
+    name: Draft the release
+    needs: [android, windows, linux]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      # A draft, never a live release. Someone has to read the notes and look at
+      # the file list before this is in front of users — and the .aab has to go to
+      # Play rather than here.
+      - uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          generate_release_notes: true
+          files: artifacts/**/*
+          fail_on_unmatched_files: true
