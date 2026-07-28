@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:archonex_converter/core/router/app_route.dart';
 import 'package:archonex_converter/core/widgets/app_screen_header.dart';
 import 'package:archonex_converter/core/widgets/app_screen_layout.dart';
 import 'package:archonex_converter/l10n/app_localizations.dart';
@@ -61,6 +63,9 @@ class PdfConverterView extends StatelessWidget {
       onSavePressed: (index) => _add(context, ConvertedPdfSaveRequested(index)),
       onSaveAllPressed: () =>
           _add(context, const AllConvertedPdfsSaveRequested()),
+      // Pushed rather than gone to: the paywall is a detour, and coming back
+      // has to land on the selection that is already set up here.
+      onUpgradePressed: () => context.pushNamed(AppRoute.paywall.routeName),
     );
   }
 

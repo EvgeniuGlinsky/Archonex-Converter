@@ -13,7 +13,11 @@ import 'package:archonex_converter/project_files/features/media_converter/data/u
 import 'package:archonex_converter/project_files/features/media_converter/domain/models/media_format.dart';
 import 'package:archonex_converter/project_files/features/media_converter/ui/bloc/media_converter_bloc.dart';
 import 'package:archonex_converter/project_files/features/media_converter/ui/media_converter_view.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/consume_quota_use_case.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/watch_conversion_allowance_use_case.dart';
 
+import '../subscription/fakes.dart';
+import '../usage_quota/fakes.dart';
 import 'fakes.dart';
 
 /// The converter cannot be driven through `ArchonexApp`: picking a file needs
@@ -60,12 +64,19 @@ void main() {
     en = await AppLocalizations.delegate.load(const Locale('en'));
   });
 
+  /// Subscribed on purpose: the quota banner would add a row to every screen
+  /// below, and none of these tests are about it. Its own coverage lives in the
+  /// image converter's view test.
   MediaConverterBloc createBloc({required bool isSupported}) {
     final FakeMediaFileRepo fileRepo = FakeMediaFileRepo(
       pickResult: videoSource,
     );
     final FakeMediaConverterRepo converterRepo = FakeMediaConverterRepo(
       isSupported: isSupported,
+    );
+    final FakeUsageQuotaRepo quotaRepo = FakeUsageQuotaRepo();
+    final FakeSubscriptionRepo subscriptionRepo = FakeSubscriptionRepo(
+      isActive: true,
     );
 
     return MediaConverterBloc(
@@ -74,6 +85,14 @@ void main() {
       convertMedia: ConvertMediaUseCase(converterRepo),
       saveConvertedFile: SaveConvertedFileUseCase(fileRepo),
       discardConvertedFile: DiscardConvertedFileUseCase(converterRepo),
+      watchConversionAllowance: WatchConversionAllowanceUseCase(
+        quotaRepo: quotaRepo,
+        subscriptionRepo: subscriptionRepo,
+      ),
+      consumeQuota: ConsumeQuotaUseCase(
+        quotaRepo: quotaRepo,
+        subscriptionRepo: subscriptionRepo,
+      ),
     )..add(const MediaConverterStarted());
   }
 

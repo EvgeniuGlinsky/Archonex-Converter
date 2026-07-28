@@ -24,6 +24,7 @@ class PdfConverterCallbacks {
     required this.onCancelPressed,
     required this.onSavePressed,
     required this.onSaveAllPressed,
+    required this.onUpgradePressed,
   });
 
   final VoidCallback onPickPressed;
@@ -39,4 +40,5 @@ class PdfConverterCallbacks {
   final VoidCallback onCancelPressed;
   final ValueChanged<int> onSavePressed;
   final VoidCallback onSaveAllPressed;
+  final VoidCallback onUpgradePressed;
 }

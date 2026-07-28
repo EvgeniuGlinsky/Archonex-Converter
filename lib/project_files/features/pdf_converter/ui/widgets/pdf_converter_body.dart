@@ -14,6 +14,7 @@ import 'package:archonex_converter/project_files/features/pdf_converter/ui/widge
 import 'package:archonex_converter/project_files/features/pdf_converter/ui/widgets/pdf_results_card.dart';
 import 'package:archonex_converter/project_files/features/pdf_converter/ui/widgets/pdf_target_grid.dart';
 import 'package:archonex_converter/project_files/features/pdf_converter/ui/widgets/source_document_list.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/ui/widgets/quota_notice.dart';
 
 /// Everything between the header and the primary action.
 ///
@@ -45,6 +46,10 @@ class PdfConverterBody extends StatelessWidget {
             AppFileLimits.maxBatchFiles,
             AppFileLimits.maxUploadLabel,
           ),
+        ),
+        QuotaNotice(
+          allowance: state.allowance,
+          onUpgradePressed: callbacks.onUpgradePressed,
         ),
         if (!state.isSupported) ...<Widget>[
           const SizedBox(height: _gap),

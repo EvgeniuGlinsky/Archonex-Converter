@@ -16,7 +16,11 @@ import 'package:archonex_converter/project_files/features/pdf_converter/ui/bloc/
 import 'package:archonex_converter/project_files/features/pdf_converter/ui/pdf_converter_view.dart';
 import 'package:archonex_converter/project_files/features/pdf_converter/ui/widgets/pdf_converter_actions.dart';
 import 'package:archonex_converter/project_files/features/pdf_converter/ui/widgets/pdf_target_grid.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/consume_quota_use_case.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/watch_conversion_allowance_use_case.dart';
 
+import '../subscription/fakes.dart';
+import '../usage_quota/fakes.dart';
 import 'fakes.dart';
 
 /// Tall enough that the whole body is built: it is a `ListView`, so anything
@@ -27,6 +31,8 @@ void main() {
   late AppLocalizations en;
   late FakePdfFileRepo fileRepo;
   late FakePdfConverterRepo converterRepo;
+  late FakeUsageQuotaRepo quotaRepo;
+  late FakeSubscriptionRepo subscriptionRepo;
 
   setUpAll(() async {
     en = await AppLocalizations.delegate.load(const Locale('en'));
@@ -39,6 +45,11 @@ void main() {
     // so it holds whatever platform the test host reports.
     fileRepo = FakePdfFileRepo();
     converterRepo = FakePdfConverterRepo();
+    quotaRepo = FakeUsageQuotaRepo();
+    // Subscribed on purpose: the quota banner would add a row to every screen
+    // below, and none of these tests are about it. Its own coverage lives in
+    // the image converter's view test.
+    subscriptionRepo = FakeSubscriptionRepo(isActive: true);
   });
 
   /// The bloc is built inside `BlocProvider.create` on purpose: created in
@@ -66,6 +77,14 @@ void main() {
             saveConvertedPdf: SaveConvertedPdfUseCase(fileRepo),
             saveAllConvertedPdfs: SaveAllConvertedPdfsUseCase(fileRepo),
             discardConvertedPdfs: DiscardConvertedPdfsUseCase(converterRepo),
+            watchConversionAllowance: WatchConversionAllowanceUseCase(
+              quotaRepo: quotaRepo,
+              subscriptionRepo: subscriptionRepo,
+            ),
+            consumeQuota: ConsumeQuotaUseCase(
+              quotaRepo: quotaRepo,
+              subscriptionRepo: subscriptionRepo,
+            ),
           )..add(const PdfConverterStarted()),
           child: const PdfConverterView(),
         ),

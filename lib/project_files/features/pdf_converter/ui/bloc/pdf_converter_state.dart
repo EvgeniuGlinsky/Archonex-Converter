@@ -24,6 +24,7 @@ final class PdfConverterState extends Equatable {
     this.failure,
     this.savedLocation,
     this.savedCount = 0,
+    this.allowance = const ConversionAllowance.unlimited(),
   });
 
   final bool isSupported;
@@ -42,6 +43,18 @@ final class PdfConverterState extends Equatable {
   final ConversionFailure? failure;
   final String? savedLocation;
   final int savedCount;
+
+  /// What the free monthly count still permits. Starts unlimited so the button
+  /// does not flicker into a locked state while storage is being read.
+  final ConversionAllowance allowance;
+
+  /// Source files this run would spend.
+  ///
+  /// The sources, whichever direction this is: ten photos merged into one PDF
+  /// cost ten, and one PDF exploded into fifty pages costs one. Counting the
+  /// output would make the second direction unusable on the free tier and the
+  /// first one suspiciously cheap.
+  int get filesInRun => sources.length;
 
   /// What kind of run the current selection implies, or `null` when there is
   /// nothing selected. Derived rather than stored so it cannot drift from
@@ -78,7 +91,11 @@ final class PdfConverterState extends Equatable {
       isSupported && !isBusy && availableTargets.isNotEmpty;
 
   bool get canConvert =>
-      isSupported && sources.isNotEmpty && target != null && !isBusy;
+      isSupported &&
+      sources.isNotEmpty &&
+      target != null &&
+      !isBusy &&
+      allowance.allows(filesInRun);
 
   /// Whether the advanced panel has anything to show for the current target.
   bool get hasAdvancedSettings {
@@ -105,6 +122,7 @@ final class PdfConverterState extends Equatable {
     String? savedLocation,
     bool clearSavedLocation = false,
     int? savedCount,
+    ConversionAllowance? allowance,
   }) =>
       PdfConverterState(
         isSupported: isSupported ?? this.isSupported,
@@ -120,6 +138,7 @@ final class PdfConverterState extends Equatable {
         savedLocation:
             clearSavedLocation ? null : savedLocation ?? this.savedLocation,
         savedCount: savedCount ?? this.savedCount,
+        allowance: allowance ?? this.allowance,
       );
 
   @override
@@ -136,5 +155,6 @@ final class PdfConverterState extends Equatable {
         failure,
         savedLocation,
         savedCount,
+        allowance,
       ];
 }

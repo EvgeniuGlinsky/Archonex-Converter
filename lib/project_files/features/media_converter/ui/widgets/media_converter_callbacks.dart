@@ -28,6 +28,7 @@ class MediaConverterCallbacks {
     required this.onAdvancedReset,
     required this.onCancelPressed,
     required this.onDownloadPressed,
+    required this.onUpgradePressed,
   });
 
   final VoidCallback onPickPressed;
@@ -43,4 +44,5 @@ class MediaConverterCallbacks {
   final VoidCallback onAdvancedReset;
   final VoidCallback onCancelPressed;
   final VoidCallback onDownloadPressed;
+  final VoidCallback onUpgradePressed;
 }

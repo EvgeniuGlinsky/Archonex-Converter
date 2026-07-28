@@ -207,6 +207,31 @@
     }
   },
 
+  "quotaRemaining": "{count, plural, one{В этом месяце остался {count} бесплатный файл} few{В этом месяце осталось {count} бесплатных файла} many{В этом месяце осталось {count} бесплатных файлов} other{В этом месяце осталось {count} бесплатных файла}}",
+  "@quotaRemaining": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "quotaExhaustedNotice": "Бесплатные файлы в этом месяце закончились — все {limit}. Счётчик обнулится {resetDate}.",
+  "@quotaExhaustedNotice": {
+    "placeholders": {
+      "limit": { "type": "int" },
+      "resetDate": { "type": "String" }
+    }
+  },
+
+  "quotaUpgradeLabel": "Снять лимит",
+
+  "quotaExceededError": "В этом месяце осталось бесплатных файлов: {remaining}, а для этого запуска нужно {requested}.",
+  "@quotaExceededError": {
+    "placeholders": {
+      "remaining": { "type": "int" },
+      "requested": { "type": "int" }
+    }
+  },
+
   "paywallTitle": "Конвертация без лимита",
 
   "paywallSubtitle": "Бесплатно — {limit} файлов в месяц. Подписка снимает счётчик полностью.",

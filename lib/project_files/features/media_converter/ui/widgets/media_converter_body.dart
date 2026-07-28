@@ -17,6 +17,7 @@ import 'package:archonex_converter/project_files/features/media_converter/ui/wid
 import 'package:archonex_converter/project_files/features/media_converter/ui/widgets/media_converter_callbacks.dart';
 import 'package:archonex_converter/project_files/features/media_converter/ui/widgets/source_file_card.dart';
 import 'package:archonex_converter/project_files/features/media_converter/ui/widgets/target_format_grid.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/ui/widgets/quota_notice.dart';
 
 /// Everything between the header and the primary action.
 ///
@@ -45,6 +46,10 @@ class MediaConverterBody extends StatelessWidget {
       children: <Widget>[
         FileSizeLimitNotice(
           l10n.maxFileSizeNotice(AppFileLimits.maxUploadLabel),
+        ),
+        QuotaNotice(
+          allowance: state.allowance,
+          onUpgradePressed: callbacks.onUpgradePressed,
         ),
         if (!state.isSupported) ...<Widget>[
           const SizedBox(height: _gap),

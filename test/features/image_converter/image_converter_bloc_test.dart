@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:archonex_converter/core/constants/app_file_limits.dart';
+import 'package:archonex_converter/core/constants/app_quota_limits.dart';
 import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
 import 'package:archonex_converter/project_files/features/converter_shared/domain/models/save_result.dart';
 import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
@@ -17,12 +18,18 @@ import 'package:archonex_converter/project_files/features/image_converter/domain
 import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
 import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_quality.dart';
 import 'package:archonex_converter/project_files/features/image_converter/ui/bloc/image_converter_bloc.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/consume_quota_use_case.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/watch_conversion_allowance_use_case.dart';
 
+import '../subscription/fakes.dart';
+import '../usage_quota/fakes.dart';
 import 'fakes.dart';
 
 void main() {
   late FakeImageFileRepo fileRepo;
   late FakeImageConverterRepo converterRepo;
+  late FakeUsageQuotaRepo quotaRepo;
+  late FakeSubscriptionRepo subscriptionRepo;
   late ImageConverterBloc bloc;
 
   const SourceFile onePng = SourceFile(
@@ -41,9 +48,11 @@ void main() {
     path: '/tmp/three.jpg',
   );
 
-  void buildBloc({bool isSupported = true}) {
+  void buildBloc({bool isSupported = true, int usedFiles = 0}) {
     fileRepo = FakeImageFileRepo();
     converterRepo = FakeImageConverterRepo(isSupported: isSupported);
+    quotaRepo = FakeUsageQuotaRepo(usedFiles: usedFiles);
+    subscriptionRepo = FakeSubscriptionRepo();
     bloc = ImageConverterBloc(
       getConverterAvailability:
           GetImageConverterAvailabilityUseCase(converterRepo),
@@ -52,6 +61,16 @@ void main() {
       saveConvertedImage: SaveConvertedImageUseCase(fileRepo),
       saveAllConvertedImages: SaveAllConvertedImagesUseCase(fileRepo),
       discardConvertedImages: DiscardConvertedImagesUseCase(converterRepo),
+      // Real use cases over fake repositories: the join between the counter
+      // and the subscription is exactly what these tests are about.
+      watchConversionAllowance: WatchConversionAllowanceUseCase(
+        quotaRepo: quotaRepo,
+        subscriptionRepo: subscriptionRepo,
+      ),
+      consumeQuota: ConsumeQuotaUseCase(
+        quotaRepo: quotaRepo,
+        subscriptionRepo: subscriptionRepo,
+      ),
     )..add(const ImageConverterStarted());
   }
 
@@ -344,6 +363,82 @@ void main() {
         bloc.state.settings.dimensionLimit,
         ImageDimensionLimit.auto,
       );
+    });
+  });
+
+  group('the free monthly count', () {
+    test('a batch costs one file per photo that came out', () async {
+      await prepare();
+      await convertAll();
+
+      expect(quotaRepo.consumed, <int>[2]);
+    });
+
+    test('a photo the engine could not read is not charged for', () async {
+      await prepare();
+
+      bloc.add(const ConversionRequested());
+      await settle();
+
+      final ControllableImageConversionJob job = converterRepo.lastJob!;
+      job.emitFailed(0, const CorruptSourceFailure());
+      await settle();
+      job.emitConverted(1);
+      await settle();
+      await job.finish();
+      await settle();
+
+      expect(quotaRepo.consumed, <int>[1]);
+    });
+
+    test('a cancelled batch costs nothing', () async {
+      await prepare();
+
+      bloc.add(const ConversionRequested());
+      await settle();
+      bloc.add(const ConversionCancelled());
+      await settle();
+
+      expect(quotaRepo.consumed, isEmpty);
+    });
+
+    test('a batch larger than what is left blocks the button', () async {
+      buildBloc(usedFiles: AppQuotaLimits.freeFilesPerMonth - 1);
+      await settle();
+      await prepare();
+
+      expect(bloc.state.filesInRun, 2);
+      expect(bloc.state.allowance.remaining, 1);
+      expect(bloc.state.canConvert, isFalse);
+    });
+
+    test('a batch that still fits is allowed through', () async {
+      buildBloc(usedFiles: AppQuotaLimits.freeFilesPerMonth - 2);
+      await settle();
+      await prepare();
+
+      expect(bloc.state.canConvert, isTrue);
+    });
+
+    test('a run that slips past the button is refused', () async {
+      buildBloc(usedFiles: AppQuotaLimits.freeFilesPerMonth);
+      await settle();
+      await prepare();
+
+      bloc.add(const ConversionRequested());
+      await settle();
+
+      expect(converterRepo.convertCallCount, 0);
+      expect(bloc.state.failure, isA<QuotaExceededFailure>());
+    });
+
+    test('a subscriber is never counted', () async {
+      subscriptionRepo.activate();
+      await settle();
+      await prepare();
+      await convertAll();
+
+      expect(quotaRepo.consumed, isEmpty);
     });
   });
 

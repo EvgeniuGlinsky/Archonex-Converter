@@ -47,6 +47,10 @@ dependencies:
   printing: ^5.14.3
   image: ^4.8.0
 
+  # Backs the monthly conversion counter. The app has no accounts and no
+  # server, so the free tier can only be remembered on the device itself.
+  shared_preferences: ^2.5.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

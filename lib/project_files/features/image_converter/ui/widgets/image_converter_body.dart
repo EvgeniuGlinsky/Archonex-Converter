@@ -17,6 +17,7 @@ import 'package:archonex_converter/project_files/features/image_converter/ui/wid
 import 'package:archonex_converter/project_files/features/image_converter/ui/widgets/image_converter_callbacks.dart';
 import 'package:archonex_converter/project_files/features/image_converter/ui/widgets/source_image_list.dart';
 import 'package:archonex_converter/project_files/features/image_converter/ui/widgets/target_format_grid.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/ui/widgets/quota_notice.dart';
 
 /// Everything between the header and the primary action.
 ///
@@ -48,6 +49,10 @@ class ImageConverterBody extends StatelessWidget {
             AppFileLimits.maxBatchFiles,
             AppFileLimits.maxUploadLabel,
           ),
+        ),
+        QuotaNotice(
+          allowance: state.allowance,
+          onUpgradePressed: callbacks.onUpgradePressed,
         ),
         if (!state.isSupported) ...<Widget>[
           const SizedBox(height: _gap),

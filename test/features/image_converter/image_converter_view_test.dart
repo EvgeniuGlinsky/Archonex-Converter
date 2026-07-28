@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:archonex_converter/core/constants/app_file_limits.dart';
+import 'package:archonex_converter/core/constants/app_quota_limits.dart';
 import 'package:archonex_converter/core/theme/app_theme.dart';
 import 'package:archonex_converter/core/utils/file_size_formatter.dart';
 import 'package:archonex_converter/l10n/app_localizations.dart';
@@ -16,7 +17,11 @@ import 'package:archonex_converter/project_files/features/image_converter/data/u
 import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
 import 'package:archonex_converter/project_files/features/image_converter/ui/bloc/image_converter_bloc.dart';
 import 'package:archonex_converter/project_files/features/image_converter/ui/image_converter_view.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/consume_quota_use_case.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/watch_conversion_allowance_use_case.dart';
 
+import '../subscription/fakes.dart';
+import '../usage_quota/fakes.dart';
 import 'fakes.dart';
 
 /// The converter cannot be driven through `ArchonexApp`: picking photos needs
@@ -62,10 +67,24 @@ void main() {
     en = await AppLocalizations.delegate.load(const Locale('en'));
   });
 
-  ImageConverterBloc createBloc({required bool isSupported}) {
+  /// [isSubscribed] defaults to true so the quota banner stays off the screen:
+  /// every test below is about the converter, and an extra row would push the
+  /// widgets under test around for reasons that have nothing to do with them.
+  /// The banner has its own test at the bottom of this file.
+  ImageConverterBloc createBloc({
+    required bool isSupported,
+    bool isSubscribed = true,
+    int usedFiles = 0,
+  }) {
     final FakeImageFileRepo fileRepo = FakeImageFileRepo(pickResult: photos);
     final FakeImageConverterRepo converterRepo = FakeImageConverterRepo(
       isSupported: isSupported,
+    );
+    final FakeUsageQuotaRepo quotaRepo = FakeUsageQuotaRepo(
+      usedFiles: usedFiles,
+    );
+    final FakeSubscriptionRepo subscriptionRepo = FakeSubscriptionRepo(
+      isActive: isSubscribed,
     );
 
     return ImageConverterBloc(
@@ -76,6 +95,14 @@ void main() {
       saveConvertedImage: SaveConvertedImageUseCase(fileRepo),
       saveAllConvertedImages: SaveAllConvertedImagesUseCase(fileRepo),
       discardConvertedImages: DiscardConvertedImagesUseCase(converterRepo),
+      watchConversionAllowance: WatchConversionAllowanceUseCase(
+        quotaRepo: quotaRepo,
+        subscriptionRepo: subscriptionRepo,
+      ),
+      consumeQuota: ConsumeQuotaUseCase(
+        quotaRepo: quotaRepo,
+        subscriptionRepo: subscriptionRepo,
+      ),
     )..add(const ImageConverterStarted());
   }
 
@@ -83,6 +110,8 @@ void main() {
     WidgetTester tester, {
     required Size size,
     bool isSupported = true,
+    bool isSubscribed = true,
+    int usedFiles = 0,
   }) async {
     tester.view
       ..devicePixelRatio = 1
@@ -95,7 +124,11 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: BlocProvider<ImageConverterBloc>(
-          create: (_) => bloc = createBloc(isSupported: isSupported),
+          create: (_) => bloc = createBloc(
+            isSupported: isSupported,
+            isSubscribed: isSubscribed,
+            usedFiles: usedFiles,
+          ),
           child: const ImageConverterView(),
         ),
       ),
@@ -232,6 +265,56 @@ void main() {
           .onPressed,
       isNull,
     );
+  });
+
+  group('the free monthly count', () {
+    testWidgets('a free device is told what is left before it picks anything',
+        (WidgetTester tester) async {
+      await pumpScreen(
+        tester,
+        size: tallScreen,
+        isSubscribed: false,
+        usedFiles: 4,
+      );
+
+      expect(
+        find.text(en.quotaRemaining(AppQuotaLimits.freeFilesPerMonth - 4)),
+        findsOneWidget,
+      );
+      expect(find.text(en.quotaUpgradeLabel), findsOneWidget);
+    });
+
+    testWidgets('a spent month kills the convert button',
+        (WidgetTester tester) async {
+      await pumpScreen(
+        tester,
+        size: tallScreen,
+        isSubscribed: false,
+        usedFiles: AppQuotaLimits.freeFilesPerMonth,
+      );
+      await pickPhotos(tester);
+      await chooseTarget(tester, ImageFormat.webp);
+
+      expect(find.text(en.quotaUpgradeLabel), findsOneWidget);
+      expect(
+        tester
+            .widget<FilledButton>(
+              find.widgetWithText(
+                FilledButton,
+                en.convertAllToLabel(2, ImageFormat.webp.label),
+              ),
+            )
+            .onPressed,
+        isNull,
+      );
+    });
+
+    testWidgets('a subscriber is shown no count at all',
+        (WidgetTester tester) async {
+      await pumpScreen(tester, size: tallScreen);
+
+      expect(find.text(en.quotaUpgradeLabel), findsNothing);
+    });
   });
 
   for (final MapEntry<String, Size> entry in screenSizes.entries) {

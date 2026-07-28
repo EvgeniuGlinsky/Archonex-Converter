@@ -207,6 +207,31 @@
     }
   },
 
+  "quotaRemaining": "{count, plural, other{本月还剩 {count} 个免费文件}}",
+  "@quotaRemaining": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "quotaExhaustedNotice": "本月的 {limit} 个免费文件已用完，将于 {resetDate} 重新计数。",
+  "@quotaExhaustedNotice": {
+    "placeholders": {
+      "limit": { "type": "int" },
+      "resetDate": { "type": "String" }
+    }
+  },
+
+  "quotaUpgradeLabel": "解除限制",
+
+  "quotaExceededError": "本月只剩 {remaining} 个免费文件，而这次需要 {requested} 个。",
+  "@quotaExceededError": {
+    "placeholders": {
+      "remaining": { "type": "int" },
+      "requested": { "type": "int" }
+    }
+  },
+
   "paywallTitle": "不限次数转换",
 
   "paywallSubtitle": "免费方案每月可转换 {limit} 个文件。订阅后不再计数。",

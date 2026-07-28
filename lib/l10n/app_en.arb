@@ -311,6 +311,31 @@
     }
   },
 
+  "quotaRemaining": "{count, plural, one{1 free file left this month} other{{count} free files left this month}}",
+  "@quotaRemaining": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "quotaExhaustedNotice": "The {limit} free files for this month are used up. The count refills on {resetDate}.",
+  "@quotaExhaustedNotice": {
+    "placeholders": {
+      "limit": { "type": "int" },
+      "resetDate": { "type": "String" }
+    }
+  },
+
+  "quotaUpgradeLabel": "Get unlimited",
+
+  "quotaExceededError": "Only {remaining} free files are left this month, and this run needs {requested}.",
+  "@quotaExceededError": {
+    "placeholders": {
+      "remaining": { "type": "int" },
+      "requested": { "type": "int" }
+    }
+  },
+
   "paywallTitle": "Unlimited conversions",
 
   "paywallSubtitle": "The free plan converts {limit} files a month. A subscription lifts the count entirely.",

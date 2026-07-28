@@ -19,6 +19,9 @@ import 'package:archonex_converter/project_files/features/pdf_converter/domain/m
 import 'package:archonex_converter/project_files/features/pdf_converter/domain/models/pdf_format.dart';
 import 'package:archonex_converter/project_files/features/pdf_converter/domain/models/pdf_page_size.dart';
 import 'package:archonex_converter/project_files/features/pdf_converter/domain/models/pdf_target.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/consume_quota_use_case.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/watch_conversion_allowance_use_case.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/domain/models/conversion_allowance.dart';
 
 part 'pdf_converter_event.dart';
 part 'pdf_converter_state.dart';
@@ -43,12 +46,16 @@ class PdfConverterBloc extends Bloc<PdfConverterEvent, PdfConverterState> {
     required SaveConvertedPdfUseCase saveConvertedPdf,
     required SaveAllConvertedPdfsUseCase saveAllConvertedPdfs,
     required DiscardConvertedPdfsUseCase discardConvertedPdfs,
+    required WatchConversionAllowanceUseCase watchConversionAllowance,
+    required ConsumeQuotaUseCase consumeQuota,
   })  : _getConverterAvailability = getConverterAvailability,
         _pickSources = pickSources,
         _convertPdf = convertPdf,
         _saveConvertedPdf = saveConvertedPdf,
         _saveAllConvertedPdfs = saveAllConvertedPdfs,
         _discardConvertedPdfs = discardConvertedPdfs,
+        _watchConversionAllowance = watchConversionAllowance,
+        _consumeQuota = consumeQuota,
         super(const PdfConverterState()) {
     on<PdfConverterStarted>(_onStarted, transformer: restartable());
     // droppable: the OS shows one dialog, so extra taps must not queue up.
@@ -80,6 +87,8 @@ class PdfConverterBloc extends Bloc<PdfConverterEvent, PdfConverterState> {
   final SaveConvertedPdfUseCase _saveConvertedPdf;
   final SaveAllConvertedPdfsUseCase _saveAllConvertedPdfs;
   final DiscardConvertedPdfsUseCase _discardConvertedPdfs;
+  final WatchConversionAllowanceUseCase _watchConversionAllowance;
+  final ConsumeQuotaUseCase _consumeQuota;
 
   PdfConversionJob? _activeJob;
 
@@ -99,7 +108,21 @@ class PdfConverterBloc extends Bloc<PdfConverterEvent, PdfConverterState> {
   ) async {
     await _dropResults();
 
-    emit(PdfConverterState(isSupported: _getConverterAvailability()));
+    emit(
+      PdfConverterState(
+        isSupported: _getConverterAvailability(),
+        allowance: state.allowance,
+      ),
+    );
+
+    // Runs for as long as the screen does: the count is shared with the other
+    // converters and with the paywall, so it can change while this screen is
+    // simply sitting there. `restartable` is what keeps a second start from
+    // leaving two subscriptions behind.
+    await emit.onEach<ConversionAllowance>(
+      _watchConversionAllowance(),
+      onData: (allowance) => emit(state.copyWith(allowance: allowance)),
+    );
   }
 
   Future<void> _onPickRequested(
@@ -313,6 +336,21 @@ class PdfConverterBloc extends Bloc<PdfConverterEvent, PdfConverterState> {
       return;
     }
 
+    // The button is already disabled when the selection does not fit in what is
+    // left; this catches the case where it ran out on another screen.
+    if (!state.allowance.allows(state.filesInRun)) {
+      emit(
+        _withFailure(
+          QuotaExceededFailure(
+            remaining: state.allowance.remaining,
+            requested: state.filesInRun,
+          ),
+        ),
+      );
+
+      return;
+    }
+
     await _dropResults();
 
     final PdfConversionJob job;
@@ -356,6 +394,11 @@ class PdfConverterBloc extends Bloc<PdfConverterEvent, PdfConverterState> {
     // with an error instead, and that already parked the screen back on ready.
     if (state.isConverting) {
       emit(state.copyWith(status: PdfConverterStatus.converted));
+
+      // All or nothing here, unlike the image batch: this converter ends the
+      // whole run on the first problem, so reaching this point means every
+      // source made it.
+      await _consumeQuota(state.filesInRun);
     }
   }
 

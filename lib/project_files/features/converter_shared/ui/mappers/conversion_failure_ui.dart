@@ -20,6 +20,8 @@ extension ConversionFailureUi on ConversionFailure {
         ),
       TooManyFilesFailure(:final int limitCount) =>
         l10n.tooManyFiles(limitCount),
+      QuotaExceededFailure(:final int remaining, :final int requested) =>
+        l10n.quotaExceededError(remaining, requested),
       FilesSkippedFailure(:final int skippedCount) =>
         l10n.filesSkipped(skippedCount),
       UnsupportedFormatFailure(:final String actualExtension) =>
@@ -58,6 +60,7 @@ extension ConversionFailureUi on ConversionFailure {
   IconData get icon => switch (this) {
         FileTooLargeFailure() => Icons.data_usage_rounded,
         TooManyFilesFailure() => Icons.filter_none_rounded,
+        QuotaExceededFailure() => Icons.lock_outline_rounded,
         FilesSkippedFailure() => Icons.playlist_remove_rounded,
         UnsupportedFormatFailure() => Icons.extension_off_outlined,
         IncompatibleTargetFailure() => Icons.block_outlined,
@@ -78,7 +81,11 @@ extension ConversionFailureUi on ConversionFailure {
       };
 
   /// Cancelling is expected behaviour, and so is dropping a few files out of a
-  /// large pick, so both are shown as notices rather than as errors.
+  /// large pick or reaching the end of the free count, so all three are shown
+  /// as notices rather than as errors. Nothing broke — the quota banner beside
+  /// this one is what carries the way forward.
   bool get isNeutral =>
-      this is ConversionCancelledFailure || this is FilesSkippedFailure;
+      this is ConversionCancelledFailure ||
+      this is FilesSkippedFailure ||
+      this is QuotaExceededFailure;
 }

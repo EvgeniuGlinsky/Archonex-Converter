@@ -22,6 +22,7 @@ final class MediaConverterState extends Equatable {
     this.progress,
     this.failure,
     this.savedLocation,
+    this.allowance = const ConversionAllowance.unlimited(),
   });
 
   final MediaConverterStatus status;
@@ -52,6 +53,13 @@ final class MediaConverterState extends Equatable {
   /// Where the last save landed, `null` when the platform does not report it.
   final String? savedLocation;
 
+  /// What the free monthly count still permits. Starts unlimited so the button
+  /// does not flicker into a locked state while storage is being read.
+  final ConversionAllowance allowance;
+
+  /// Source files this run would spend. One converter, one file.
+  int get filesInRun => source == null ? 0 : 1;
+
   /// Detected from the file name rather than stored, so it can never drift out
   /// of sync with [source].
   MediaFormat? get sourceFormat {
@@ -79,7 +87,11 @@ final class MediaConverterState extends Equatable {
       isSupported && !isBusy && availableTargets.isNotEmpty;
 
   bool get canConvert =>
-      isSupported && source != null && target != null && !isBusy;
+      isSupported &&
+      source != null &&
+      target != null &&
+      !isBusy &&
+      allowance.allows(filesInRun);
 
   MediaConverterState copyWith({
     MediaConverterStatus? status,
@@ -92,6 +104,7 @@ final class MediaConverterState extends Equatable {
     double? progress,
     ConversionFailure? failure,
     String? savedLocation,
+    ConversionAllowance? allowance,
     bool clearSource = false,
     bool clearTarget = false,
     bool clearResult = false,
@@ -111,6 +124,7 @@ final class MediaConverterState extends Equatable {
       failure: clearFailure ? null : failure ?? this.failure,
       savedLocation:
           clearSavedLocation ? null : savedLocation ?? this.savedLocation,
+      allowance: allowance ?? this.allowance,
     );
   }
 
@@ -126,5 +140,6 @@ final class MediaConverterState extends Equatable {
         progress,
         failure,
         savedLocation,
+        allowance,
       ];
 }

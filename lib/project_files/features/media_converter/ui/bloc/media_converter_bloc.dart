@@ -19,6 +19,9 @@ import 'package:archonex_converter/project_files/features/media_converter/domain
 import 'package:archonex_converter/project_files/features/media_converter/domain/models/frame_rate_option.dart';
 import 'package:archonex_converter/project_files/features/media_converter/domain/models/media_format.dart';
 import 'package:archonex_converter/project_files/features/media_converter/domain/models/video_resolution.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/consume_quota_use_case.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/watch_conversion_allowance_use_case.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/domain/models/conversion_allowance.dart';
 
 part 'media_converter_event.dart';
 part 'media_converter_state.dart';
@@ -43,11 +46,15 @@ class MediaConverterBloc
     required ConvertMediaUseCase convertMedia,
     required SaveConvertedFileUseCase saveConvertedFile,
     required DiscardConvertedFileUseCase discardConvertedFile,
+    required WatchConversionAllowanceUseCase watchConversionAllowance,
+    required ConsumeQuotaUseCase consumeQuota,
   })  : _getConverterAvailability = getConverterAvailability,
         _pickSourceFile = pickSourceFile,
         _convertMedia = convertMedia,
         _saveConvertedFile = saveConvertedFile,
         _discardConvertedFile = discardConvertedFile,
+        _watchConversionAllowance = watchConversionAllowance,
+        _consumeQuota = consumeQuota,
         super(const MediaConverterState()) {
     on<MediaConverterStarted>(_onStarted, transformer: restartable());
     // droppable: the OS only shows one dialog, so extra taps must not queue up.
@@ -75,6 +82,8 @@ class MediaConverterBloc
   final ConvertMediaUseCase _convertMedia;
   final SaveConvertedFileUseCase _saveConvertedFile;
   final DiscardConvertedFileUseCase _discardConvertedFile;
+  final WatchConversionAllowanceUseCase _watchConversionAllowance;
+  final ConsumeQuotaUseCase _consumeQuota;
 
   ConversionJob? _activeJob;
 
@@ -97,7 +106,21 @@ class MediaConverterBloc
   ) async {
     await _dropResult();
 
-    emit(MediaConverterState(isSupported: _getConverterAvailability()));
+    emit(
+      MediaConverterState(
+        isSupported: _getConverterAvailability(),
+        allowance: state.allowance,
+      ),
+    );
+
+    // Runs for as long as the screen does: the count is shared with the other
+    // converters and with the paywall, so it can change while this screen is
+    // simply sitting there. `restartable` is what keeps a second start from
+    // leaving two subscriptions behind.
+    await emit.onEach<ConversionAllowance>(
+      _watchConversionAllowance(),
+      onData: (allowance) => emit(state.copyWith(allowance: allowance)),
+    );
   }
 
   Future<void> _onPickRequested(
@@ -300,6 +323,21 @@ class MediaConverterBloc
       return;
     }
 
+    // The button is already disabled when the month is spent; this catches the
+    // case where it ran out on another screen a moment ago.
+    if (!state.allowance.allows(state.filesInRun)) {
+      emit(
+        _withFailure(
+          QuotaExceededFailure(
+            remaining: state.allowance.remaining,
+            requested: state.filesInRun,
+          ),
+        ),
+      );
+
+      return;
+    }
+
     await _dropResult();
 
     final ConversionJob job;
@@ -346,6 +384,12 @@ class MediaConverterBloc
     );
 
     _activeJob = null;
+
+    // A result is the only proof the run finished: a cancellation and a failure
+    // both leave it null, and neither should cost the user a file.
+    if (state.result != null) {
+      await _consumeQuota(state.filesInRun);
+    }
   }
 
   Future<void> _onConversionCancelled(

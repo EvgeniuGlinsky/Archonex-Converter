@@ -31,6 +31,24 @@ final class TooManyFilesFailure extends ConversionFailure {
   final int limitCount;
 }
 
+/// The run would go past what the free tier has left this month.
+///
+/// Only reachable in a race: the convert button is already disabled when the
+/// count is short, but the count is shared by three screens and can run out on
+/// one of them while another is mid-setup.
+final class QuotaExceededFailure extends ConversionFailure {
+  const QuotaExceededFailure({
+    required this.remaining,
+    required this.requested,
+  });
+
+  /// Free files still available this month.
+  final int remaining;
+
+  /// Source files this run would have taken.
+  final int requested;
+}
+
 /// Part of a multi file pick was dropped, and the rest was kept.
 ///
 /// Carries a count rather than the individual reasons: a pick of thirty photos

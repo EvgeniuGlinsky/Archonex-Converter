@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:archonex_converter/core/constants/app_quota_limits.dart';
 import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
 import 'package:archonex_converter/project_files/features/converter_shared/domain/models/save_result.dart';
 import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
@@ -15,12 +16,18 @@ import 'package:archonex_converter/project_files/features/pdf_converter/domain/m
 import 'package:archonex_converter/project_files/features/pdf_converter/domain/models/pdf_page_size.dart';
 import 'package:archonex_converter/project_files/features/pdf_converter/domain/models/pdf_target.dart';
 import 'package:archonex_converter/project_files/features/pdf_converter/ui/bloc/pdf_converter_bloc.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/consume_quota_use_case.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/watch_conversion_allowance_use_case.dart';
 
+import '../subscription/fakes.dart';
+import '../usage_quota/fakes.dart';
 import 'fakes.dart';
 
 void main() {
   late FakePdfFileRepo fileRepo;
   late FakePdfConverterRepo converterRepo;
+  late FakeUsageQuotaRepo quotaRepo;
+  late FakeSubscriptionRepo subscriptionRepo;
   late PdfConverterBloc bloc;
 
   /// Lets the bloc's event queue drain.
@@ -34,6 +41,16 @@ void main() {
         saveConvertedPdf: SaveConvertedPdfUseCase(fileRepo),
         saveAllConvertedPdfs: SaveAllConvertedPdfsUseCase(fileRepo),
         discardConvertedPdfs: DiscardConvertedPdfsUseCase(converterRepo),
+        // Real use cases over fake repositories: the join between the counter
+        // and the subscription is exactly what these tests are about.
+        watchConversionAllowance: WatchConversionAllowanceUseCase(
+          quotaRepo: quotaRepo,
+          subscriptionRepo: subscriptionRepo,
+        ),
+        consumeQuota: ConsumeQuotaUseCase(
+          quotaRepo: quotaRepo,
+          subscriptionRepo: subscriptionRepo,
+        ),
       );
 
   setUp(() {
@@ -41,6 +58,8 @@ void main() {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     fileRepo = FakePdfFileRepo();
     converterRepo = FakePdfConverterRepo();
+    quotaRepo = FakeUsageQuotaRepo();
+    subscriptionRepo = FakeSubscriptionRepo();
     bloc = buildBloc();
   });
 
@@ -163,6 +182,79 @@ void main() {
         bloc.state.settings.rasterDpi,
         PdfConversionSettings.defaultRasterDpi,
       );
+    });
+  });
+
+  group('the free monthly count', () {
+    test('a merge costs one file per source, not one per document', () async {
+      await prepare(
+        files: <SourceFile>[source('a.png'), source('b.png'), source('c.png')],
+      );
+
+      bloc.add(const PdfConversionRequested());
+      await settle();
+      converterRepo.lastJob!.produce('merged.pdf');
+      await converterRepo.lastJob!.finish();
+      await settle();
+
+      expect(quotaRepo.consumed, <int>[3]);
+    });
+
+    test('one PDF split into many pages still costs one file', () async {
+      await prepare(
+        files: <SourceFile>[source('scan.pdf')],
+        target: PdfTarget.png,
+      );
+
+      bloc.add(const PdfConversionRequested());
+      await settle();
+
+      final ControllablePdfConversionJob job = converterRepo.lastJob!;
+      job.produce('scan_1.png');
+      job.produce('scan_2.png');
+      await job.finish();
+      await settle();
+
+      expect(quotaRepo.consumed, <int>[1]);
+    });
+
+    test('a failed run costs nothing', () async {
+      await prepare();
+
+      bloc.add(const PdfConversionRequested());
+      await settle();
+      await converterRepo.lastJob!.fail(const ConversionEngineFailure());
+      await settle();
+
+      expect(quotaRepo.consumed, isEmpty);
+    });
+
+    test('a selection larger than what is left blocks the button', () async {
+      // Unlike the other two converters, this bloc is not started by `setUp`,
+      // and nothing watches the count until it is.
+      bloc.add(const PdfConverterStarted());
+      await settle();
+
+      quotaRepo.setUsed(AppQuotaLimits.freeFilesPerMonth - 1);
+      await settle();
+      await prepare();
+
+      expect(bloc.state.filesInRun, 2);
+      expect(bloc.state.canConvert, isFalse);
+    });
+
+    test('a subscriber is never counted', () async {
+      subscriptionRepo.activate();
+      await settle();
+      await prepare();
+
+      bloc.add(const PdfConversionRequested());
+      await settle();
+      converterRepo.lastJob!.produce('merged.pdf');
+      await converterRepo.lastJob!.finish();
+      await settle();
+
+      expect(quotaRepo.consumed, isEmpty);
     });
   });
 
