@@ -222,7 +222,7 @@ Notes to keep to hand if a reviewer asks:
   device is subscribed. None of it identifies the user, and it is removed on uninstall.
 - The only network use is Google Play billing, which Google handles as seller of record.
 
-Privacy policy URL: `https://<username>.github.io/Archonex-Converter/privacy.html`
+Privacy policy URL: `https://evgeniuglinsky.github.io/Archonex-Converter/privacy.html`
 
 ---
 
@@ -239,9 +239,9 @@ sharing, no location, no purchases of loot boxes. Digital purchases: **Yes** (th
 | --- | --- |
 | Category | Tools |
 | Tags | File manager, Video, Photo |
-| Website | `https://<username>.github.io/Archonex-Converter/` |
+| Website | `https://evgeniuglinsky.github.io/Archonex-Converter/` |
 | Support email | *your address* |
-| Privacy policy | `https://<username>.github.io/Archonex-Converter/privacy.html` |
+| Privacy policy | `https://evgeniuglinsky.github.io/Archonex-Converter/privacy.html` |
 
 ---
 
