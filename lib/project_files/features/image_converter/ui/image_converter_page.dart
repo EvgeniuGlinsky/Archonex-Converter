@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:archonex/project_files/features/image_converter/data/platform/image_converter_platform.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/convert_images_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/discard_converted_images_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/get_image_converter_availability_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/pick_source_images_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/save_all_converted_images_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/save_converted_image_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/domain/image_converter_repo.dart';
-import 'package:archonex/project_files/features/image_converter/domain/image_file_repo.dart';
-import 'package:archonex/project_files/features/image_converter/ui/bloc/image_converter_bloc.dart';
-import 'package:archonex/project_files/features/image_converter/ui/image_converter_view.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/platform/image_converter_platform.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/convert_images_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/discard_converted_images_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/get_image_converter_availability_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/pick_source_images_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/save_all_converted_images_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/save_converted_image_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/image_converter_repo.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/image_file_repo.dart';
+import 'package:archonex_converter/project_files/features/image_converter/ui/bloc/image_converter_bloc.dart';
+import 'package:archonex_converter/project_files/features/image_converter/ui/image_converter_view.dart';
+import 'package:archonex_converter/project_files/features/subscription/domain/subscription_repo.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/consume_quota_use_case.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/watch_conversion_allowance_use_case.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/domain/usage_quota_repo.dart';
 
 /// Wires the image converter dependencies. No UI lives here.
 ///
@@ -25,6 +29,11 @@ class ImageConverterPage extends StatelessWidget {
     final ImageConverterRepo converterRepo = createImageConverterRepo();
     final ImageFileRepo imageFileRepo = createImageFileRepo();
 
+    // App-wide, unlike the two above: the count and the entitlement are shared
+    // with every other screen.
+    final UsageQuotaRepo quotaRepo = context.read<UsageQuotaRepo>();
+    final SubscriptionRepo subscriptionRepo = context.read<SubscriptionRepo>();
+
     return BlocProvider<ImageConverterBloc>(
       create: (_) => ImageConverterBloc(
         getConverterAvailability:
@@ -34,6 +43,14 @@ class ImageConverterPage extends StatelessWidget {
         saveConvertedImage: SaveConvertedImageUseCase(imageFileRepo),
         saveAllConvertedImages: SaveAllConvertedImagesUseCase(imageFileRepo),
         discardConvertedImages: DiscardConvertedImagesUseCase(converterRepo),
+        watchConversionAllowance: WatchConversionAllowanceUseCase(
+          quotaRepo: quotaRepo,
+          subscriptionRepo: subscriptionRepo,
+        ),
+        consumeQuota: ConsumeQuotaUseCase(
+          quotaRepo: quotaRepo,
+          subscriptionRepo: subscriptionRepo,
+        ),
       )..add(const ImageConverterStarted()),
       child: const ImageConverterView(),
     );

@@ -2,8 +2,8 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:archonex/project_files/features/file_converters/data/use_cases/get_converters_use_case.dart';
-import 'package:archonex/project_files/features/file_converters/domain/models/converter_tool.dart';
+import 'package:archonex_converter/project_files/features/file_converters/data/use_cases/get_converters_use_case.dart';
+import 'package:archonex_converter/project_files/features/file_converters/domain/models/converter_tool.dart';
 
 part 'file_converters_event.dart';
 part 'file_converters_state.dart';

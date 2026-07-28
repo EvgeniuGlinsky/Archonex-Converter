@@ -1,9 +1,11 @@
+import 'package:equatable/equatable.dart';
+
 /// Outcome of a save attempt, so the caller can tell a cancelled dialog from a
 /// download that the platform cannot name.
 enum SaveOutcome { cancelled, savedToLocation, downloadStarted }
 
 /// What came of handing one or more results to the platform.
-class SaveResult {
+class SaveResult extends Equatable {
   const SaveResult({
     required this.outcome,
     this.location,
@@ -24,4 +26,7 @@ class SaveResult {
   /// How many files actually landed. Always `1` for a single save; a batch
   /// reports the count so the confirmation can be specific.
   final int savedCount;
+
+  @override
+  List<Object?> get props => <Object?>[outcome, location, savedCount];
 }

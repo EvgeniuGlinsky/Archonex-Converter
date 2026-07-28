@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:archonex/core/router/app_router.dart';
-import 'package:archonex/core/theme/app_theme.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/language_selection/data/language_repo_impl.dart';
-import 'package:archonex/project_files/features/language_selection/domain/language_repo.dart';
-import 'package:archonex/project_files/features/language_selection/domain/models/app_language.dart';
+import 'package:archonex_converter/core/router/app_router.dart';
+import 'package:archonex_converter/core/theme/app_theme.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/language_selection/data/language_repo_impl.dart';
+import 'package:archonex_converter/project_files/features/language_selection/domain/language_repo.dart';
+import 'package:archonex_converter/project_files/features/language_selection/domain/models/app_language.dart';
+import 'package:archonex_converter/project_files/features/subscription/data/platform/subscription_platform.dart';
+import 'package:archonex_converter/project_files/features/subscription/domain/subscription_repo.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/prefs_quota_storage.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/usage_quota_repo_impl.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/domain/usage_quota_repo.dart';
 
 /// Application root.
 ///
@@ -21,15 +26,25 @@ class ArchonexApp extends StatefulWidget {
 }
 
 class _ArchonexAppState extends State<ArchonexApp> {
-  // Both outlive rebuilds: the router keeps the stack, the repo keeps the
-  // chosen language for the whole session.
+  // All of these outlive rebuilds: the router keeps the stack, the language
+  // repo keeps the chosen language, and the quota and subscription repos hold
+  // one count and one entitlement for the whole app — three converter screens
+  // read them and any of them can change them, so a per-screen instance would
+  // let the same file be counted twice.
   final GoRouter _router = AppRouter.create();
   final LanguageRepo _languageRepo = LanguageRepoImpl();
+  final UsageQuotaRepo _quotaRepo =
+      UsageQuotaRepoImpl(storage: PrefsQuotaStorage());
+  final SubscriptionRepo _subscriptionRepo = createSubscriptionRepo();
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider<LanguageRepo>.value(
-      value: _languageRepo,
+    return MultiRepositoryProvider(
+      providers: <RepositoryProvider<Object>>[
+        RepositoryProvider<LanguageRepo>.value(value: _languageRepo),
+        RepositoryProvider<UsageQuotaRepo>.value(value: _quotaRepo),
+        RepositoryProvider<SubscriptionRepo>.value(value: _subscriptionRepo),
+      ],
       child: ValueListenableBuilder<AppLanguage>(
         valueListenable: _languageRepo.selectedLanguageListenable,
         builder: (context, language, _) => MaterialApp.router(

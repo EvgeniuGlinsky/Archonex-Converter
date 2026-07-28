@@ -16,8 +16,8 @@
   "converterMediaSubtitle": "视频、音频和动态图像",
   "converterImageTitle": "图片转换器",
   "converterImageSubtitle": "JPG、PNG、WebP 等更多格式",
-  "converterDocumentTitle": "文档转换器",
-  "converterDocumentSubtitle": "DOCX、PDF 和 TXT",
+  "converterPdfTitle": "PDF 转换器",
+  "converterPdfSubtitle": "照片转 PDF，PDF 转图片",
 
   "mediaConverterTitle": "媒体转换器",
   "mediaConverterScreenSubtitle": "添加文件，选择格式并进行转换。",
@@ -116,12 +116,22 @@
   "incompatibleTarget": "{source} 无法转换为 {target}。",
 
   "noAudioTrackError": "此文件没有音轨，因此没有可提取的内容。",
-  "corruptSourceError": "无法读取此文件。它可能已损坏，或使用了应用不支持的编解码器。",
+  "corruptSourceError": "无法读取此文件。它可能已损坏，或采用了应用不支持的变体格式。",
+  "passwordProtectedError": "此文件受密码保护。请移除密码后重试。",
+
+  "unsupportedCharactersError": "文本中包含内置字体无法绘制的字符，例如 {sample}。目前尚不支持中文、日文和韩文。",
+  "@unsupportedCharactersError": {
+    "placeholders": {
+      "sample": { "type": "String" }
+    }
+  },
+
+  "mixedSourceKindsError": "请选择图片、PDF 或文本文件中的一类，不要混选。",
 
   "unknownSize": "过大",
   "emptyFileError": "所选文件为空。",
   "fileReadError": "无法读取所选文件。请尝试其他文件。",
-  "conversionUnsupportedError": "此平台暂不支持转换。请使用 Windows、macOS、Android 或 iOS 应用。",
+  "conversionUnsupportedError": "此转换器暂不支持当前平台。",
   "conversionFailedError": "转换失败，请重试。",
   "conversionCancelledError": "转换已取消。",
   "insufficientStorageError": "没有足够的可用空间来存储结果。",
@@ -133,5 +143,131 @@
 
   "autoLabel": "自动",
   "originalLabel": "原始",
-  "presetLabel": "预设"
+  "presetLabel": "预设",
+
+  "pdfConverterTitle": "PDF 转换器",
+  "pdfConverterScreenSubtitle": "将照片或文本合成 PDF，或将 PDF 拆分为图片。",
+
+  "pdfSourcesNotice": "最多 {maxBatch} 个文件，每个 {maxSize}",
+  "@pdfSourcesNotice": {
+    "placeholders": {
+      "maxBatch": { "type": "int" },
+      "maxSize": { "type": "String" }
+    }
+  },
+
+  "addFilesLabel": "添加文件",
+  "addMoreFilesLabel": "继续添加",
+  "clearFilesLabel": "全部清除",
+
+  "noFilesHint": "尚未选择文件。可添加图片、PDF 或文本文件，一次最多 {maxBatch} 个。",
+  "@noFilesHint": {
+    "placeholders": {
+      "maxBatch": { "type": "int" }
+    }
+  },
+
+  "filesSelected": "{count, plural, other{{count} 个文件 · {totalSize}}}",
+  "@filesSelected": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "totalSize": { "type": "String" }
+    }
+  },
+
+  "convertingPages": "正在处理第 {done} 页，共 {total} 页…",
+  "@convertingPages": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+
+  "pagesConverted": "{count, plural, other{已处理 {count} 页。}}",
+  "@pagesConverted": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "pageSizeLabel": "页面尺寸",
+  "pageSizeFitSource": "适应图片",
+  "pageSizeA4": "A4",
+  "pageSizeLetter": "Letter",
+  "marginLabel": "页边距",
+  "marginNone": "无",
+  "marginSmall": "较小",
+  "marginLarge": "较大",
+  "resolutionDpiLabel": "分辨率",
+
+  "dpiValue": "{dpi} dpi",
+  "@dpiValue": {
+    "placeholders": {
+      "dpi": { "type": "int" }
+    }
+  },
+
+  "quotaRemaining": "{count, plural, other{本月还剩 {count} 个免费文件}}",
+  "@quotaRemaining": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "quotaExhaustedNotice": "本月的 {limit} 个免费文件已用完，将于 {resetDate} 重新计数。",
+  "@quotaExhaustedNotice": {
+    "placeholders": {
+      "limit": { "type": "int" },
+      "resetDate": { "type": "String" }
+    }
+  },
+
+  "quotaUpgradeLabel": "解除限制",
+
+  "quotaExceededError": "本月只剩 {remaining} 个免费文件，而这次需要 {requested} 个。",
+  "@quotaExceededError": {
+    "placeholders": {
+      "remaining": { "type": "int" },
+      "requested": { "type": "int" }
+    }
+  },
+
+  "paywallTitle": "不限次数转换",
+
+  "paywallSubtitle": "免费方案每月可转换 {limit} 个文件。订阅后不再计数。",
+  "@paywallSubtitle": {
+    "placeholders": {
+      "limit": { "type": "int" }
+    }
+  },
+
+  "paywallBenefitUnlimited": "每月文件数量不限",
+  "paywallBenefitConverters": "全部转换器：媒体、图片和 PDF",
+  "paywallBenefitOffline": "依然完全离线——无需账号，不上传任何内容",
+
+  "paywallPeriodMonthly": "按月",
+  "paywallPeriodYearly": "按年",
+  "paywallPeriodLifetime": "一次性买断",
+  "paywallSubscribeLabel": "订阅",
+  "paywallRestoreLabel": "恢复购买",
+
+  "paywallLicenseKeyTitle": "已在网站购买？",
+  "paywallLicenseKeyLabel": "许可密钥",
+  "paywallLicenseKeyHint": "请粘贴购买邮件中的密钥",
+  "paywallRedeemLabel": "激活",
+  "paywallBuyOnWebNotice": "订阅在网站购买。您会收到一个密钥，在这里输入即可。",
+
+  "paywallNoPlansNotice": "目前没有可购买的方案。如果这看起来不对，请检查网络连接后重试。",
+  "paywallStoreBuildOnlyNotice": "此副本并非从应用商店安装，因此无法完成付款。请从 Google Play 安装 Archonex Converter 以订阅——两个版本的免费月度额度完全相同。",
+  "paywallActiveTitle": "订阅已生效",
+  "paywallActiveMessage": "本设备的转换不再计入每月次数。",
+
+  "purchaseSucceeded": "订阅已生效，可以随意转换。",
+  "purchaseCancelled": "已取消购买。",
+  "purchaseCheckoutOpened": "结账页面已在浏览器中打开。拿到密钥后回到这里输入。",
+  "purchaseNothingToRestore": "未在本设备上找到有效订阅。",
+  "purchaseSubscriptionLapsed": "该密钥的订阅已失效。续订后即可不受每月次数限制。",
+  "purchaseInvalidLicenseKey": "该密钥不适用于本应用，或激活次数已用完。",
+  "purchaseUnavailable": "此版本暂不支持购买。",
+  "purchaseFailed": "操作未成功，请重试。"
 }

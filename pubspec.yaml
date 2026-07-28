@@ -1,4 +1,4 @@
-name: archonex
+name: archonex_converter
 description: "Archonex Converter — a free, limitless file converter for video, audio and images."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -43,6 +43,24 @@ dependencies:
   file_picker: ^11.0.2
   ffmpeg_kit_flutter_new: ^4.5.3
   intl: any
+  pdf: ^3.12.0
+  printing: ^5.14.3
+  image: ^4.8.0
+
+  # Backs the monthly conversion counter and the licence. The app has no
+  # accounts, so both can only be remembered on the device itself.
+  shared_preferences: ^2.5.5
+
+  # Play billing, which is how the paid tier is actually sold. Google is the
+  # merchant of record: it takes the payment, remits the tax and owns the
+  # entitlement, so nothing in this app has to.
+  in_app_purchase: ^3.3.0
+
+  # The licence route, reserved for the platforms a store cannot reach — see
+  # `LicenseGateway`. Unused until a desktop channel exists, and the only
+  # network the app would ever make. Converting never leaves the device.
+  http: ^1.6.0
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
@@ -74,10 +92,14 @@ flutter:
   # Generates AppLocalizations from lib/l10n/*.arb — see l10n.yaml.
   generate: true
 
-  # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  # Noto Sans is embedded into every PDF the text converter writes. The fonts
+  # built into the `pdf` package cover Latin only, and they fail silently:
+  # Cyrillic and CJK come out as blank boxes rather than as an error. This one
+  # covers Latin, Greek and Cyrillic — CJK is refused up front instead, see
+  # `PdfDocumentWriter`. SIL Open Font License 1.1, see assets/fonts/OFL.txt.
+  assets:
+    - assets/fonts/NotoSans-Regular.ttf
+    - assets/fonts/OFL.txt
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

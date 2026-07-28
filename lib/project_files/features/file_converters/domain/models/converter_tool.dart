@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 ///
 /// Adding a converter means adding a value here, an entry in the repository
 /// implementation and — once it is built — a route in the UI mapper.
-enum ConverterToolType { media, image, document }
+enum ConverterToolType { media, image, pdf }
 
 /// One entry of the converter catalogue.
 ///

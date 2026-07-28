@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_file_limits.dart';
-import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/conversion_error_banner.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/conversion_progress_indicator.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/conversion_result_card.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/file_size_limit_notice.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/quality_preset_selector.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_quality.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
-import 'package:archonex/project_files/features/media_converter/ui/bloc/media_converter_bloc.dart';
-import 'package:archonex/project_files/features/media_converter/ui/mappers/conversion_quality_ui.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/advanced_settings_panel.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/media_converter_callbacks.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/source_file_card.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/target_format_grid.dart';
+import 'package:archonex_converter/core/constants/app_file_limits.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/conversion_error_banner.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/conversion_progress_indicator.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/conversion_result_card.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/file_size_limit_notice.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/quality_preset_selector.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/conversion_quality.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/media_format.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/bloc/media_converter_bloc.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/mappers/conversion_quality_ui.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/widgets/advanced_settings_panel.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/widgets/media_converter_callbacks.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/widgets/source_file_card.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/widgets/target_format_grid.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/ui/widgets/quota_notice.dart';
 
 /// Everything between the header and the primary action.
 ///
@@ -45,6 +46,10 @@ class MediaConverterBody extends StatelessWidget {
       children: <Widget>[
         FileSizeLimitNotice(
           l10n.maxFileSizeNotice(AppFileLimits.maxUploadLabel),
+        ),
+        QuotaNotice(
+          allowance: state.allowance,
+          onUpgradePressed: callbacks.onUpgradePressed,
         ),
         if (!state.isSupported) ...<Widget>[
           const SizedBox(height: _gap),

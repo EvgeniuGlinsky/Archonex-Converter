@@ -1,8 +1,8 @@
-import 'package:archonex/project_files/features/converter_shared/domain/models/converted_file.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_job.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_settings.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_format.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/converted_file.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_job.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_settings.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
 
 /// Contract for the image conversion engine.
 abstract interface class ImageConverterRepo {

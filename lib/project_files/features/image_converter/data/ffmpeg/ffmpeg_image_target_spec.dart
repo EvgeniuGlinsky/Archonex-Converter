@@ -1,5 +1,5 @@
-import 'package:archonex/project_files/features/image_converter/data/ffmpeg/ffmpeg_image_codecs.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_format.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/ffmpeg/ffmpeg_image_codecs.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
 
 /// How one target format is produced: which encoder, and which muxer quirks
 /// have to be humoured.

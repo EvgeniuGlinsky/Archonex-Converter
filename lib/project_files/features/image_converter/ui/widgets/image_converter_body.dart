@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_file_limits.dart';
-import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/conversion_error_banner.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/conversion_progress_indicator.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/file_size_limit_notice.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/quality_preset_selector.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_format.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_quality.dart';
-import 'package:archonex/project_files/features/image_converter/ui/bloc/image_converter_bloc.dart';
-import 'package:archonex/project_files/features/image_converter/ui/mappers/image_quality_ui.dart';
-import 'package:archonex/project_files/features/image_converter/ui/widgets/batch_results_card.dart';
-import 'package:archonex/project_files/features/image_converter/ui/widgets/image_advanced_settings_panel.dart';
-import 'package:archonex/project_files/features/image_converter/ui/widgets/image_converter_callbacks.dart';
-import 'package:archonex/project_files/features/image_converter/ui/widgets/source_image_list.dart';
-import 'package:archonex/project_files/features/image_converter/ui/widgets/target_format_grid.dart';
+import 'package:archonex_converter/core/constants/app_file_limits.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/conversion_error_banner.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/conversion_progress_indicator.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/file_size_limit_notice.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/quality_preset_selector.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_quality.dart';
+import 'package:archonex_converter/project_files/features/image_converter/ui/bloc/image_converter_bloc.dart';
+import 'package:archonex_converter/project_files/features/image_converter/ui/mappers/image_quality_ui.dart';
+import 'package:archonex_converter/project_files/features/image_converter/ui/widgets/batch_results_card.dart';
+import 'package:archonex_converter/project_files/features/image_converter/ui/widgets/image_advanced_settings_panel.dart';
+import 'package:archonex_converter/project_files/features/image_converter/ui/widgets/image_converter_callbacks.dart';
+import 'package:archonex_converter/project_files/features/image_converter/ui/widgets/source_image_list.dart';
+import 'package:archonex_converter/project_files/features/image_converter/ui/widgets/target_format_grid.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/ui/widgets/quota_notice.dart';
 
 /// Everything between the header and the primary action.
 ///
@@ -48,6 +49,10 @@ class ImageConverterBody extends StatelessWidget {
             AppFileLimits.maxBatchFiles,
             AppFileLimits.maxUploadLabel,
           ),
+        ),
+        QuotaNotice(
+          allowance: state.allowance,
+          onUpgradePressed: callbacks.onUpgradePressed,
         ),
         if (!state.isSupported) ...<Widget>[
           const SizedBox(height: _gap),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_spacing.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
 
 /// Centres the splash content. Positioning only.
 class SplashLayout extends StatelessWidget {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_file_limits.dart';
-import 'package:archonex/core/utils/file_size_formatter.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex_converter/core/constants/app_file_limits.dart';
+import 'package:archonex_converter/core/utils/file_size_formatter.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
 
 /// Turns a failure into the copy and glyph shown by the error banner.
 ///
@@ -20,6 +20,8 @@ extension ConversionFailureUi on ConversionFailure {
         ),
       TooManyFilesFailure(:final int limitCount) =>
         l10n.tooManyFiles(limitCount),
+      QuotaExceededFailure(:final int remaining, :final int requested) =>
+        l10n.quotaExceededError(remaining, requested),
       FilesSkippedFailure(:final int skippedCount) =>
         l10n.filesSkipped(skippedCount),
       UnsupportedFormatFailure(:final String actualExtension) =>
@@ -33,6 +35,10 @@ extension ConversionFailureUi on ConversionFailure {
         l10n.incompatibleTarget(sourceLabel, targetLabel),
       NoAudioTrackFailure() => l10n.noAudioTrackError,
       CorruptSourceFailure() => l10n.corruptSourceError,
+      PasswordProtectedFailure() => l10n.passwordProtectedError,
+      UnsupportedCharactersFailure(:final String sample) =>
+        l10n.unsupportedCharactersError(sample),
+      MixedSourceKindsFailure() => l10n.mixedSourceKindsError,
       EmptyFileFailure() => l10n.emptyFileError,
       FileReadFailure() => l10n.fileReadError,
       ConversionUnsupportedFailure() => l10n.conversionUnsupportedError,
@@ -54,11 +60,15 @@ extension ConversionFailureUi on ConversionFailure {
   IconData get icon => switch (this) {
         FileTooLargeFailure() => Icons.data_usage_rounded,
         TooManyFilesFailure() => Icons.filter_none_rounded,
+        QuotaExceededFailure() => Icons.lock_outline_rounded,
         FilesSkippedFailure() => Icons.playlist_remove_rounded,
         UnsupportedFormatFailure() => Icons.extension_off_outlined,
         IncompatibleTargetFailure() => Icons.block_outlined,
         NoAudioTrackFailure() => Icons.volume_off_outlined,
         CorruptSourceFailure() => Icons.broken_image_outlined,
+        PasswordProtectedFailure() => Icons.lock_person_outlined,
+        UnsupportedCharactersFailure() => Icons.translate_rounded,
+        MixedSourceKindsFailure() => Icons.shuffle_rounded,
         EmptyFileFailure() => Icons.description_outlined,
         FileReadFailure() => Icons.folder_off_outlined,
         ConversionUnsupportedFailure() => Icons.desktop_access_disabled_outlined,
@@ -71,7 +81,11 @@ extension ConversionFailureUi on ConversionFailure {
       };
 
   /// Cancelling is expected behaviour, and so is dropping a few files out of a
-  /// large pick, so both are shown as notices rather than as errors.
+  /// large pick or reaching the end of the free count, so all three are shown
+  /// as notices rather than as errors. Nothing broke — the quota banner beside
+  /// this one is what carries the way forward.
   bool get isNeutral =>
-      this is ConversionCancelledFailure || this is FilesSkippedFailure;
+      this is ConversionCancelledFailure ||
+      this is FilesSkippedFailure ||
+      this is QuotaExceededFailure;
 }

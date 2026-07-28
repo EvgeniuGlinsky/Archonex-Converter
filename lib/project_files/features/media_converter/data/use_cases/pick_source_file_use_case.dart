@@ -1,8 +1,8 @@
-import 'package:archonex/core/constants/app_file_limits.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
-import 'package:archonex/project_files/features/media_converter/domain/media_file_repo.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
+import 'package:archonex_converter/core/constants/app_file_limits.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/media_file_repo.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/media_format.dart';
 
 /// Picks a source file and refuses everything the converter cannot take.
 ///

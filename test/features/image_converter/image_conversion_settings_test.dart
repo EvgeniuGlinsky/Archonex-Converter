@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:archonex/project_files/features/image_converter/domain/models/image_background.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_settings.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_dimension_limit.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_format.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_quality.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_background.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_settings.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_dimension_limit.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_quality.dart';
 
 void main() {
   group('deferring to the preset', () {

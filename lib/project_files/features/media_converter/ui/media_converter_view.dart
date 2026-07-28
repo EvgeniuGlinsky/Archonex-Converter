@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
-import 'package:archonex/core/widgets/app_screen_header.dart';
-import 'package:archonex/core/widgets/app_screen_layout.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/media_converter/ui/bloc/media_converter_bloc.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/media_converter_actions.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/media_converter_body.dart';
-import 'package:archonex/project_files/features/media_converter/ui/widgets/media_converter_callbacks.dart';
+import 'package:archonex_converter/core/router/app_route.dart';
+import 'package:archonex_converter/core/widgets/app_screen_header.dart';
+import 'package:archonex_converter/core/widgets/app_screen_layout.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/bloc/media_converter_bloc.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/widgets/media_converter_actions.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/widgets/media_converter_body.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/widgets/media_converter_callbacks.dart';
 
 /// Errors live in the body banner; this listener only announces a finished
 /// save, so the same problem is never reported twice.
@@ -66,6 +68,10 @@ class MediaConverterView extends StatelessWidget {
       onCancelPressed: () => _add(context, const ConversionCancelled()),
       onDownloadPressed: () =>
           _add(context, const ConvertedFileSaveRequested()),
+      // Pushed rather than gone to: the paywall is a detour, and coming back
+      // has to land on the file that is already set up here.
+      onUpgradePressed: () =>
+          context.pushNamed(AppRoute.paywall.routeName),
     );
   }
 

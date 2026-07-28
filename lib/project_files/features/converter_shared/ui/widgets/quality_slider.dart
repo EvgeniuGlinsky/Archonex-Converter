@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/normalized_quality.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/normalized_quality.dart';
 
 /// Normalised quality, from "smaller file" to "better quality".
 ///

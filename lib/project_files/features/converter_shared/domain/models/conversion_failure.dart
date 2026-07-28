@@ -31,6 +31,24 @@ final class TooManyFilesFailure extends ConversionFailure {
   final int limitCount;
 }
 
+/// The run would go past what the free tier has left this month.
+///
+/// Only reachable in a race: the convert button is already disabled when the
+/// count is short, but the count is shared by three screens and can run out on
+/// one of them while another is mid-setup.
+final class QuotaExceededFailure extends ConversionFailure {
+  const QuotaExceededFailure({
+    required this.remaining,
+    required this.requested,
+  });
+
+  /// Free files still available this month.
+  final int remaining;
+
+  /// Source files this run would have taken.
+  final int requested;
+}
+
 /// Part of a multi file pick was dropped, and the rest was kept.
 ///
 /// Carries a count rather than the individual reasons: a pick of thirty photos
@@ -69,9 +87,36 @@ final class NoAudioTrackFailure extends ConversionFailure {
   const NoAudioTrackFailure();
 }
 
-/// FFmpeg could not make sense of the input at all.
+/// The engine could not make sense of the input at all.
 final class CorruptSourceFailure extends ConversionFailure {
   const CorruptSourceFailure();
+}
+
+/// The source is encrypted and no password was supplied.
+///
+/// Only PDFs reach this today. Kept separate from [CorruptSourceFailure]
+/// because the file is perfectly well formed and the user can act on it — the
+/// two would otherwise send them looking for damage that is not there.
+final class PasswordProtectedFailure extends ConversionFailure {
+  const PasswordProtectedFailure();
+}
+
+/// The text carries characters the embedded font cannot draw.
+///
+/// The bundled Noto Sans covers Latin, Greek and Cyrillic. Anything else — CJK
+/// above all — would come out as blank boxes, and the PDF writer will not fail
+/// on its own, so this is raised instead of handing back a silently broken
+/// document.
+final class UnsupportedCharactersFailure extends ConversionFailure {
+  const UnsupportedCharactersFailure({required this.sample});
+
+  /// A few of the offending characters, so the message can name them.
+  final String sample;
+}
+
+/// A batch mixes kinds that have no single direction, e.g. photos and a PDF.
+final class MixedSourceKindsFailure extends ConversionFailure {
+  const MixedSourceKindsFailure();
 }
 
 /// The picked file has no content.

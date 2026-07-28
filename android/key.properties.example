@@ -1,0 +1,17 @@
+# Copy to android/key.properties and fill in. That file is gitignored, and the
+# keystore it points at must live outside this repository.
+#
+# Create the keystore once, and keep it forever — Android will not accept an
+# update to an app signed by a different key, so losing it means losing the
+# ability to update anything already installed:
+#
+#   keytool -genkey -v -keystore C:\Users\<you>\archonex-upload.jks \
+#     -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 -alias archonex
+#
+# `storeFile` is resolved relative to the `android/app` directory, so an absolute
+# path is the only thing that behaves the same on every machine and in CI.
+
+storeFile=C:\\Users\\<you>\\archonex-upload.jks
+storePassword=
+keyAlias=archonex
+keyPassword=

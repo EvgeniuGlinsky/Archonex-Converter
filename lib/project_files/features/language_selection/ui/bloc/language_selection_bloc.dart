@@ -2,10 +2,10 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:archonex/project_files/features/language_selection/data/use_cases/get_available_languages_use_case.dart';
-import 'package:archonex/project_files/features/language_selection/data/use_cases/get_selected_language_use_case.dart';
-import 'package:archonex/project_files/features/language_selection/data/use_cases/select_language_use_case.dart';
-import 'package:archonex/project_files/features/language_selection/domain/models/app_language.dart';
+import 'package:archonex_converter/project_files/features/language_selection/data/use_cases/get_available_languages_use_case.dart';
+import 'package:archonex_converter/project_files/features/language_selection/data/use_cases/get_selected_language_use_case.dart';
+import 'package:archonex_converter/project_files/features/language_selection/data/use_cases/select_language_use_case.dart';
+import 'package:archonex_converter/project_files/features/language_selection/domain/models/app_language.dart';
 
 part 'language_selection_event.dart';
 part 'language_selection_state.dart';

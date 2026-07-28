@@ -7,9 +7,14 @@ enum AppRoute {
   languageSelection(path: '/language'),
   fileConverters(path: '/converters'),
 
+  /// Reachable from every converter, so it sits at the top level rather than
+  /// under one of them.
+  paywall(path: '/paywall'),
+
   // Children of [fileConverters] — one entry per converter screen.
   mediaConverter(path: 'media'),
-  imageConverter(path: 'image');
+  imageConverter(path: 'image'),
+  pdfConverter(path: 'pdf');
 
   const AppRoute({required this.path});
 

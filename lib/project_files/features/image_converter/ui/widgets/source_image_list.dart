@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_file_limits.dart';
-import 'package:archonex/core/constants/app_radius.dart';
-import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/core/utils/file_size_formatter.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_item.dart';
-import 'package:archonex/project_files/features/image_converter/ui/widgets/source_image_tile.dart';
+import 'package:archonex_converter/core/constants/app_file_limits.dart';
+import 'package:archonex_converter/core/constants/app_radius.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
+import 'package:archonex_converter/core/utils/file_size_formatter.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_item.dart';
+import 'package:archonex_converter/project_files/features/image_converter/ui/widgets/source_image_tile.dart';
 
 /// The batch: a call to action while empty, the photos once filled.
 class SourceImageList extends StatelessWidget {

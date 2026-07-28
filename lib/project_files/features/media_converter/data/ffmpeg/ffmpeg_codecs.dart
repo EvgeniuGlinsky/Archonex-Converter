@@ -1,4 +1,4 @@
-import 'package:archonex/project_files/features/converter_shared/data/ffmpeg/ffmpeg_quality_scale.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/data/ffmpeg/ffmpeg_quality_scale.dart';
 
 /// The video encoders the bundled FFmpeg build can write with.
 ///

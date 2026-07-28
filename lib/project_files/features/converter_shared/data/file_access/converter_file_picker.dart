@@ -1,8 +1,8 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 
-import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
 
 /// The picking half of file access, shared by every converter and platform.
 ///

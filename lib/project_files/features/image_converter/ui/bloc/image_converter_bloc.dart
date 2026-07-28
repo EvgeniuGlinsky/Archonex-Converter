@@ -2,25 +2,28 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:archonex/core/constants/app_file_limits.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/converted_file.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/save_result.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/convert_images_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/discard_converted_images_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/get_image_converter_availability_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/pick_source_images_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/save_all_converted_images_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/data/use_cases/save_converted_image_use_case.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_background.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_item.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_job.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_settings.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_update.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_dimension_limit.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_format.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_quality.dart';
+import 'package:archonex_converter/core/constants/app_file_limits.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/converted_file.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/save_result.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/convert_images_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/discard_converted_images_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/get_image_converter_availability_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/pick_source_images_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/save_all_converted_images_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/save_converted_image_use_case.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_background.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_item.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_job.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_settings.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_update.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_dimension_limit.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_quality.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/consume_quota_use_case.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/watch_conversion_allowance_use_case.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/domain/models/conversion_allowance.dart';
 
 part 'image_converter_event.dart';
 part 'image_converter_state.dart';
@@ -48,12 +51,16 @@ class ImageConverterBloc
     required SaveConvertedImageUseCase saveConvertedImage,
     required SaveAllConvertedImagesUseCase saveAllConvertedImages,
     required DiscardConvertedImagesUseCase discardConvertedImages,
+    required WatchConversionAllowanceUseCase watchConversionAllowance,
+    required ConsumeQuotaUseCase consumeQuota,
   })  : _getConverterAvailability = getConverterAvailability,
         _pickSourceImages = pickSourceImages,
         _convertImages = convertImages,
         _saveConvertedImage = saveConvertedImage,
         _saveAllConvertedImages = saveAllConvertedImages,
         _discardConvertedImages = discardConvertedImages,
+        _watchConversionAllowance = watchConversionAllowance,
+        _consumeQuota = consumeQuota,
         super(const ImageConverterState()) {
     on<ImageConverterStarted>(_onStarted, transformer: restartable());
     // droppable: the OS only shows one dialog, so extra taps must not queue up.
@@ -86,6 +93,8 @@ class ImageConverterBloc
   final SaveConvertedImageUseCase _saveConvertedImage;
   final SaveAllConvertedImagesUseCase _saveAllConvertedImages;
   final DiscardConvertedImagesUseCase _discardConvertedImages;
+  final WatchConversionAllowanceUseCase _watchConversionAllowance;
+  final ConsumeQuotaUseCase _consumeQuota;
 
   ImageConversionJob? _activeJob;
 
@@ -105,7 +114,21 @@ class ImageConverterBloc
   ) async {
     await _dropResults();
 
-    emit(ImageConverterState(isSupported: _getConverterAvailability()));
+    emit(
+      ImageConverterState(
+        isSupported: _getConverterAvailability(),
+        allowance: state.allowance,
+      ),
+    );
+
+    // Runs for as long as the screen does: the count is shared with the other
+    // converters and with the paywall, so it can change while this screen is
+    // simply sitting there. `restartable` is what keeps a second start from
+    // leaving two subscriptions behind.
+    await emit.onEach<ConversionAllowance>(
+      _watchConversionAllowance(),
+      onData: (allowance) => emit(state.copyWith(allowance: allowance)),
+    );
   }
 
   Future<void> _onPickRequested(
@@ -342,6 +365,22 @@ class ImageConverterBloc
       return;
     }
 
+    // The button is already disabled when the batch does not fit in what is
+    // left; this catches the case where it ran out on another screen.
+    if (!state.allowance.allows(state.filesInRun)) {
+      emit(
+        _withFailure(
+          QuotaExceededFailure(
+            remaining: state.allowance.remaining,
+            requested: state.filesInRun,
+          ),
+          state.items,
+        ),
+      );
+
+      return;
+    }
+
     final List<ImageConversionItem> items = await _resetItems();
 
     final ImageConversionJob job;
@@ -384,6 +423,11 @@ class ImageConverterBloc
     // with an error instead, and that already parked the screen back on ready.
     if (state.isConverting) {
       emit(state.copyWith(status: ImageConverterStatus.converted));
+
+      // Only the photos that came out the other side are charged: one
+      // unreadable file in a batch of thirty is the app's problem, not the
+      // user's budget.
+      await _consumeQuota(state.convertedCount);
     }
   }
 

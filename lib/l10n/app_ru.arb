@@ -16,8 +16,8 @@
   "converterMediaSubtitle": "Видео, аудио и анимированные изображения",
   "converterImageTitle": "Конвертер изображений",
   "converterImageSubtitle": "JPG, PNG, WebP и другие",
-  "converterDocumentTitle": "Конвертер документов",
-  "converterDocumentSubtitle": "DOCX, PDF и TXT",
+  "converterPdfTitle": "PDF-конвертер",
+  "converterPdfSubtitle": "Фото в PDF, PDF в картинки",
 
   "mediaConverterTitle": "Медиаконвертер",
   "mediaConverterScreenSubtitle": "Добавьте файл, выберите формат и конвертируйте его.",
@@ -116,12 +116,22 @@
   "incompatibleTarget": "{source} нельзя конвертировать в {target}.",
 
   "noAudioTrackError": "В этом файле нет аудиодорожки, поэтому извлекать нечего.",
-  "corruptSourceError": "Не удалось прочитать этот файл. Возможно, он повреждён или использует кодек, который приложение не поддерживает.",
+  "corruptSourceError": "Не удалось прочитать этот файл. Возможно, он повреждён или сохранён в разновидности, которую приложение не поддерживает.",
+  "passwordProtectedError": "Файл защищён паролем. Снимите пароль и попробуйте снова.",
+
+  "unsupportedCharactersError": "В тексте есть символы, которые встроенный шрифт не может отрисовать, например {sample}. Китайский, японский и корейский пока не поддерживаются.",
+  "@unsupportedCharactersError": {
+    "placeholders": {
+      "sample": { "type": "String" }
+    }
+  },
+
+  "mixedSourceKindsError": "Выберите либо картинки, либо PDF, либо текстовые файлы — но не всё сразу.",
 
   "unknownSize": "слишком большой",
   "emptyFileError": "Выбранный файл пуст.",
   "fileReadError": "Не удалось прочитать выбранный файл. Попробуйте другой.",
-  "conversionUnsupportedError": "Конвертация пока недоступна на этой платформе. Используйте приложение для Windows, macOS, Android или iOS.",
+  "conversionUnsupportedError": "Этот конвертер пока недоступен на данной платформе.",
   "conversionFailedError": "Не удалось выполнить конвертацию. Попробуйте ещё раз.",
   "conversionCancelledError": "Конвертация отменена.",
   "insufficientStorageError": "Недостаточно свободного места для сохранения результата.",
@@ -133,5 +143,131 @@
 
   "autoLabel": "Авто",
   "originalLabel": "Оригинал",
-  "presetLabel": "Пресет"
+  "presetLabel": "Пресет",
+
+  "pdfConverterTitle": "PDF-конвертер",
+  "pdfConverterScreenSubtitle": "Соберите PDF из фото или текста — или разберите PDF на картинки.",
+
+  "pdfSourcesNotice": "До {maxBatch} файлов, по {maxSize} каждый",
+  "@pdfSourcesNotice": {
+    "placeholders": {
+      "maxBatch": { "type": "int" },
+      "maxSize": { "type": "String" }
+    }
+  },
+
+  "addFilesLabel": "Добавить файлы",
+  "addMoreFilesLabel": "Добавить ещё",
+  "clearFilesLabel": "Очистить всё",
+
+  "noFilesHint": "Файлы пока не выбраны. Добавьте картинки, PDF или текстовые файлы — до {maxBatch} за раз.",
+  "@noFilesHint": {
+    "placeholders": {
+      "maxBatch": { "type": "int" }
+    }
+  },
+
+  "filesSelected": "{count, plural, one{{count} файл · {totalSize}} few{{count} файла · {totalSize}} many{{count} файлов · {totalSize}} other{{count} файла · {totalSize}}}",
+  "@filesSelected": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "totalSize": { "type": "String" }
+    }
+  },
+
+  "convertingPages": "Обработка страницы {done} из {total}…",
+  "@convertingPages": {
+    "placeholders": {
+      "done": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+
+  "pagesConverted": "{count, plural, one{Обработана {count} страница.} few{Обработано {count} страницы.} many{Обработано {count} страниц.} other{Обработано {count} страницы.}}",
+  "@pagesConverted": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "pageSizeLabel": "Размер страницы",
+  "pageSizeFitSource": "По размеру картинки",
+  "pageSizeA4": "A4",
+  "pageSizeLetter": "Letter",
+  "marginLabel": "Поля",
+  "marginNone": "Без полей",
+  "marginSmall": "Небольшие",
+  "marginLarge": "Широкие",
+  "resolutionDpiLabel": "Разрешение",
+
+  "dpiValue": "{dpi} dpi",
+  "@dpiValue": {
+    "placeholders": {
+      "dpi": { "type": "int" }
+    }
+  },
+
+  "quotaRemaining": "{count, plural, one{В этом месяце остался {count} бесплатный файл} few{В этом месяце осталось {count} бесплатных файла} many{В этом месяце осталось {count} бесплатных файлов} other{В этом месяце осталось {count} бесплатных файла}}",
+  "@quotaRemaining": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "quotaExhaustedNotice": "Бесплатные файлы в этом месяце закончились — все {limit}. Счётчик обнулится {resetDate}.",
+  "@quotaExhaustedNotice": {
+    "placeholders": {
+      "limit": { "type": "int" },
+      "resetDate": { "type": "String" }
+    }
+  },
+
+  "quotaUpgradeLabel": "Снять лимит",
+
+  "quotaExceededError": "В этом месяце осталось бесплатных файлов: {remaining}, а для этого запуска нужно {requested}.",
+  "@quotaExceededError": {
+    "placeholders": {
+      "remaining": { "type": "int" },
+      "requested": { "type": "int" }
+    }
+  },
+
+  "paywallTitle": "Конвертация без лимита",
+
+  "paywallSubtitle": "Бесплатно — {limit} файлов в месяц. Подписка снимает счётчик полностью.",
+  "@paywallSubtitle": {
+    "placeholders": {
+      "limit": { "type": "int" }
+    }
+  },
+
+  "paywallBenefitUnlimited": "Сколько угодно файлов каждый месяц",
+  "paywallBenefitConverters": "Все конвертеры: медиа, изображения и PDF",
+  "paywallBenefitOffline": "По-прежнему полностью офлайн — без аккаунта, ничего не отправляется",
+
+  "paywallPeriodMonthly": "Помесячно",
+  "paywallPeriodYearly": "На год",
+  "paywallPeriodLifetime": "Разово, навсегда",
+  "paywallSubscribeLabel": "Оформить подписку",
+  "paywallRestoreLabel": "Восстановить покупки",
+
+  "paywallLicenseKeyTitle": "Купили на сайте?",
+  "paywallLicenseKeyLabel": "Лицензионный ключ",
+  "paywallLicenseKeyHint": "Вставьте ключ из письма о покупке",
+  "paywallRedeemLabel": "Активировать",
+  "paywallBuyOnWebNotice": "Подписка оформляется на сайте. Вам придёт ключ — его нужно ввести здесь.",
+
+  "paywallNoPlansNotice": "Сейчас ничего не продаётся. Если это выглядит неправильно, проверьте соединение и попробуйте снова.",
+  "paywallStoreBuildOnlyNotice": "Эта копия установлена не из магазина, поэтому принять оплату не может. Чтобы оформить подписку, установите Archonex Converter из Google Play — бесплатный месячный лимит в обеих версиях одинаковый.",
+  "paywallActiveTitle": "Подписка активна",
+  "paywallActiveMessage": "На этом устройстве конвертация идёт без месячного счётчика.",
+
+  "purchaseSucceeded": "Подписка активна. Конвертируйте сколько нужно.",
+  "purchaseCancelled": "Покупка отменена.",
+  "purchaseCheckoutOpened": "Оплата открыта в браузере. Вернитесь с ключом и введите его здесь.",
+  "purchaseNothingToRestore": "Активная подписка на этом устройстве не найдена.",
+  "purchaseSubscriptionLapsed": "Подписка по этому ключу больше не активна. Продлите её, чтобы конвертировать без месячного лимита.",
+  "purchaseInvalidLicenseKey": "Ключ не подходит этому приложению или его активации исчерпаны.",
+  "purchaseUnavailable": "Покупки в этой сборке пока недоступны.",
+  "purchaseFailed": "Не получилось. Попробуйте ещё раз."
 }

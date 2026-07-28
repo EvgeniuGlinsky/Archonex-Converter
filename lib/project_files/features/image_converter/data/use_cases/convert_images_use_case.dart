@@ -1,10 +1,10 @@
-import 'package:archonex/core/constants/app_file_limits.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
-import 'package:archonex/project_files/features/image_converter/domain/image_converter_repo.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_job.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_settings.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_format.dart';
+import 'package:archonex_converter/core/constants/app_file_limits.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/image_converter_repo.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_job.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_settings.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
 
 /// Starts a batch, re-checking every guard the pick already applied.
 ///

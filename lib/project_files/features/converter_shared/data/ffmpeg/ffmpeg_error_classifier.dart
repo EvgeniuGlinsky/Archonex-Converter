@@ -1,4 +1,4 @@
-import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
 
 /// Turns FFmpeg's log output into a failure the screen can explain.
 ///

@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 
-import 'package:archonex/project_files/features/image_converter/domain/models/image_background.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_dimension_limit.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_format.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_quality.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_background.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_dimension_limit.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_quality.dart';
 
 /// Everything the image converter screen can be asked to do, in one bundle.
 ///
@@ -28,6 +28,7 @@ class ImageConverterCallbacks {
     required this.onCancelPressed,
     required this.onSavePressed,
     required this.onSaveAllPressed,
+    required this.onUpgradePressed,
   });
 
   final VoidCallback onPickPressed;
@@ -44,4 +45,5 @@ class ImageConverterCallbacks {
   final VoidCallback onCancelPressed;
   final ValueChanged<int> onSavePressed;
   final VoidCallback onSaveAllPressed;
+  final VoidCallback onUpgradePressed;
 }

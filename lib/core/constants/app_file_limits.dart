@@ -68,11 +68,17 @@ class AppFileLimits {
     return switch (defaultTargetPlatform) {
       TargetPlatform.android => _CapacityTier.android,
       TargetPlatform.iOS => _CapacityTier.iOS,
+      // Linux belongs here despite shipping no FFmpeg: this answers how large a
+      // file can be saved, not which engines exist. Its save path is the same
+      // OS-level copy the other desktops use, and the PDF converter — which
+      // needs no FFmpeg — really does run there. Whether a given engine is
+      // available is a separate question each repository answers for itself,
+      // see `FfmpegImageConverterRepo.isSupported`.
+      TargetPlatform.linux ||
       TargetPlatform.windows ||
       TargetPlatform.macOS =>
         _CapacityTier.desktop,
-      // Linux ships no FFmpeg engine, so nothing is convertible there.
-      TargetPlatform.linux || TargetPlatform.fuchsia => _CapacityTier.unsupported,
+      TargetPlatform.fuchsia => _CapacityTier.unsupported,
     };
   }
 }

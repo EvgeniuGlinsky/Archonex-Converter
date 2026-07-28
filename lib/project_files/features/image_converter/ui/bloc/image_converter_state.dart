@@ -21,6 +21,7 @@ final class ImageConverterState extends Equatable {
     this.failure,
     this.savedLocation,
     this.savedCount = 0,
+    this.allowance = const ConversionAllowance.unlimited(),
   });
 
   final ImageConverterStatus status;
@@ -50,10 +51,17 @@ final class ImageConverterState extends Equatable {
   /// How many files the last save wrote.
   final int savedCount;
 
+  /// What the free monthly count still permits. Starts unlimited so the button
+  /// does not flicker into a locked state while storage is being read.
+  final ConversionAllowance allowance;
+
   List<SourceFile> get sources =>
       items.map((item) => item.source).toList(growable: false);
 
   int get totalCount => items.length;
+
+  /// Source files this run would spend — every photo in the batch.
+  int get filesInRun => totalCount;
 
   int get convertedCount =>
       items.where((item) => item.status == ImageItemStatus.done).length;
@@ -136,7 +144,11 @@ final class ImageConverterState extends Equatable {
       isSupported && !isBusy && availableTargets.isNotEmpty;
 
   bool get canConvert =>
-      isSupported && items.isNotEmpty && target != null && !isBusy;
+      isSupported &&
+      items.isNotEmpty &&
+      target != null &&
+      !isBusy &&
+      allowance.allows(filesInRun);
 
   ImageConverterState copyWith({
     ImageConverterStatus? status,
@@ -148,6 +160,7 @@ final class ImageConverterState extends Equatable {
     ConversionFailure? failure,
     String? savedLocation,
     int? savedCount,
+    ConversionAllowance? allowance,
     bool clearTarget = false,
     bool clearFailure = false,
     bool clearSavedLocation = false,
@@ -163,6 +176,7 @@ final class ImageConverterState extends Equatable {
       savedLocation:
           clearSavedLocation ? null : savedLocation ?? this.savedLocation,
       savedCount: clearSavedLocation ? 0 : savedCount ?? this.savedCount,
+      allowance: allowance ?? this.allowance,
     );
   }
 
@@ -177,5 +191,6 @@ final class ImageConverterState extends Equatable {
         failure,
         savedLocation,
         savedCount,
+        allowance,
       ];
 }

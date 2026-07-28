@@ -1,25 +1,32 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:archonex/core/constants/app_file_limits.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/source_file.dart';
-import 'package:archonex/project_files/features/media_converter/data/use_cases/convert_media_use_case.dart';
-import 'package:archonex/project_files/features/media_converter/data/use_cases/discard_converted_file_use_case.dart';
-import 'package:archonex/project_files/features/media_converter/data/use_cases/get_converter_availability_use_case.dart';
-import 'package:archonex/project_files/features/media_converter/data/use_cases/pick_source_file_use_case.dart';
-import 'package:archonex/project_files/features/media_converter/data/use_cases/save_converted_file_use_case.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/audio_bitrate_option.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_quality.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/frame_rate_option.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/video_resolution.dart';
-import 'package:archonex/project_files/features/media_converter/ui/bloc/media_converter_bloc.dart';
+import 'package:archonex_converter/core/constants/app_file_limits.dart';
+import 'package:archonex_converter/core/constants/app_quota_limits.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/convert_media_use_case.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/discard_converted_file_use_case.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/get_converter_availability_use_case.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/pick_source_file_use_case.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/use_cases/save_converted_file_use_case.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/audio_bitrate_option.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/conversion_quality.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/frame_rate_option.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/media_format.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/video_resolution.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/bloc/media_converter_bloc.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/consume_quota_use_case.dart';
+import 'package:archonex_converter/project_files/features/usage_quota/data/use_cases/watch_conversion_allowance_use_case.dart';
 
+import '../subscription/fakes.dart';
+import '../usage_quota/fakes.dart';
 import 'fakes.dart';
 
 void main() {
   late FakeMediaFileRepo fileRepo;
   late FakeMediaConverterRepo converterRepo;
+  late FakeUsageQuotaRepo quotaRepo;
+  late FakeSubscriptionRepo subscriptionRepo;
   late MediaConverterBloc bloc;
 
   // A MOV rather than an MP4, so MP4 itself is a legal target: no format is
@@ -42,15 +49,27 @@ void main() {
 
   /// Rebuilds the bloc so a test can start from a different platform support
   /// state; called with the defaults by [setUp].
-  void buildBloc({bool isSupported = true}) {
+  void buildBloc({bool isSupported = true, int usedFiles = 0}) {
     fileRepo = FakeMediaFileRepo();
     converterRepo = FakeMediaConverterRepo(isSupported: isSupported);
+    quotaRepo = FakeUsageQuotaRepo(usedFiles: usedFiles);
+    subscriptionRepo = FakeSubscriptionRepo();
     bloc = MediaConverterBloc(
       getConverterAvailability: GetConverterAvailabilityUseCase(converterRepo),
       pickSourceFile: PickSourceFileUseCase(fileRepo),
       convertMedia: ConvertMediaUseCase(converterRepo),
       saveConvertedFile: SaveConvertedFileUseCase(fileRepo),
       discardConvertedFile: DiscardConvertedFileUseCase(converterRepo),
+      // Real use cases over fake repositories: the join between the counter
+      // and the subscription is exactly what these tests are about.
+      watchConversionAllowance: WatchConversionAllowanceUseCase(
+        quotaRepo: quotaRepo,
+        subscriptionRepo: subscriptionRepo,
+      ),
+      consumeQuota: ConsumeQuotaUseCase(
+        quotaRepo: quotaRepo,
+        subscriptionRepo: subscriptionRepo,
+      ),
     )..add(const MediaConverterStarted());
   }
 
@@ -443,6 +462,76 @@ void main() {
 
       expect(bloc.state.isConverting, isTrue);
       expect(bloc.state.progress, isNull);
+    });
+  });
+
+  group('the free monthly count', () {
+    test('a finished conversion costs one file', () async {
+      await prepare();
+
+      bloc.add(const ConversionRequested());
+      await settle();
+      await converterRepo.lastJob!.complete();
+      await settle();
+
+      expect(quotaRepo.consumed, <int>[1]);
+    });
+
+    test('a cancelled conversion costs nothing', () async {
+      await prepare();
+
+      bloc.add(const ConversionRequested());
+      await settle();
+      bloc.add(const ConversionCancelled());
+      await settle();
+
+      expect(quotaRepo.consumed, isEmpty);
+    });
+
+    test('a failed conversion costs nothing', () async {
+      await prepare();
+
+      bloc.add(const ConversionRequested());
+      await settle();
+      await converterRepo.lastJob!.fail();
+      await settle();
+
+      expect(quotaRepo.consumed, isEmpty);
+    });
+
+    test('a spent month blocks the button', () async {
+      buildBloc(usedFiles: AppQuotaLimits.freeFilesPerMonth);
+      await settle();
+      await prepare();
+
+      expect(bloc.state.allowance.isExhausted, isTrue);
+      expect(bloc.state.canConvert, isFalse);
+    });
+
+    test('a spent month refuses a run that slips past the button', () async {
+      buildBloc(usedFiles: AppQuotaLimits.freeFilesPerMonth);
+      await settle();
+      await prepare();
+
+      bloc.add(const ConversionRequested());
+      await settle();
+
+      expect(converterRepo.convertCallCount, 0);
+      expect(bloc.state.failure, isA<QuotaExceededFailure>());
+    });
+
+    test('a subscriber is never counted', () async {
+      subscriptionRepo.activate();
+      await settle();
+      await prepare();
+
+      bloc.add(const ConversionRequested());
+      await settle();
+      await converterRepo.lastJob!.complete();
+      await settle();
+
+      expect(quotaRepo.consumed, isEmpty);
+      expect(bloc.state.allowance.isUnlimited, isTrue);
     });
   });
 

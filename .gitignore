@@ -49,6 +49,13 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Release signing. The keystore itself lives outside the repository entirely;
+# this file only points at it and holds its passwords. Committing either would
+# hand anyone who clones this the ability to ship an update as us — and the key
+# can never be rotated, because Android will not accept an update signed by a
+# different one.
+/android/key.properties
+
 # Local tooling / personal state
 .claude/settings.local.json
 .fvm/

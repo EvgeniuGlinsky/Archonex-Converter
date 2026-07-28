@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/format_badge.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/format_badge.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/media_format.dart';
 
 /// Presentation details of a format group, kept out of the domain layer.
 extension MediaFormatKindUi on MediaFormatKind {

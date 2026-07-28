@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:archonex/project_files/features/converter_shared/data/ffmpeg/ffmpeg_filters.dart';
-import 'package:archonex/project_files/features/image_converter/data/ffmpeg/ffmpeg_image_command_builder.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_background.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_settings.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_dimension_limit.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_format.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_quality.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/data/ffmpeg/ffmpeg_filters.dart';
+import 'package:archonex_converter/project_files/features/image_converter/data/ffmpeg/ffmpeg_image_command_builder.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_background.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_settings.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_dimension_limit.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_quality.dart';
 
 void main() {
   const String input = '/tmp/holiday photo.png';

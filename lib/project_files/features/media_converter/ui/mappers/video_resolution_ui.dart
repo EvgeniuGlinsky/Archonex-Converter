@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/video_resolution.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/video_resolution.dart';
 
 /// Copy for the resolution options, kept out of the domain layer.
 extension VideoResolutionUi on VideoResolution {

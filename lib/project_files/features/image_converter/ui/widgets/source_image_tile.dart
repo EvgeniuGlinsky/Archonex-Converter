@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_radius.dart';
-import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/core/utils/file_size_formatter.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/converted_file.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/mappers/conversion_failure_ui.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/format_badge.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_conversion_item.dart';
-import 'package:archonex/project_files/features/image_converter/domain/models/image_format.dart';
-import 'package:archonex/project_files/features/image_converter/ui/mappers/image_format_ui.dart';
+import 'package:archonex_converter/core/constants/app_radius.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
+import 'package:archonex_converter/core/utils/file_size_formatter.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/converted_file.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/mappers/conversion_failure_ui.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/format_badge.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_conversion_item.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/models/image_format.dart';
+import 'package:archonex_converter/project_files/features/image_converter/ui/mappers/image_format_ui.dart';
 
 /// One photo in the batch: what it is, where it got to, and what can be done
 /// with it.

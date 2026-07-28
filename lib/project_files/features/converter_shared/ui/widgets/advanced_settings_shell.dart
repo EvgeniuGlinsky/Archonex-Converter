@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_durations.dart';
-import 'package:archonex/core/constants/app_radius.dart';
-import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/l10n/app_localizations.dart';
+import 'package:archonex_converter/core/constants/app_durations.dart';
+import 'package:archonex_converter/core/constants/app_radius.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
 
 /// The frame around a converter's advanced controls: a header that expands and
 /// collapses, and a slot for whatever fields belong inside.

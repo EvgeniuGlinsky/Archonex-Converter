@@ -1,14 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:archonex/project_files/features/media_converter/data/ffmpeg/ffmpeg_codecs.dart';
-import 'package:archonex/project_files/features/media_converter/data/ffmpeg/ffmpeg_command_builder.dart';
-import 'package:archonex/project_files/features/media_converter/data/ffmpeg/ffmpeg_target_spec.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/audio_bitrate_option.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_quality.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_settings.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/frame_rate_option.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/video_resolution.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/ffmpeg/ffmpeg_codecs.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/ffmpeg/ffmpeg_command_builder.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/ffmpeg/ffmpeg_target_spec.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/audio_bitrate_option.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/conversion_quality.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/conversion_settings.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/frame_rate_option.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/media_format.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/video_resolution.dart';
 
 void main() {
   // A path with a space is the case an argument list exists to survive.

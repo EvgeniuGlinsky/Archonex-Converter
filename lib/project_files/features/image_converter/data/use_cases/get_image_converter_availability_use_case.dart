@@ -1,4 +1,4 @@
-import 'package:archonex/project_files/features/image_converter/domain/image_converter_repo.dart';
+import 'package:archonex_converter/project_files/features/image_converter/domain/image_converter_repo.dart';
 
 /// Whether this build has a conversion engine behind it.
 class GetImageConverterAvailabilityUseCase {

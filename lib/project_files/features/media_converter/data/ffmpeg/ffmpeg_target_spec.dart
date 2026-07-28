@@ -1,5 +1,5 @@
-import 'package:archonex/project_files/features/media_converter/data/ffmpeg/ffmpeg_codecs.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/ffmpeg/ffmpeg_codecs.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/media_format.dart';
 
 /// How one target format is produced: which encoders, and which container
 /// quirks have to be humoured.

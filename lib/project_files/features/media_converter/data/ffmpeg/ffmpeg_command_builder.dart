@@ -1,8 +1,8 @@
-import 'package:archonex/project_files/features/converter_shared/data/ffmpeg/ffmpeg_filters.dart';
-import 'package:archonex/project_files/features/media_converter/data/ffmpeg/ffmpeg_codecs.dart';
-import 'package:archonex/project_files/features/media_converter/data/ffmpeg/ffmpeg_target_spec.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_settings.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/data/ffmpeg/ffmpeg_filters.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/ffmpeg/ffmpeg_codecs.dart';
+import 'package:archonex_converter/project_files/features/media_converter/data/ffmpeg/ffmpeg_target_spec.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/conversion_settings.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/media_format.dart';
 
 /// Builds the FFmpeg argument list for a conversion.
 ///

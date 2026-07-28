@@ -3,10 +3,10 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 
-import 'package:archonex/project_files/features/converter_shared/data/file_access/converter_file_picker.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/conversion_failure.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/converted_file.dart';
-import 'package:archonex/project_files/features/converter_shared/domain/models/save_result.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/data/file_access/converter_file_picker.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/converted_file.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/save_result.dart';
 
 /// Writing results out on the platforms that have a real file system.
 ///

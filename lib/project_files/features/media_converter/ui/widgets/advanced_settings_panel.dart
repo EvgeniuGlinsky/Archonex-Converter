@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex/core/constants/app_spacing.dart';
-import 'package:archonex/l10n/app_localizations.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/advanced_setting_row.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/advanced_settings_shell.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/quality_slider.dart';
-import 'package:archonex/project_files/features/converter_shared/ui/widgets/setting_dropdown.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/audio_bitrate_option.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/conversion_settings.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/frame_rate_option.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/media_format.dart';
-import 'package:archonex/project_files/features/media_converter/domain/models/video_resolution.dart';
-import 'package:archonex/project_files/features/media_converter/ui/mappers/audio_bitrate_option_ui.dart';
-import 'package:archonex/project_files/features/media_converter/ui/mappers/frame_rate_option_ui.dart';
-import 'package:archonex/project_files/features/media_converter/ui/mappers/video_resolution_ui.dart';
+import 'package:archonex_converter/core/constants/app_spacing.dart';
+import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/advanced_setting_row.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/advanced_settings_shell.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/quality_slider.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/setting_dropdown.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/audio_bitrate_option.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/conversion_settings.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/frame_rate_option.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/media_format.dart';
+import 'package:archonex_converter/project_files/features/media_converter/domain/models/video_resolution.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/mappers/audio_bitrate_option_ui.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/mappers/frame_rate_option_ui.dart';
+import 'package:archonex_converter/project_files/features/media_converter/ui/mappers/video_resolution_ui.dart';
 
 /// Manual overrides on top of the quality preset.
 ///

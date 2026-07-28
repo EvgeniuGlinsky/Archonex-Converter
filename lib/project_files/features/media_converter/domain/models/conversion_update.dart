@@ -1,4 +1,4 @@
-﻿import 'package:archonex/project_files/features/converter_shared/domain/models/converted_file.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/domain/models/converted_file.dart';
 
 /// One tick of a running conversion.
 sealed class ConversionUpdate {
