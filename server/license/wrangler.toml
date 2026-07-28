@@ -1,0 +1,24 @@
+name = "archonex-license"
+main = "src/index.js"
+compatibility_date = "2026-07-01"
+
+# The app compiles this hostname in, and builds already downloaded from GitHub
+# Releases keep pointing at it forever. Renaming the worker breaks every one of
+# them, so this name is effectively permanent.
+workers_dev = true
+
+[vars]
+# Devices one key may activate. A subscriber with a laptop, a desktop and a
+# phone should never have to think about this; three is the smallest number that
+# is true of that person.
+MAX_ACTIVATIONS = "3"
+
+# Created with:
+#   wrangler kv namespace create LICENSES
+# then paste the id it prints below.
+[[kv_namespaces]]
+binding = "LICENSES"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"
+
+# Secrets are never written here. Set with:
+#   wrangler secret put PADDLE_WEBHOOK_SECRET

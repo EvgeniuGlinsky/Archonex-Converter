@@ -1,0 +1,62 @@
+name: Deploy licence service
+
+# Only when the service itself changes. The app and the worker share a
+# repository but nothing else, and a Dart-only commit has no business
+# redeploying the thing that answers licence questions.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'server/license/**'
+      - '.github/workflows/deploy-license.yml'
+  workflow_dispatch:
+
+# A second deploy on top of a running one would leave it unclear which version
+# is live.
+concurrency:
+  group: deploy-license
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Cloudflare Workers
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # No build step and no dependencies, so this is the whole gate. The tests
+      # cover the webhook signature, which is where a mistake either accepts
+      # forged payments or drops real ones.
+      - name: Check syntax
+        run: |
+          node --check server/license/src/index.js
+          node --check server/license/src/lib.js
+
+      - name: Test
+        run: node --test
+        working-directory: server/license
+
+      # The Cloudflare account does not exist yet. Until its secrets are set,
+      # this job reports what is missing and stays green rather than painting
+      # main red on every unrelated push.
+      - name: Check credentials
+        id: guard
+        env:
+          API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$API_TOKEN" ] || [ -z "$ACCOUNT_ID" ]; then
+            echo "::notice::CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID is not set — skipping the deploy. See server/license/README.md."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy
+        if: steps.guard.outputs.ready == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: server/license
