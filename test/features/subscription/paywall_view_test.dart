@@ -147,6 +147,21 @@ void main() {
     expect(tester.widget<FilledButton>(activate()).onPressed, isNotNull);
   });
 
+  testWidgets('a build the store will not serve says where to buy instead',
+      (WidgetTester tester) async {
+    await pumpScreen(
+      tester,
+      repo: FakeSubscriptionRepo(channel: PurchaseChannel.storeBuildOnly),
+    );
+
+    expect(find.text(en.paywallStoreBuildOnlyNotice), findsOneWidget);
+    // No button of any kind: this copy cannot take a payment, and offering one
+    // would be offering something that fails.
+    expect(find.text(en.paywallSubscribeLabel), findsNothing);
+    expect(find.text(en.paywallRedeemLabel), findsNothing);
+    expect(find.text(en.paywallRestoreLabel), findsNothing);
+  });
+
   testWidgets('an entitled device is congratulated, not sold to',
       (WidgetTester tester) async {
     await pumpScreen(tester, repo: FakeSubscriptionRepo(isActive: true));
