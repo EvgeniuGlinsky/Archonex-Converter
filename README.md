@@ -3,7 +3,7 @@
 [![CI](https://github.com/EvgeniuGlinsky/Archonex-Converter/actions/workflows/ci.yml/badge.svg)](https://github.com/EvgeniuGlinsky/Archonex-Converter/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-A free, offline file converter with no artificial size limits — convert files at the full technical ceiling of the platform, not a discounted fraction of it. Three converters ship today:
+An offline file converter with no artificial size limits — convert files at the full technical ceiling of the platform, not a discounted fraction of it. The free tier is bounded by **how many files** you convert, never by how large they are: ten source files a month, and a subscription lifts the count. Three converters ship today:
 
 - **Media converter** — audio, video and animation, on FFmpeg.
 - **Image converter** — photos, in batches, on FFmpeg.
@@ -13,7 +13,7 @@ Nothing leaves the device. Everything runs on a bundled engine, never a remote s
 
 ## Status
 
-All three converters are implemented end to end. The app is deliberately scoped to converters only, with no other product categories.
+All three converters are implemented end to end, and the free tier is enforced. The app is deliberately scoped to converters only, with no other product categories.
 
 **Office documents are not supported, and are not planned.** DOCX, XLSX and PPTX to PDF with any layout fidelity has no mature offline Dart path; every alternative is either a cloud API, which would break the promise above, or a bundled LibreOffice. The PDF converter is named after what it actually does rather than after what people wish it did.
 
@@ -32,7 +32,7 @@ Not built, in rough order of how well each fits what is already here:
 | Subtitle converter | SRT ↔ VTT ↔ ASS. Nearly free: FFmpeg is already bundled and already does this. |
 | Data format converter | CSV ↔ JSON ↔ XML ↔ YAML. Trivial in pure Dart, but aimed at developers rather than at the audience the rest of the app serves. |
 
-A paid tier is planned to gate by **file count**, not by size. Nothing of it is built.
+The paid tier itself is built and described below; what is still missing is the billing behind it.
 
 ## Platform support
 
@@ -50,7 +50,24 @@ Engine availability and the size ceiling are two separate questions, and `AppFil
 
 Every ceiling above is the platform's real technical maximum, not a discounted offering: there is no free/paid split by file size. Pushing mobile to that raw ceiling trades away a safety margin, since saving a result can hold 2–3× its size resident in memory, so very large files risk an out-of-memory crash on real devices. `integration_test/capacity_probe_test.dart` exists to measure a safer, per-device number if that turns out to bite. All of it lives in `lib/core/constants/app_file_limits.dart`, with the reasoning next to each number.
 
-The image and PDF converters add a second ceiling, on how many files one batch may hold: 30 on mobile, 100 on desktop. Unlike the byte limits this one is a product choice on every platform — files are handled one at a time, so nothing in the stack caps the count. It is also the hook the future paid tier will hang on.
+The image and PDF converters add a second ceiling, on how many files one batch may hold: 30 on mobile, 100 on desktop. Unlike the byte limits this one is a product choice on every platform — files are handled one at a time, so nothing in the stack caps the count.
+
+## Free tier and subscription
+
+Ten **source** files per calendar month, then conversion is blocked until the count refills on the 1st or a subscription lifts it. Source files rather than produced ones: a batch of five photos costs five, five photos merged into one PDF costs five, and one PDF exploded into twelve images costs one. What was handed over is what can be predicted in advance.
+
+Only files that actually made it through are counted. A cancelled run, a failed run and the one unreadable photo in a batch of thirty all cost nothing.
+
+The count lives on the device, in `shared_preferences`, because the app has no accounts and no server. A clock wound backwards is ignored — `QuotaRecord.lastSeen` wins — so a spent month cannot be replayed by changing the date. A clock wound *forwards* does grant a fresh count once; closing that needs a server, which an offline app does not have. Reinstalling also clears it. Both are known and accepted.
+
+`SubscriptionRepo` is the seam where money will arrive, and today's implementation is `FreeOnlySubscriptionRepo`: nothing is entitled and nothing is for sale. The paywall screen is real and says so out loud rather than displaying a price no checkout would honour. Two implementations will replace it, chosen by the platform boundary in `data/platform/`:
+
+| Platform | Route | Why |
+| --- | --- | --- |
+| Android, iOS, macOS | Store billing (`in_app_purchase`) | The only way the stores permit charging for a digital subscription |
+| Windows, Linux | Licence key bought on the web | No store billing reaches Flutter there. Microsoft takes **no cut at all** from apps that bring their own payments |
+
+Entitlements are **per platform and per device**: with no accounts, a subscription bought in one store cannot be seen from another. That is a decision, not an oversight.
 
 ## Stack
 
@@ -62,6 +79,7 @@ The image and PDF converters add a second ceiling, on how many files one batch m
 - [`ffmpeg_kit_flutter_new`](https://pub.dev/packages/ffmpeg_kit_flutter_new) — the media and image engine
 - [`pdf`](https://pub.dev/packages/pdf) + [`printing`](https://pub.dev/packages/printing) — the PDF engine: the first writes, the second rasterises through PDFium
 - [`image`](https://pub.dev/packages/image) — encoding rasterised pages to PNG or JPEG
+- [`shared_preferences`](https://pub.dev/packages/shared_preferences) — the monthly conversion count, and the only state in the app that outlives the process
 
 Both PDF packages are held one minor version below the latest: those require Dart 3.12, and the toolchain is pinned to the Flutter release that ships 3.11.
 
@@ -124,6 +142,8 @@ Routing has one source of truth: the `AppRoute` enum in `lib/core/router/app_rou
 - `data/file_access/` — the picker and the writer, including the batch save that falls back to one dialog per file when a chosen folder turns out to be unwritable
 - `ui/` — the failure-to-copy mapper and the widgets every screen renders
 
+Two features exist for the paid tier rather than for converting. `usage_quota/` owns the count: every rule about calendar months and device clocks lives in `UsageQuotaRepoImpl`, and `QuotaStorage` behind it only reads and writes what those rules produced — which is what lets the rules be tested without a platform plugin. `subscription/` owns the entitlement and the paywall screen. They meet in exactly one place, `WatchConversionAllowanceUseCase`, which hands the converters a single `ConversionAllowance`; no converter screen ever asks about subscriptions. Both repositories are app-wide singletons provided in `archonex_app.dart`, because the same count is spent from three screens.
+
 A converter-specific model stays in its own feature: `MediaFormat`, `ImageFormat` and `PdfFormat` answer different questions and are deliberately not one enum. Adding a failure to the sealed `ConversionFailure` hierarchy will not compile until it is given copy in all three ARB files — that is the mechanism working, not an obstacle.
 
 ## Tests
@@ -133,7 +153,7 @@ flutter analyze
 flutter test
 ```
 
-`test/` holds unit and widget tests, concentrated on the three converters: the FFmpeg command builders, the duration parser and error classifier, every use case, every BLoC, the format and settings models, and a view test each. Fakes are hand written, one file per feature (`test/features/<feature>/fakes.dart`) — there is no mocking package.
+`test/` holds unit and widget tests, concentrated on the three converters: the FFmpeg command builders, the duration parser and error classifier, every use case, every BLoC, the format and settings models, and a view test each. The paid tier is covered alongside them: month rollover, a clock wound backwards, overlapping counts, what each converter charges for, and the paywall in both of its forms. Fakes are hand written, one file per feature (`test/features/<feature>/fakes.dart`) — there is no mocking package.
 
 `integration_test/` is separate and is **not** part of CI — it needs a real device:
 
