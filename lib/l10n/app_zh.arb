@@ -205,5 +205,40 @@
     "placeholders": {
       "dpi": { "type": "int" }
     }
-  }
+  },
+
+  "paywallTitle": "不限次数转换",
+
+  "paywallSubtitle": "免费方案每月可转换 {limit} 个文件。订阅后不再计数。",
+  "@paywallSubtitle": {
+    "placeholders": {
+      "limit": { "type": "int" }
+    }
+  },
+
+  "paywallBenefitUnlimited": "每月文件数量不限",
+  "paywallBenefitConverters": "全部转换器：媒体、图片和 PDF",
+  "paywallBenefitOffline": "依然完全离线——无需账号，不上传任何内容",
+
+  "paywallPeriodMonthly": "按月",
+  "paywallPeriodYearly": "按年",
+  "paywallSubscribeLabel": "订阅",
+  "paywallRestoreLabel": "恢复购买",
+
+  "paywallLicenseKeyTitle": "已在网站购买？",
+  "paywallLicenseKeyLabel": "许可密钥",
+  "paywallLicenseKeyHint": "请粘贴购买邮件中的密钥",
+  "paywallRedeemLabel": "激活",
+  "paywallBuyOnWebNotice": "在 Windows 和 Linux 上，订阅在网站购买，然后在这里用密钥激活。",
+
+  "paywallNoPlansNotice": "订阅尚未开放，此页面已准备就绪。",
+  "paywallActiveTitle": "订阅已生效",
+  "paywallActiveMessage": "本设备的转换不再计入每月次数。",
+
+  "purchaseSucceeded": "订阅已生效，可以随意转换。",
+  "purchaseCancelled": "已取消购买。",
+  "purchaseNothingToRestore": "未在本设备上找到有效订阅。",
+  "purchaseInvalidLicenseKey": "该密钥不适用于本应用，或激活次数已用完。",
+  "purchaseUnavailable": "此版本暂不支持购买。",
+  "purchaseFailed": "操作未成功，请重试。"
 }

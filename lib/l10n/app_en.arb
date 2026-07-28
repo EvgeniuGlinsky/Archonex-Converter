@@ -309,5 +309,40 @@
     "placeholders": {
       "dpi": { "type": "int" }
     }
-  }
+  },
+
+  "paywallTitle": "Unlimited conversions",
+
+  "paywallSubtitle": "The free plan converts {limit} files a month. A subscription lifts the count entirely.",
+  "@paywallSubtitle": {
+    "placeholders": {
+      "limit": { "type": "int" }
+    }
+  },
+
+  "paywallBenefitUnlimited": "As many files a month as you like",
+  "paywallBenefitConverters": "Every converter: media, images and PDF",
+  "paywallBenefitOffline": "Still fully offline — no account, nothing uploaded",
+
+  "paywallPeriodMonthly": "Monthly",
+  "paywallPeriodYearly": "Yearly",
+  "paywallSubscribeLabel": "Subscribe",
+  "paywallRestoreLabel": "Restore purchases",
+
+  "paywallLicenseKeyTitle": "Bought on the web?",
+  "paywallLicenseKeyLabel": "Licence key",
+  "paywallLicenseKeyHint": "Paste the key from your purchase email",
+  "paywallRedeemLabel": "Activate",
+  "paywallBuyOnWebNotice": "On Windows and Linux the subscription is bought on the website, then unlocked here with a key.",
+
+  "paywallNoPlansNotice": "Subscriptions are not open yet. This screen is ready for them.",
+  "paywallActiveTitle": "Subscription active",
+  "paywallActiveMessage": "This device converts without a monthly count.",
+
+  "purchaseSucceeded": "Subscription active. Convert as much as you like.",
+  "purchaseCancelled": "Purchase cancelled.",
+  "purchaseNothingToRestore": "No active subscription was found on this device.",
+  "purchaseInvalidLicenseKey": "That key is not valid for this app, or all of its activations are used up.",
+  "purchaseUnavailable": "Purchases are not available in this build yet.",
+  "purchaseFailed": "That did not go through. Please try again."
 }

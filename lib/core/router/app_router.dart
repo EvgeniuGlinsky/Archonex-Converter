@@ -7,6 +7,7 @@ import 'package:archonex_converter/project_files/features/language_selection/ui/
 import 'package:archonex_converter/project_files/features/media_converter/ui/media_converter_page.dart';
 import 'package:archonex_converter/project_files/features/pdf_converter/ui/pdf_converter_page.dart';
 import 'package:archonex_converter/project_files/features/splash/ui/splash_page.dart';
+import 'package:archonex_converter/project_files/features/subscription/ui/paywall_page.dart';
 
 /// Builds the application router.
 ///
@@ -27,6 +28,11 @@ class AppRouter {
           path: AppRoute.languageSelection.path,
           name: AppRoute.languageSelection.routeName,
           builder: (context, state) => const LanguageSelectionPage(),
+        ),
+        GoRoute(
+          path: AppRoute.paywall.path,
+          name: AppRoute.paywall.routeName,
+          builder: (context, state) => const PaywallPage(),
         ),
         GoRoute(
           path: AppRoute.fileConverters.path,

@@ -205,5 +205,40 @@
     "placeholders": {
       "dpi": { "type": "int" }
     }
-  }
+  },
+
+  "paywallTitle": "Конвертация без лимита",
+
+  "paywallSubtitle": "Бесплатно — {limit} файлов в месяц. Подписка снимает счётчик полностью.",
+  "@paywallSubtitle": {
+    "placeholders": {
+      "limit": { "type": "int" }
+    }
+  },
+
+  "paywallBenefitUnlimited": "Сколько угодно файлов каждый месяц",
+  "paywallBenefitConverters": "Все конвертеры: медиа, изображения и PDF",
+  "paywallBenefitOffline": "По-прежнему полностью офлайн — без аккаунта, ничего не отправляется",
+
+  "paywallPeriodMonthly": "Помесячно",
+  "paywallPeriodYearly": "На год",
+  "paywallSubscribeLabel": "Оформить подписку",
+  "paywallRestoreLabel": "Восстановить покупки",
+
+  "paywallLicenseKeyTitle": "Купили на сайте?",
+  "paywallLicenseKeyLabel": "Лицензионный ключ",
+  "paywallLicenseKeyHint": "Вставьте ключ из письма о покупке",
+  "paywallRedeemLabel": "Активировать",
+  "paywallBuyOnWebNotice": "На Windows и Linux подписка оформляется на сайте, а здесь активируется ключом.",
+
+  "paywallNoPlansNotice": "Подписки пока не открыты. Экран к ним готов.",
+  "paywallActiveTitle": "Подписка активна",
+  "paywallActiveMessage": "На этом устройстве конвертация идёт без месячного счётчика.",
+
+  "purchaseSucceeded": "Подписка активна. Конвертируйте сколько нужно.",
+  "purchaseCancelled": "Покупка отменена.",
+  "purchaseNothingToRestore": "Активная подписка на этом устройстве не найдена.",
+  "purchaseInvalidLicenseKey": "Ключ не подходит этому приложению или его активации исчерпаны.",
+  "purchaseUnavailable": "Покупки в этой сборке пока недоступны.",
+  "purchaseFailed": "Не получилось. Попробуйте ещё раз."
 }

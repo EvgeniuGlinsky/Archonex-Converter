@@ -8,6 +8,8 @@ import 'package:archonex_converter/l10n/app_localizations.dart';
 import 'package:archonex_converter/project_files/features/language_selection/data/language_repo_impl.dart';
 import 'package:archonex_converter/project_files/features/language_selection/domain/language_repo.dart';
 import 'package:archonex_converter/project_files/features/language_selection/domain/models/app_language.dart';
+import 'package:archonex_converter/project_files/features/subscription/data/platform/subscription_platform.dart';
+import 'package:archonex_converter/project_files/features/subscription/domain/subscription_repo.dart';
 
 /// Application root.
 ///
@@ -21,15 +23,21 @@ class ArchonexApp extends StatefulWidget {
 }
 
 class _ArchonexAppState extends State<ArchonexApp> {
-  // Both outlive rebuilds: the router keeps the stack, the repo keeps the
-  // chosen language for the whole session.
+  // All of these outlive rebuilds: the router keeps the stack, the language
+  // repo keeps the chosen language, and the subscription repo holds one
+  // entitlement for the whole app — every screen that can offer the paid tier
+  // has to read the same answer.
   final GoRouter _router = AppRouter.create();
   final LanguageRepo _languageRepo = LanguageRepoImpl();
+  final SubscriptionRepo _subscriptionRepo = createSubscriptionRepo();
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider<LanguageRepo>.value(
-      value: _languageRepo,
+    return MultiRepositoryProvider(
+      providers: <RepositoryProvider<Object>>[
+        RepositoryProvider<LanguageRepo>.value(value: _languageRepo),
+        RepositoryProvider<SubscriptionRepo>.value(value: _subscriptionRepo),
+      ],
       child: ValueListenableBuilder<AppLanguage>(
         valueListenable: _languageRepo.selectedLanguageListenable,
         builder: (context, language, _) => MaterialApp.router(
