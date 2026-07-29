@@ -3,7 +3,7 @@
 [![CI](https://github.com/EvgeniuGlinsky/Archonex-Converter/actions/workflows/ci.yml/badge.svg)](https://github.com/EvgeniuGlinsky/Archonex-Converter/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-An offline file converter with no artificial size limits — convert files at the full technical ceiling of the platform, not a discounted fraction of it. The free tier is bounded by **how many files** you convert, never by how large they are: ten source files a month, and a subscription lifts the count. Three converters ship today:
+An offline file converter with no artificial size limits — convert files at the full technical ceiling of the platform, not a discounted fraction of it. **On Android nothing is limited and nothing is sold**: no monthly count, no cap on how many files a batch holds, and no ceiling on how large any of them are. Where the app is metered at all it is metered by **how many files** you convert, never by how large they are. Three converters ship today:
 
 - **Media converter** — audio, video and animation, on FFmpeg.
 - **Image converter** — photos, in batches, on FFmpeg.
@@ -13,7 +13,7 @@ Nothing leaves the device. Everything runs on a bundled engine, never a remote s
 
 ## Status
 
-All three converters are implemented end to end, and the free tier is enforced. The app is deliberately scoped to converters only, with no other product categories.
+All three converters are implemented end to end. The subscription and the monthly count are built and tested but switched off on Android, which is the only platform shipping today — see [Free tier and subscription](#free-tier-and-subscription). The app is deliberately scoped to converters only, with no other product categories.
 
 **Office documents are not supported, and are not planned.** DOCX, XLSX and PPTX to PDF with any layout fidelity has no mature offline Dart path; every alternative is either a cloud API, which would break the promise above, or a bundled LibreOffice. The PDF converter is named after what it actually does rather than after what people wish it did.
 
@@ -32,7 +32,7 @@ Not built, in rough order of how well each fits what is already here:
 | Subtitle converter | SRT ↔ VTT ↔ ASS. Nearly free: FFmpeg is already bundled and already does this. |
 | Data format converter | CSV ↔ JSON ↔ XML ↔ YAML. Trivial in pure Dart, but aimed at developers rather than at the audience the rest of the app serves. |
 
-The paid tier is built, billed and described below. What is still missing there is delivery of a licence key by email — today the key is shown on the page the buyer returns to after paying.
+The paid tier is built and described below, and currently sells nothing anywhere. What is still missing in the licence route is delivery of a key by email — today the key is shown on the page the buyer returns to after paying.
 
 ## Platform support
 
@@ -40,7 +40,7 @@ All six Flutter runners are present, but which converters work depends on which 
 
 | Platform | Media / Image | PDF | Size ceiling | Why that ceiling |
 | --- | --- | --- | --- | --- |
-| Android | yes | yes | 2 GB | Result crosses the platform channel as a Java `byte[]` — length is a signed 32-bit int |
+| Android | yes | yes | none at all | The source is read by path and the result is copied into a folder the user picks, so nothing is ever resident on either side |
 | iOS | yes | yes | 4 GB | Result crosses as `NSData`; the binding limit is Flutter's message codec |
 | Windows / macOS | yes | yes | 1 TB (no real ceiling) | Nothing is ever resident — the save is an OS-level copy |
 | Linux | no | yes | 1 TB (no real ceiling) | No FFmpeg engine ships, but the PDF converter needs none |
@@ -48,13 +48,19 @@ All six Flutter runners are present, but which converters work depends on which 
 
 Engine availability and the size ceiling are two separate questions, and `AppFileLimits` answers only the second. Whether a given converter can run is reported by its own repository — which is why Linux carries a desktop ceiling despite having no FFmpeg.
 
-Every ceiling above is the platform's real technical maximum, not a discounted offering: there is no free/paid split by file size. Pushing mobile to that raw ceiling trades away a safety margin, since saving a result can hold 2–3× its size resident in memory, so very large files risk an out-of-memory crash on real devices. `integration_test/capacity_probe_test.dart` exists to measure a safer, per-device number if that turns out to bite. All of it lives in `lib/core/constants/app_file_limits.dart`, with the reasoning next to each number.
+Every ceiling above is the platform's real technical maximum, not a discounted offering: there is no free/paid split by file size. `integration_test/capacity_probe_test.dart` exists to measure a safer, per-device number if the margin turns out to bite. All of it lives in `lib/core/constants/app_file_limits.dart`, with the reasoning next to each number.
 
-The image and PDF converters add a second ceiling, on how many files one batch may hold: 30 on mobile, 100 on desktop. Unlike the byte limits this one is a product choice on every platform — files are handled one at a time, so nothing in the stack caps the count.
+**The source and the result are bounded by different things**, which is why they are two numbers. FFmpeg reads a source by path everywhere, so nothing is ever resident while reading and no platform has a real ceiling on the input. Saving is where they part — and iOS is the only place they still do: `file_picker.saveFile` throws there without `bytes`, so the whole output has to be held at once.
+
+Android used to be in that position too, capped at the 2 GB a Java `byte[]` can carry. It no longer is: `IoFileSaver.saveOne` asks for a folder and copies the result into it with `dart:io`, the same route batches already took, and a copy holds nothing. Asking for a folder instead of a filename is the worse dialog and the better outcome. The byte route survives as a fallback for the one case that needs it — a storage-access URI `dart:io` cannot open — and that fallback is the only thing left that can still report `ResultTooLargeToSaveFailure`, which it does from the `OutOfMemoryError` rather than from a number checked in advance.
+
+The image and PDF converters add a second ceiling, on how many files one batch may hold: 100 on desktop, 30 on iOS, and none on Android. Unlike the byte limits this one is a product choice — files are handled one at a time, so nothing in the stack caps the count. What it bounds is the fallback save path, which asks for one dialog per file when the chosen folder turns out to be unwritable; Android does without it because that fallback stops at the first dialog the user closes.
 
 ## Free tier and subscription
 
-Ten **source** files per calendar month, then conversion is blocked until the count refills on the 1st or a subscription lifts it. Source files rather than produced ones: a batch of five photos costs five, five photos merged into one PDF costs five, and one PDF exploded into twelve images costs one. What was handed over is what can be predicted in advance.
+**Android converts without a count.** Selling a subscription there was built, tried and set aside, and a monthly cap nobody can lift is worse than none at all: the paywall it pointed to could never take a payment. `AppQuotaLimits.isMetered` is the whole switch, and everything under it stays live and tested — restoring the count is one tier entry, not a feature recovered from git.
+
+Everywhere else, ten **source** files per calendar month, then conversion is blocked until the count refills on the 1st or a subscription lifts it. Source files rather than produced ones: a batch of five photos costs five, five photos merged into one PDF costs five, and one PDF exploded into twelve images costs one. What was handed over is what can be predicted in advance.
 
 Only files that actually made it through are counted. A cancelled run, a failed run and the one unreadable photo in a batch of thirty all cost nothing.
 
@@ -66,22 +72,25 @@ The rule is deliberately unambitious: **where a store will sell for us, it sells
 
 | Platform | How it is sold | Why |
 | --- | --- | --- |
-| Android, from Google Play | Subscription, `$0.99`/month or `$7.99`/year | Google is merchant of record and owns the entitlement. No server, no keys |
-| Android, downloaded as an APK | Not sold — the paywall says where the paid version is | Play refuses billing to an app it did not install and sign |
+| Android, however installed | Nothing is sold — every converter is free and uncounted | The subscription was built and shelved; see above. `QuotaNotice` hides itself with nothing to sell, which is also what makes `/paywall` unreachable there |
 | Windows, Linux | One-time unlock, planned | No store billing Flutter can reach. Nothing expires, so nothing has to be checked again |
 | iOS, macOS | Subscription, when those builds exist | Same as Play. Neither can be built on Windows |
 | Web | Not sold | No converters there either |
 
-How a build charges depends on how it was **distributed**, which is a different question from which platform it runs on — and it cannot be detected at runtime, so it is declared at build time:
+Android is answered before either question is asked: `createSubscriptionRepo` returns the free repository there whatever the platform and however the build arrived, so `StoreSubscriptionRepo` is never constructed and Play Billing is never contacted. That is also what makes the claim in `docs/privacy.html` true — the app really does issue no network requests, rather than issuing one nobody counted.
+
+Everywhere else, how a build charges depends on how it was **distributed**, which is a different question from which platform it runs on — and it cannot be detected at runtime, so it is declared at build time:
 
 ```bash
-flutter build apk                                                   # direct: not sold here
-flutter build appbundle --dart-define=ARCHONEX_DISTRIBUTION=store   # for Play: subscriptions live
+flutter build ipa                                                # direct: not sold here
+flutter build ipa --dart-define=ARCHONEX_DISTRIBUTION=store      # for the App Store
 ```
 
-The default is the cautious answer. A build that says nothing about itself is assumed not to have come from a store, which produces an honest screen rather than a purchase that cannot complete.
+The default is the cautious answer. A build that says nothing about itself is assumed not to have come from a store, which produces an honest screen rather than a purchase that cannot complete. No Android build passes the define, and `release.yml` no longer defines it: a switch a build script names but nothing reads is worse than no switch, because the next person to read it believes it does something.
 
-### The store route
+### The store route, shelved
+
+Complete, tested, and reachable by nobody today, for two reasons rather than one: Android is unmetered, so `QuotaNotice` — the only thing that navigates to `/paywall` — never draws itself, and `createSubscriptionRepo` returns the free repository there regardless, so there would be nothing to sell if it did. The route stays registered and the tests keep running, because that is what makes turning selling back on two deletions rather than a feature recovered from git: the Android branch in `createSubscriptionRepo`, then the Android tier in `AppQuotaLimits.isMetered`, in that order.
 
 `StoreSubscriptionRepo` holds every rule; `StoreBilling` behind it carries none, which is what lets a purchase, a cancellation and a store that will not answer all be tested with no store present. Three things about it are worth knowing before touching it:
 
@@ -90,6 +99,10 @@ The default is the cautious answer. A build that says nothing about itself is as
 - **A cancellation is only ever noticed by asking.** Nothing is pushed when a subscription lapses, so `refresh()` re-asks on every launch and waits `AppStorePolicy.restoreWindow` for an answer. A store that will not answer leaves the entitlement alone — silence is not evidence.
 
 The receipt is not verified against a server, because there is no server. A rooted device running a patched store client can claim a purchase that never happened; closing that would mean converting files somewhere other than the user's machine, which is the opposite of what this app is.
+
+**If it is ever switched back on**, the console has to be set up first. A store build asks Play for `archonex_pro_monthly` and `archonex_pro_yearly` by exactly those ids and shows only what comes back. A product that is missing, still in draft, or whose base plan was never activated is answered with silence identical to a product that does not exist — so the paywall reports `CatalogProblem.nothingOnSale`, hides the Subscribe button and keeps only *Restore purchases*. `docs/PLAY_LISTING.md` has the products and the order the console needs them created in. None of it needs a new build: products are answered from Play's servers, and an app already on the device picks them up within minutes of activation.
+
+Told apart from that is `CatalogProblem.storeUnreachable` — Play did not answer at all — which is the only case the paywall offers a *Try again* for. Asking a shop that already said "nothing" changes nothing.
 
 ### The licence route, reserved
 
@@ -108,7 +121,7 @@ It is kept rather than deleted because it is exactly where the desktop one-time 
 - [`pdf`](https://pub.dev/packages/pdf) + [`printing`](https://pub.dev/packages/printing) — the PDF engine: the first writes, the second rasterises through PDFium
 - [`image`](https://pub.dev/packages/image) — encoding rasterised pages to PNG or JPEG
 - [`shared_preferences`](https://pub.dev/packages/shared_preferences) — the monthly conversion count and the licence, the only state in the app that outlives the process
-- [`in_app_purchase`](https://pub.dev/packages/in_app_purchase) — store billing, and how the paid tier is actually sold
+- [`in_app_purchase`](https://pub.dev/packages/in_app_purchase) — store billing. Kept for the day selling returns; no shipping build constructs the repository that uses it, which is why the `INTERNET` permission it declares is never exercised
 - [`http`](https://pub.dev/packages/http) + [`url_launcher`](https://pub.dev/packages/url_launcher) — the reserved licence route only. Converting never touches the network
 
 Both PDF packages are held one minor version below the latest: those require Dart 3.12, and the toolchain is pinned to the Flutter release that ships 3.11.
@@ -174,7 +187,7 @@ Routing has one source of truth: the `AppRoute` enum in `lib/core/router/app_rou
 
 Two features exist for the paid tier rather than for converting. `usage_quota/` owns the count: every rule about calendar months and device clocks lives in `UsageQuotaRepoImpl`, and `QuotaStorage` behind it only reads and writes what those rules produced — which is what lets the rules be tested without a platform plugin. `subscription/` owns the entitlement and the paywall screen, and repeats the same split for the licence: `LicenseSubscriptionRepo` holds every rule, while `LicenseGateway`, `LicenseStorage` and `CheckoutLauncher` behind it carry no decisions at all — which is what lets the offline grace period, a revoked key and a clock wound backwards all be tested with no network and no plugin. The two features meet in exactly one place, `WatchConversionAllowanceUseCase`, which hands the converters a single `ConversionAllowance`; no converter screen ever asks about subscriptions. Both repositories are app-wide singletons provided in `archonex_app.dart`, because the same count is spent from three screens.
 
-There is no server anywhere in this project. On the platforms that sell, the store is the merchant of record and owns the entitlement; on the platforms that do not, nothing is sold yet. That is a deliberate ceiling on how much machinery the first release carries.
+There is no server anywhere in this project, and no platform sells anything today. When one does, the store is the merchant of record and owns the entitlement, so there is still no server to run. That is a deliberate ceiling on how much machinery the first release carries.
 
 A converter-specific model stays in its own feature: `MediaFormat`, `ImageFormat` and `PdfFormat` answer different questions and are deliberately not one enum. Adding a failure to the sealed `ConversionFailure` hierarchy will not compile until it is given copy in all three ARB files — that is the mechanism working, not an obstacle.
 
@@ -204,6 +217,15 @@ The **PDF engine probe** drives the real writer and the real rasteriser, which t
 ## CI
 
 `.github/workflows/ci.yml` runs `flutter analyze` and `flutter test` on every push to `main` and on every pull request.
+
+## Releasing
+
+`.github/workflows/release.yml` builds everything, driven by a tag so what shipped is always recoverable from the tag it shipped at. `workflow_dispatch` rehearses it and publishes nothing.
+
+1. **Bump `pubspec.yaml` and commit it.** Both halves matter. `1.0.1+2` is the version name and the Android versionCode, and the build number is the one that cannot be got wrong: Play permanently rejects a bundle whose versionCode is not higher than the last one it accepted. Check what is live under *Release → Production* before choosing it — earlier bundles were stamped from the CI run counter, so the live number is not necessarily the one in git history.
+2. **Tag it `v<version>`.** `verify` refuses a tag that does not match the pubspec, because the artifacts are stamped from one and named from the other.
+3. The workflow drafts a GitHub Release with every artifact attached, `.aab` included. **Delete the `.aab` from the draft before publishing it** — it is the Play-signed, store-enabled bundle and belongs in the Play Console, not on a download page. Nothing enforces this.
+4. Upload that `.aab` to Play by hand. There is no service-account automation.
 
 ## License
 

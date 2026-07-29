@@ -42,6 +42,21 @@ jobs:
       - run: flutter analyze
       - run: flutter test
 
+      # The tag names the release; `pubspec.yaml` names the build. They have to
+      # be the same thing, because the Android jobs below stamp the artifacts
+      # from the pubspec and the filenames from the tag — and a mismatch would
+      # ship `1.0.1` inside a file called `1.0.2` with nothing to catch it.
+      - name: The tag must match the pubspec version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tagged="${GITHUB_REF_NAME#v}"
+          declared="$(sed -n 's/^version: *\([^+]*\)+.*$/\1/p' pubspec.yaml)"
+
+          if [ "$tagged" != "$declared" ]; then
+            echo "::error::Tag v$tagged does not match pubspec version $declared. Bump pubspec.yaml, or retag."
+            exit 1
+          fi
+
   android:
     name: Android
     needs: verify
@@ -106,24 +121,28 @@ jobs:
           echo "::error::This tag would publish an unsigned build. Set ANDROID_KEYSTORE_BASE64 and ANDROID_KEYSTORE_PASSWORD."
           exit 1
 
-      # For Google Play. `ARCHONEX_DISTRIBUTION=store` is what turns the store
-      # channel on: Play refuses billing to a build it did not install, so only
-      # this artifact may offer a purchase.
+      # Both Android builds take their version from `pubspec.yaml` and nowhere
+      # else — no `--build-name`, no `--build-number`.
+      #
+      # The number is the reason. It becomes the Android versionCode, and Play
+      # rejects a bundle whose code is not higher than the last one accepted,
+      # permanently. `GITHUB_RUN_NUMBER` used to supply it: a counter of *this
+      # workflow's* runs, unrelated to the tag and to the pubspec, which a
+      # re-run, a rehearsal or a renamed workflow can send backwards. Read from
+      # `pubspec.yaml` the code is in git, reviewable in the diff that bumps it,
+      # and recoverable from the tag alone — which `verify` has already checked
+      # names the same version.
+      #
+      # These two differ only in packaging. Nothing is sold on Android, so
+      # neither carries `ARCHONEX_DISTRIBUTION=store` — see
+      # `createSubscriptionRepo`, which answers before the define is read there.
+      # It stayed on this step for a while doing nothing, which is worse than its
+      # absence: a build script that names a switch implies the switch matters.
       - name: Build app bundle for Play
-        run: |
-          flutter build appbundle --release \
-            --dart-define=ARCHONEX_DISTRIBUTION=store \
-            --build-name=${GITHUB_REF_NAME#v} \
-            --build-number=${GITHUB_RUN_NUMBER}
+        run: flutter build appbundle --release
 
-      # For GitHub Releases. Deliberately built *without* the store define: this
-      # copy can never take a payment, and its paywall says where the paid version
-      # lives instead of showing a button that fails.
       - name: Build APK for direct download
-        run: |
-          flutter build apk --release \
-            --build-name=${GITHUB_REF_NAME#v} \
-            --build-number=${GITHUB_RUN_NUMBER}
+        run: flutter build apk --release
 
       - name: Name the artifacts
         run: |

@@ -12,6 +12,7 @@ class PaywallCallbacks {
     required this.onRedeemPressed,
     required this.onSubscribePressed,
     required this.onRestorePressed,
+    required this.onRetryPlansPressed,
   });
 
   final ValueChanged<String> onPlanSelected;
@@ -19,4 +20,5 @@ class PaywallCallbacks {
   final VoidCallback onRedeemPressed;
   final VoidCallback onSubscribePressed;
   final VoidCallback onRestorePressed;
+  final VoidCallback onRetryPlansPressed;
 }

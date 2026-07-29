@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,6 +9,7 @@ import 'package:archonex_converter/core/theme/app_theme.dart';
 import 'package:archonex_converter/core/utils/file_size_formatter.dart';
 import 'package:archonex_converter/l10n/app_localizations.dart';
 import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/file_size_limit_notice.dart';
 import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/convert_images_use_case.dart';
 import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/discard_converted_images_use_case.dart';
 import 'package:archonex_converter/project_files/features/image_converter/data/use_cases/get_image_converter_availability_use_case.dart';
@@ -156,18 +158,40 @@ void main() {
     await pumpScreen(tester, size: screenSizes['phone']!);
 
     expect(find.text(en.addPhotosLabel), findsOneWidget);
-    expect(
-      find.text(
-        en.imageLimitsNotice(
-          AppFileLimits.maxBatchFiles,
-          AppFileLimits.maxUploadLabel,
-        ),
-      ),
-      findsOneWidget,
-    );
+    // Android, which `flutter_test` reports by default: no count, no size on the
+    // way in and none on the way out either, so there is no line at all. A
+    // screen that announced a terabyte would read as a limit rather than as the
+    // absence of one.
+    expect(find.byType(FileSizeLimitNotice), findsNothing);
     expect(find.text(en.convertToTitle), findsNothing);
     expect(find.text(en.qualityTitle), findsNothing);
     expect(find.text(en.advancedTitle), findsNothing);
+  });
+
+  testWidgets('states the ceiling on the platform that still has one',
+      (WidgetTester tester) async {
+    // The counterpart of the test above: the line is gone because nothing bounds
+    // Android, not because the notice stopped working.
+    // Reset inside the body rather than through `addTearDown`: the binding
+    // asserts every foundation debug variable is back to null before the tear
+    // downs run, so a test that leaves it set fails on that instead.
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+
+    try {
+      await pumpScreen(tester, size: screenSizes['phone']!);
+
+      expect(
+        find.text(
+          en.imageLimitsNotice(
+            AppFileLimits.maxBatchFiles,
+            AppFileLimits.maxUploadLabel,
+          ),
+        ),
+        findsOneWidget,
+      );
+    } finally {
+      debugDefaultTargetPlatformOverride = null;
+    }
   });
 
   testWidgets('a pick reveals the targets, a target reveals the settings',
@@ -267,6 +291,18 @@ void main() {
     );
   });
 
+  /// A metered platform. Everything outside these two groups runs as Android,
+  /// which counts nothing — see the group at the end of this file for what it
+  /// shows there.
+  ///
+  /// A variant rather than a `setUp`: `testWidgets` checks that no foundation
+  /// debug variable is still set when the body returns, and that check runs
+  /// before any `tearDown` could clear it.
+  final TargetPlatformVariant metered =
+      TargetPlatformVariant.only(TargetPlatform.windows);
+  final TargetPlatformVariant unmetered =
+      TargetPlatformVariant.only(TargetPlatform.android);
+
   group('the free monthly count', () {
     testWidgets('a free device is told what is left before it picks anything',
         (WidgetTester tester) async {
@@ -278,11 +314,11 @@ void main() {
       );
 
       expect(
-        find.text(en.quotaRemaining(AppQuotaLimits.freeFilesPerMonth - 4)),
+        find.text(en.quotaRemaining(AppQuotaLimits.meteredFilesPerMonth - 4)),
         findsOneWidget,
       );
       expect(find.text(en.quotaUpgradeLabel), findsOneWidget);
-    });
+    }, variant: metered);
 
     testWidgets('a spent month kills the convert button',
         (WidgetTester tester) async {
@@ -290,7 +326,7 @@ void main() {
         tester,
         size: tallScreen,
         isSubscribed: false,
-        usedFiles: AppQuotaLimits.freeFilesPerMonth,
+        usedFiles: AppQuotaLimits.meteredFilesPerMonth,
       );
       await pickPhotos(tester);
       await chooseTarget(tester, ImageFormat.webp);
@@ -307,14 +343,52 @@ void main() {
             .onPressed,
         isNull,
       );
-    });
+    }, variant: metered);
 
     testWidgets('a subscriber is shown no count at all',
         (WidgetTester tester) async {
       await pumpScreen(tester, size: tallScreen);
 
       expect(find.text(en.quotaUpgradeLabel), findsNothing);
-    });
+    }, variant: metered);
+  });
+
+  group('an unmetered platform', () {
+    testWidgets('an unsubscribed device is shown no count and no way to buy',
+        (WidgetTester tester) async {
+      await pumpScreen(
+        tester,
+        size: tallScreen,
+        isSubscribed: false,
+        usedFiles: AppQuotaLimits.meteredFilesPerMonth * 3,
+      );
+
+      expect(find.text(en.quotaUpgradeLabel), findsNothing);
+      expect(find.textContaining('free file'), findsNothing);
+    }, variant: unmetered);
+
+    testWidgets('a spent month converts anyway', (WidgetTester tester) async {
+      await pumpScreen(
+        tester,
+        size: tallScreen,
+        isSubscribed: false,
+        usedFiles: AppQuotaLimits.meteredFilesPerMonth * 3,
+      );
+      await pickPhotos(tester);
+      await chooseTarget(tester, ImageFormat.webp);
+
+      expect(
+        tester
+            .widget<FilledButton>(
+              find.widgetWithText(
+                FilledButton,
+                en.convertAllToLabel(2, ImageFormat.webp.label),
+              ),
+            )
+            .onPressed,
+        isNotNull,
+      );
+    }, variant: unmetered);
   });
 
   for (final MapEntry<String, Size> entry in screenSizes.entries) {

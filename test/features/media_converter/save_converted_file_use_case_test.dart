@@ -61,24 +61,39 @@ void main() {
   });
 
   test('the ceiling it enforces follows the platform', () async {
-    debugDefaultTargetPlatformOverride = TargetPlatform.android;
-    final int androidCeiling = AppFileLimits.maxResultBytes;
+    // iOS rather than Android: Android saves through a folder the user picks, so
+    // nothing is resident and it has no ceiling left to enforce. iOS still hands
+    // the bytes over and so still has one.
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final int phoneCeiling = AppFileLimits.maxResultBytes;
 
     debugDefaultTargetPlatformOverride = TargetPlatform.windows;
     final int desktopCeiling = AppFileLimits.maxResultBytes;
 
-    expect(desktopCeiling, greaterThan(androidCeiling));
+    expect(desktopCeiling, greaterThan(phoneCeiling));
 
     // A result that desktop saves happily is refused on a phone, which is the
     // whole point of the ceiling being per platform.
     repo.saveLocation = r'C:\Users\me\clip.wav';
-    await saveConvertedFile(resultOf(androidCeiling + 1));
+    await saveConvertedFile(resultOf(phoneCeiling + 1));
     expect(repo.saveCallCount, 1);
 
-    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
     await expectLater(
-      saveConvertedFile(resultOf(androidCeiling + 1)),
+      saveConvertedFile(resultOf(phoneCeiling + 1)),
       throwsA(isA<ResultTooLargeToSaveFailure>()),
     );
+  });
+
+  test('Android refuses nothing for its size', () async {
+    // The counterpart of the test above, and the point of the change: the
+    // pre-check had a number on Android and now has none, so a result larger
+    // than any real file still reaches the saver.
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    repo.saveLocation = '/storage/emulated/0/Download/clip.wav';
+
+    await saveConvertedFile(resultOf(8 * AppFileLimits.bytesInGigabyte));
+
+    expect(repo.saveCallCount, 1);
   });
 }

@@ -1,3 +1,4 @@
+import 'package:archonex_converter/core/constants/app_quota_limits.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/subscription_repo.dart';
 import 'package:archonex_converter/project_files/features/usage_quota/domain/usage_quota_repo.dart';
 
@@ -7,6 +8,10 @@ import 'package:archonex_converter/project_files/features/usage_quota/domain/usa
 /// photo the engine choked on costs nothing. A subscriber's runs are not
 /// counted at all — not merely ignored when read — so cancelling a
 /// subscription starts the month from whatever was spent before it began.
+///
+/// An unmetered platform is not counted either, for the same reason and one
+/// more: nothing should be written to the device for a number no screen will
+/// ever read.
 class ConsumeQuotaUseCase {
   const ConsumeQuotaUseCase({
     required UsageQuotaRepo quotaRepo,
@@ -18,7 +23,8 @@ class ConsumeQuotaUseCase {
   final SubscriptionRepo _subscriptionRepo;
 
   Future<void> call(int fileCount) async {
-    if (_subscriptionRepo.statusListenable.value.isActive) {
+    if (!AppQuotaLimits.isMetered ||
+        _subscriptionRepo.statusListenable.value.isActive) {
       return;
     }
 

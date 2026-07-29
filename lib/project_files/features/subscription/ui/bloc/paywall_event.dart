@@ -40,3 +40,8 @@ final class PaywallLicenseKeyRedeemRequested extends PaywallEvent {
 final class PaywallRestoreRequested extends PaywallEvent {
   const PaywallRestoreRequested();
 }
+
+/// Ask the store what it sells again, without leaving the screen.
+final class PaywallPlansRetried extends PaywallEvent {
+  const PaywallPlansRetried();
+}

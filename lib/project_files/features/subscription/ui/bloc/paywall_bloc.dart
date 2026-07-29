@@ -8,6 +8,7 @@ import 'package:archonex_converter/project_files/features/subscription/data/use_
 import 'package:archonex_converter/project_files/features/subscription/data/use_cases/redeem_license_key_use_case.dart';
 import 'package:archonex_converter/project_files/features/subscription/data/use_cases/restore_purchases_use_case.dart';
 import 'package:archonex_converter/project_files/features/subscription/data/use_cases/watch_subscription_status_use_case.dart';
+import 'package:archonex_converter/project_files/features/subscription/domain/models/plan_catalog.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_channel.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_outcome.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/subscription_plan.dart';
@@ -45,6 +46,7 @@ class PaywallBloc extends Bloc<PaywallEvent, PaywallState> {
     on<PaywallSubscribeRequested>(_onSubscribe, transformer: droppable());
     on<PaywallLicenseKeyRedeemRequested>(_onRedeem, transformer: droppable());
     on<PaywallRestoreRequested>(_onRestore, transformer: droppable());
+    on<PaywallPlansRetried>(_onRetryPlans, transformer: droppable());
   }
 
   final GetPurchaseChannelUseCase _getPurchaseChannel;
@@ -58,20 +60,47 @@ class PaywallBloc extends Bloc<PaywallEvent, PaywallState> {
     PaywallStarted event,
     Emitter<PaywallState> emit,
   ) async {
-    final List<SubscriptionPlan> plans = await _loadPlans();
+    final PlanCatalog catalog = await _loadPlans();
 
-    emit(
-      state.copyWith(
-        status: PaywallStatus.ready,
-        channel: _getPurchaseChannel(),
-        plans: plans,
-        selectedPlanId: _defaultPlanId(plans),
-      ),
-    );
+    emit(_withCatalog(catalog).copyWith(channel: _getPurchaseChannel()));
 
     await emit.onEach<SubscriptionStatus>(
       _watchSubscriptionStatus(),
       onData: (status) => emit(state.copyWith(isSubscribed: status.isActive)),
+    );
+  }
+
+  /// A second ask, for a store that would not answer the first time.
+  ///
+  /// Its own handler rather than re-adding [PaywallStarted]: that one is
+  /// `restartable()` and never returns — it holds the `emit.onEach` watching the
+  /// entitlement for as long as the screen lives, so restarting it would drop the
+  /// subscription arriving from another device mid-retry.
+  Future<void> _onRetryPlans(
+    PaywallPlansRetried event,
+    Emitter<PaywallState> emit,
+  ) async {
+    if (!state.canRetryPlans) {
+      return;
+    }
+
+    emit(state.copyWith(status: PaywallStatus.loading, clearOutcome: true));
+
+    emit(_withCatalog(await _loadPlans()));
+  }
+
+  /// The half [_onStarted] and [_onRetryPlans] share: whatever the store said,
+  /// written into the state as one consistent picture.
+  PaywallState _withCatalog(PlanCatalog catalog) {
+    final String? planId = _defaultPlanId(catalog.plans);
+
+    return state.copyWith(
+      status: PaywallStatus.ready,
+      plans: catalog.plans,
+      catalogProblem: catalog.problem,
+      clearCatalogProblem: catalog.problem == null,
+      selectedPlanId: planId,
+      clearSelectedPlan: planId == null,
     );
   }
 

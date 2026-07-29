@@ -60,6 +60,15 @@
       "maxSize": { "type": "String" }
     }
   },
+
+  "maxResultSizeNotice": "Converted files can be saved up to {maxSize}.",
+  "@maxResultSizeNotice": {
+    "description": "Shown where the source has no size ceiling and the batch has no count, so saving is the only limit left. Android today.",
+    "placeholders": {
+      "maxSize": { "type": "String" }
+    }
+  },
+
   "chooseFileLabel": "Choose file",
   "chooseFileHint": "No file selected yet. Files up to {maxSize} are accepted.",
   "@chooseFileHint": {
@@ -67,6 +76,7 @@
       "maxSize": { "type": "String" }
     }
   },
+  "chooseFileHintUnlimited": "No file selected yet.",
   "removeFileLabel": "Remove",
   "convertLabel": "Convert",
   "convertingLabel": "Converting…",
@@ -103,6 +113,7 @@
       "maxBatch": { "type": "int" }
     }
   },
+  "noPhotosHintUnlimited": "No photos selected yet.",
 
   "photosSelected": "{count, plural, one{1 photo · {totalSize}} other{{count} photos · {totalSize}}}",
   "@photosSelected": {
@@ -226,7 +237,6 @@
 
   "mixedSourceKindsError": "Pick either images, or a PDF, or text files — not a mix of them.",
 
-  "unknownSize": "too large",
   "emptyFileError": "The selected file is empty.",
   "fileReadError": "Could not read the selected file. Try another one.",
   "conversionUnsupportedError": "This converter is not available on this platform yet.",
@@ -237,10 +247,16 @@
 
   "resultTooLargeToSave": "The converted file is {actualSize}, over the {maxSize} limit on this platform. Try the Compact preset or a smaller size.",
   "@resultTooLargeToSave": {
+    "description": "Shown when the result was measured and found over the platform's ceiling, before saving was attempted.",
     "placeholders": {
       "actualSize": { "type": "String" },
       "maxSize": { "type": "String" }
     }
+  },
+
+  "resultTooLargeForMemory": "This device ran out of memory saving the converted file. Try the Compact preset or a smaller size.",
+  "@resultTooLargeForMemory": {
+    "description": "Shown when saving ran out of memory, so neither the file's size nor a ceiling is known. Names no number on purpose."
   },
 
   "saveFailedError": "Could not save the file. Try a different location.",
@@ -270,6 +286,7 @@
       "maxBatch": { "type": "int" }
     }
   },
+  "noFilesHintUnlimited": "No files selected yet. Add images, a PDF, or text files.",
 
   "filesSelected": "{count, plural, one{1 file · {totalSize}} other{{count} files · {totalSize}}}",
   "@filesSelected": {
@@ -361,8 +378,10 @@
   "paywallRedeemLabel": "Activate",
   "paywallBuyOnWebNotice": "The subscription is bought on the website. You are sent a key, and it is entered here.",
 
-  "paywallNoPlansNotice": "Nothing is on sale right now. If that looks wrong, check your connection and try again.",
-  "paywallStoreBuildOnlyNotice": "This copy was not installed from the store, so it cannot take a payment. Install Archonex Converter from Google Play to subscribe — the free monthly count is the same in both.",
+  "paywallNoPlansNotice": "There is nothing on sale here yet. Subscriptions are on their way — nothing is wrong with your device.",
+  "paywallStoreUnreachableNotice": "The store did not answer, so there is nothing to show. Check your connection and try again.",
+  "paywallRetryLabel": "Try again",
+  "paywallStoreBuildOnlyNotice": "This copy was not installed from an app store, so it cannot take a payment. Install Archonex Converter from your platform's store to subscribe — the free monthly count is the same in both.",
   "paywallActiveTitle": "Subscription active",
   "paywallActiveMessage": "This device converts without a monthly count.",
 

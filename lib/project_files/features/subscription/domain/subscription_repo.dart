@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import 'package:archonex_converter/project_files/features/subscription/domain/models/plan_catalog.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_channel.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_outcome.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/subscription_plan.dart';
@@ -21,10 +22,9 @@ abstract interface class SubscriptionRepo {
   /// Re-reads the entitlement from wherever it lives.
   Future<void> refresh();
 
-  /// Plans to display, priced by the store. Empty when there is nothing to
-  /// sell — which is also what the paywall says out loud rather than inventing
-  /// a price of its own.
-  Future<List<SubscriptionPlan>> loadPlans();
+  /// Plans to display, priced by the store, or why there are none — which is
+  /// what the paywall says out loud rather than inventing a price of its own.
+  Future<PlanCatalog> loadPlans();
 
   /// Store route: opens the platform's purchase sheet.
   Future<PurchaseOutcome> purchase(SubscriptionPlan plan);

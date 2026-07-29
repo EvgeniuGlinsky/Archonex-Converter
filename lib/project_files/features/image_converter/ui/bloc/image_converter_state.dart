@@ -137,7 +137,10 @@ final class ImageConverterState extends Equatable {
       isConverting || isSaving || status == ImageConverterStatus.picking;
 
   bool get canPick =>
-      isSupported && !isBusy && totalCount < AppFileLimits.maxBatchFiles;
+      isSupported &&
+      !isBusy &&
+      (!AppFileLimits.isBatchLimited ||
+          totalCount < AppFileLimits.maxBatchFiles);
 
   /// The grid, the presets and the advanced panel all go dead together.
   bool get canEditSettings =>

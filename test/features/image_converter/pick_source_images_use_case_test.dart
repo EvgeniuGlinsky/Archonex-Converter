@@ -13,8 +13,11 @@ void main() {
   late PickSourceImagesUseCase pickSourceImages;
 
   setUp(() {
-    // Pinned so the ceilings under test are the same on every machine.
-    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    // Pinned so the ceilings under test are the same on every machine, and
+    // pinned to a platform that *has* ceilings: `flutter_test` reports Android,
+    // where the batch is unbounded, so an unpinned test would assert a rule
+    // that no longer runs.
+    debugDefaultTargetPlatformOverride = TargetPlatform.windows;
     repo = FakeImageFileRepo();
     pickSourceImages = PickSourceImagesUseCase(repo);
   });
@@ -137,6 +140,26 @@ void main() {
         pickSourceImages(alreadySelected: AppFileLimits.maxBatchFiles),
         throwsA(isA<TooManyFilesFailure>()),
       );
+    });
+
+    test('a platform without one takes a batch far past it', () async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+
+      const int wellPastTheOldCap = 250;
+      repo.pickResult = <SourceFile>[
+        for (int i = 0; i < wellPastTheOldCap; i++) photo('$i.jpg'),
+      ];
+
+      expect((await pickSourceImages()).accepted, hasLength(wellPastTheOldCap));
+    });
+
+    test('an unlimited batch is not the same as a forbidden one', () async {
+      // Zero and the unlimited sentinel are both "no number to compare
+      // against"; only one of them means the pick may go ahead.
+      debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
+      repo.pickResult = <SourceFile>[photo('one.jpg')];
+
+      await expectLater(pickSourceImages(), throwsA(isA<ConversionFailure>()));
     });
   });
 

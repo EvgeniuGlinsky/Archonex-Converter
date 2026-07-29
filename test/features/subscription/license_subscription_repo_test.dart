@@ -5,6 +5,7 @@ import 'package:archonex_converter/project_files/features/subscription/data/lice
 import 'package:archonex_converter/project_files/features/subscription/domain/models/checkout_offer.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/license_check.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/license_record.dart';
+import 'package:archonex_converter/project_files/features/subscription/domain/models/plan_catalog.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_channel.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_outcome.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/subscription_plan.dart';
@@ -275,13 +276,26 @@ void main() {
       gateway.offers = <CheckoutOffer>[monthlyOffer];
       final LicenseSubscriptionRepo repo = buildRepo();
 
-      expect(await repo.loadPlans(), <SubscriptionPlan>[monthly]);
+      expect((await repo.loadPlans()).plans, <SubscriptionPlan>[monthly]);
 
       gateway.isReachable = false;
 
-      // Nothing invented. The paywall's empty state is the honest answer both
-      // when the shop is shut and when it is unreachable.
-      expect(await repo.loadPlans(), isEmpty);
+      // Nothing invented — and said as the unreachable service it was, which is
+      // the case the paywall offers a retry for.
+      final PlanCatalog catalog = await repo.loadPlans();
+
+      expect(catalog.plans, isEmpty);
+      expect(catalog.problem, CatalogProblem.storeUnreachable);
+    });
+
+    test('a service with an empty catalogue is a shut shop, not a silent one',
+        () async {
+      gateway.offers = const <CheckoutOffer>[];
+
+      expect(
+        (await buildRepo().loadPlans()).problem,
+        CatalogProblem.nothingOnSale,
+      );
     });
   });
 

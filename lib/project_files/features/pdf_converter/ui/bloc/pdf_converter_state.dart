@@ -85,7 +85,10 @@ final class PdfConverterState extends Equatable {
       isConverting || isSaving || status == PdfConverterStatus.picking;
 
   bool get canPick =>
-      isSupported && !isBusy && sources.length < AppFileLimits.maxBatchFiles;
+      isSupported &&
+      !isBusy &&
+      (!AppFileLimits.isBatchLimited ||
+          sources.length < AppFileLimits.maxBatchFiles);
 
   bool get canEditSettings =>
       isSupported && !isBusy && availableTargets.isNotEmpty;

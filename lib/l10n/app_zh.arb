@@ -50,8 +50,10 @@
   "keepAudioHint": "关闭以生成无声视频。",
 
   "maxFileSizeNotice": "最大文件大小：{maxSize}",
+  "maxResultSizeNotice": "转换后的文件最大可保存 {maxSize}。",
   "chooseFileLabel": "选择文件",
   "chooseFileHint": "尚未选择文件。接受最大 {maxSize} 的文件。",
+  "chooseFileHintUnlimited": "尚未选择文件。",
   "removeFileLabel": "移除",
   "convertLabel": "转换",
   "convertingLabel": "转换中…",
@@ -72,6 +74,7 @@
   "addMorePhotosLabel": "添加更多",
   "clearPhotosLabel": "全部清除",
   "noPhotosHint": "尚未选择照片。最多可一次添加 {maxBatch} 张。",
+  "noPhotosHintUnlimited": "尚未选择照片。",
 
   "photosSelected": "{count, plural, other{{count} 张照片 · {totalSize}}}",
 
@@ -128,7 +131,6 @@
 
   "mixedSourceKindsError": "请选择图片、PDF 或文本文件中的一类，不要混选。",
 
-  "unknownSize": "过大",
   "emptyFileError": "所选文件为空。",
   "fileReadError": "无法读取所选文件。请尝试其他文件。",
   "conversionUnsupportedError": "此转换器暂不支持当前平台。",
@@ -138,6 +140,8 @@
   "savePermissionDeniedError": "存储访问被拒绝。请在系统设置中允许访问后重试。",
 
   "resultTooLargeToSave": "转换后的文件大小为 {actualSize}，超出此平台 {maxSize} 的限制。请尝试紧凑预设或更小的尺寸。",
+
+  "resultTooLargeForMemory": "本设备内存不足，无法保存转换后的文件。请尝试紧凑预设或更小的尺寸。",
 
   "saveFailedError": "无法保存文件。请尝试其他位置。",
 
@@ -161,6 +165,7 @@
   "clearFilesLabel": "全部清除",
 
   "noFilesHint": "尚未选择文件。可添加图片、PDF 或文本文件，一次最多 {maxBatch} 个。",
+  "noFilesHintUnlimited": "尚未选择文件。可添加图片、PDF 或文本文件。",
   "@noFilesHint": {
     "placeholders": {
       "maxBatch": { "type": "int" }
@@ -257,8 +262,10 @@
   "paywallRedeemLabel": "激活",
   "paywallBuyOnWebNotice": "订阅在网站购买。您会收到一个密钥，在这里输入即可。",
 
-  "paywallNoPlansNotice": "目前没有可购买的方案。如果这看起来不对，请检查网络连接后重试。",
-  "paywallStoreBuildOnlyNotice": "此副本并非从应用商店安装，因此无法完成付款。请从 Google Play 安装 Archonex Converter 以订阅——两个版本的免费月度额度完全相同。",
+  "paywallNoPlansNotice": "这里暂时还没有可购买的方案。订阅即将上线——您的设备没有问题。",
+  "paywallStoreUnreachableNotice": "商店没有响应，因此无内容可显示。请检查网络连接后重试。",
+  "paywallRetryLabel": "重试",
+  "paywallStoreBuildOnlyNotice": "此副本并非从应用商店安装，因此无法完成付款。请从您所用平台的应用商店安装 Archonex Converter 以订阅——两个版本的免费月度额度完全相同。",
   "paywallActiveTitle": "订阅已生效",
   "paywallActiveMessage": "本设备的转换不再计入每月次数。",
 

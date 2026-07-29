@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:archonex_converter/project_files/features/subscription/data/store_subscription_repo.dart';
+import 'package:archonex_converter/project_files/features/subscription/domain/models/plan_catalog.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_channel.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_outcome.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/subscription_plan.dart';
@@ -29,6 +30,10 @@ void main() {
   }) =>
       StorePurchase(productId: id, status: status, needsCompletion: needsCompletion);
 
+  /// The plans alone, for the tests that only need something buyable.
+  Future<List<SubscriptionPlan>> loadedPlans() async =>
+      (await repo.loadPlans()).plans;
+
   setUp(() {
     billing = FakeStoreBilling(
       products: const <StoreProduct>[yearlyProduct, monthlyProduct],
@@ -47,15 +52,16 @@ void main() {
 
   group('what is on sale', () {
     test('plans are priced by the store, shortest commitment first', () async {
-      final List<SubscriptionPlan> plans = await repo.loadPlans();
+      final PlanCatalog catalog = await repo.loadPlans();
 
       // The store answered yearly-first; reading order is ours to fix.
       expect(
-        plans.map((SubscriptionPlan plan) => plan.id),
+        catalog.plans.map((SubscriptionPlan plan) => plan.id),
         <String>[StoreProducts.monthly, StoreProducts.yearly],
       );
-      expect(plans.first.priceLabel, r'$0.99');
-      expect(plans.first.period, SubscriptionPeriod.monthly);
+      expect(catalog.plans.first.priceLabel, r'$0.99');
+      expect(catalog.plans.first.period, SubscriptionPeriod.monthly);
+      expect(catalog.problem, isNull);
     });
 
     test('a product this build does not sell is ignored, not shown', () async {
@@ -64,29 +70,77 @@ void main() {
         StoreProduct(id: 'archonex_pro_weekly', priceLabel: r'$0.49'),
       ];
 
-      final List<SubscriptionPlan> plans = await repo.loadPlans();
+      final PlanCatalog catalog = await repo.loadPlans();
 
-      expect(plans.map((SubscriptionPlan plan) => plan.id), <String>[StoreProducts.monthly]);
+      expect(
+        catalog.plans.map((SubscriptionPlan plan) => plan.id),
+        <String>[StoreProducts.monthly],
+      );
     });
 
-    test('a device with no store sells nothing and is not asked', () async {
+    test('a device with no store is unreachable, and is not asked', () async {
       billing.available = false;
 
-      expect(await repo.loadPlans(), isEmpty);
+      final PlanCatalog catalog = await repo.loadPlans();
+
+      expect(catalog.plans, isEmpty);
+      expect(catalog.problem, CatalogProblem.storeUnreachable);
       expect(billing.queryCallCount, 0);
     });
 
-    test('a store that will not answer sells nothing rather than throwing',
+    test('a store that will not answer is unreachable rather than throwing',
         () async {
       billing.isBroken = true;
 
-      expect(await repo.loadPlans(), isEmpty);
+      final PlanCatalog catalog = await repo.loadPlans();
+
+      expect(catalog.plans, isEmpty);
+      expect(catalog.problem, CatalogProblem.storeUnreachable);
+    });
+
+    test('a store that answers with an empty shelf is not unreachable',
+        () async {
+      // What an unconfigured Play console looks like from here: billing works,
+      // and it sells none of these. Telling this apart from the case above is
+      // the whole reason `PlanCatalog` exists — one is worth retrying and the
+      // other is not.
+      billing.products = const <StoreProduct>[];
+
+      final PlanCatalog catalog = await repo.loadPlans();
+
+      expect(catalog.plans, isEmpty);
+      expect(catalog.problem, CatalogProblem.nothingOnSale);
+      expect(billing.queryCallCount, 1);
+    });
+
+    test('a store selling only products this build ignores is an empty shelf',
+        () async {
+      billing.products = const <StoreProduct>[
+        StoreProduct(id: 'archonex_pro_weekly', priceLabel: r'$0.49'),
+      ];
+
+      expect((await repo.loadPlans()).problem, CatalogProblem.nothingOnSale);
+    });
+
+    test('one product named twice is one plan, at the first price', () async {
+      // What Play sends for a subscription carrying a promotional offer beside
+      // its base plan: the same id twice, at two prices. Showing both would sell
+      // one subscription as two.
+      billing.products = const <StoreProduct>[
+        monthlyProduct,
+        StoreProduct(id: StoreProducts.monthly, priceLabel: r'$0.00'),
+      ];
+
+      final PlanCatalog catalog = await repo.loadPlans();
+
+      expect(catalog.plans, hasLength(1));
+      expect(catalog.plans.single.priceLabel, r'$0.99');
     });
   });
 
   group('buying', () {
     test('a completed purchase entitles the device', () async {
-      final List<SubscriptionPlan> plans = await repo.loadPlans();
+      final List<SubscriptionPlan> plans = await loadedPlans();
 
       final Future<PurchaseOutcome> pending = repo.purchase(plans.first);
       await billing.report(<StorePurchase>[purchase(StorePurchaseStatus.purchased)]);
@@ -107,7 +161,7 @@ void main() {
     });
 
     test('closing the sheet is cancelled, not failed', () async {
-      final List<SubscriptionPlan> plans = await repo.loadPlans();
+      final List<SubscriptionPlan> plans = await loadedPlans();
 
       final Future<PurchaseOutcome> pending = repo.purchase(plans.first);
       await billing.report(<StorePurchase>[purchase(StorePurchaseStatus.cancelled)]);
@@ -117,7 +171,7 @@ void main() {
     });
 
     test('a store error is a failure and entitles nothing', () async {
-      final List<SubscriptionPlan> plans = await repo.loadPlans();
+      final List<SubscriptionPlan> plans = await loadedPlans();
 
       final Future<PurchaseOutcome> pending = repo.purchase(plans.first);
       await billing.report(<StorePurchase>[purchase(StorePurchaseStatus.failed)]);
@@ -127,7 +181,7 @@ void main() {
     });
 
     test('a pending purchase is not reported either way', () async {
-      final List<SubscriptionPlan> plans = await repo.loadPlans();
+      final List<SubscriptionPlan> plans = await loadedPlans();
 
       final Future<PurchaseOutcome> pending = repo.purchase(plans.first);
       await billing.report(<StorePurchase>[purchase(StorePurchaseStatus.pending)]);
@@ -152,21 +206,21 @@ void main() {
     });
 
     test('a sheet that never opens is a failure', () async {
-      final List<SubscriptionPlan> plans = await repo.loadPlans();
+      final List<SubscriptionPlan> plans = await loadedPlans();
       billing.opensSheet = false;
 
       expect(await repo.purchase(plans.first), PurchaseOutcome.failed);
     });
 
     test('a store that throws while buying is a failure', () async {
-      final List<SubscriptionPlan> plans = await repo.loadPlans();
+      final List<SubscriptionPlan> plans = await loadedPlans();
       billing.isBroken = true;
 
       expect(await repo.purchase(plans.first), PurchaseOutcome.failed);
     });
 
     test('a purchase for another product does not settle this one', () async {
-      final List<SubscriptionPlan> plans = await repo.loadPlans();
+      final List<SubscriptionPlan> plans = await loadedPlans();
 
       final Future<PurchaseOutcome> pending = repo.purchase(plans.first);
       // Something bought in an older version of the app. Not ours to act on.

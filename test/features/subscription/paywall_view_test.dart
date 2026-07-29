@@ -10,6 +10,7 @@ import 'package:archonex_converter/project_files/features/subscription/data/use_
 import 'package:archonex_converter/project_files/features/subscription/data/use_cases/redeem_license_key_use_case.dart';
 import 'package:archonex_converter/project_files/features/subscription/data/use_cases/restore_purchases_use_case.dart';
 import 'package:archonex_converter/project_files/features/subscription/data/use_cases/watch_subscription_status_use_case.dart';
+import 'package:archonex_converter/project_files/features/subscription/domain/models/plan_catalog.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_channel.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/subscription_plan.dart';
 import 'package:archonex_converter/project_files/features/subscription/ui/bloc/paywall_bloc.dart';
@@ -88,6 +89,30 @@ void main() {
     // No button at all rather than a dead one: there is nothing for it to do,
     // and a permanently greyed-out call to action only invites tapping.
     expect(find.text(en.paywallSubscribeLabel), findsNothing);
+    // Nor a retry: the store answered, and it will answer the same again.
+    expect(find.text(en.paywallRetryLabel), findsNothing);
+  });
+
+  testWidgets('a store that would not answer offers to be asked again',
+      (WidgetTester tester) async {
+    final FakeSubscriptionRepo repo = FakeSubscriptionRepo(
+      emptyCatalogProblem: CatalogProblem.storeUnreachable,
+    );
+
+    await pumpScreen(tester, repo: repo);
+
+    expect(find.text(en.paywallStoreUnreachableNotice), findsOneWidget);
+    expect(find.text(en.paywallNoPlansNotice), findsNothing);
+
+    // The store comes back, and the screen fills without being left and
+    // re-entered.
+    repo.plans = const <SubscriptionPlan>[monthly];
+    await tester.tap(find.text(en.paywallRetryLabel));
+    await tester.pumpAndSettle();
+
+    expect(find.text(r'$0.79'), findsOneWidget);
+    expect(find.text(en.paywallSubscribeLabel), findsOneWidget);
+    expect(find.text(en.paywallStoreUnreachableNotice), findsNothing);
   });
 
   testWidgets('a licence build asks for a key and offers to re-check it',

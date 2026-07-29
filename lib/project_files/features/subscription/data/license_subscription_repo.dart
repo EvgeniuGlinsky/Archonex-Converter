@@ -7,6 +7,7 @@ import 'package:archonex_converter/project_files/features/subscription/domain/li
 import 'package:archonex_converter/project_files/features/subscription/domain/models/checkout_offer.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/license_check.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/license_record.dart';
+import 'package:archonex_converter/project_files/features/subscription/domain/models/plan_catalog.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_channel.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_outcome.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/subscription_plan.dart';
@@ -97,19 +98,27 @@ class LicenseSubscriptionRepo implements SubscriptionRepo {
   }
 
   @override
-  Future<List<SubscriptionPlan>> loadPlans() async {
+  Future<PlanCatalog> loadPlans() async {
     try {
       _offers = await _gateway.loadOffers();
     } on LicenseServiceUnavailable {
-      // Nothing shown and nothing invented. The paywall's empty state already
-      // says the shop is not open, which is also the honest thing to say when
-      // the shop is merely unreachable.
+      // Nothing shown and nothing invented, and said as the unreachable service
+      // it was rather than as an empty shop: the paywall offers a retry for the
+      // first and not for the second.
       _offers = const <CheckoutOffer>[];
+
+      return const PlanCatalog.unavailable(CatalogProblem.storeUnreachable);
     }
 
-    return _offers
+    final List<SubscriptionPlan> plans = _offers
         .map((CheckoutOffer offer) => offer.plan)
         .toList(growable: false);
+
+    if (plans.isEmpty) {
+      return const PlanCatalog.unavailable(CatalogProblem.nothingOnSale);
+    }
+
+    return PlanCatalog.offered(plans);
   }
 
   /// Opens the checkout page and stops there.
