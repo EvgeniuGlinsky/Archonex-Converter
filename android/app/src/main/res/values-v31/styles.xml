@@ -9,7 +9,12 @@
          rather than adding to it.
 
          `windowSplashScreenAnimatedIcon` is left unset on purpose: the default is
-         the launcher icon, which is what belongs there. -->
+         the launcher icon, which is what belongs there.
+
+         `windowSplashScreenIconBackgroundColor` is left unset for a different
+         reason: setting it makes the system draw the icon smaller to fit the
+         circle it adds, and the colour is already right without it — the adaptive
+         icon's own `background` layer is this very same colour. -->
     <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <item name="android:windowSplashScreenBackground">@color/splash_background</item>
         <item name="android:windowBackground">@drawable/launch_background</item>

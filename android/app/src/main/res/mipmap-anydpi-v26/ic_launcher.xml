@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The launcher icon Android 8 and up uses. Without it the system takes the
+     legacy PNGs in `mipmap-<density>/`, shrinks them into its mask and puts its
+     own white circle behind them — which is also what the Android 12 launch
+     screen then shows, because it draws whatever the launcher would.
+
+     The foreground layer is opaque, with the same plate colour baked into it as
+     `background` holds, rather than the emblem on transparency. Two reasons: the
+     master is a 3D render whose emblem has no clean alpha to key out, and a
+     foreground with transparent margins makes Android 12 decide the icon has room
+     and enlarge it, so the launch screen stops matching the launcher.
+
+     `monochrome` is the Android 13 themed icon. Older releases ignore the tag,
+     so it needs no `-v33` folder of its own. -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+    <monochrome android:drawable="@mipmap/ic_launcher_monochrome" />
+</adaptive-icon>
