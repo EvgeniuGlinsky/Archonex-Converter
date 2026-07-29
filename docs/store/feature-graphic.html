@@ -1,0 +1,103 @@
+<!--
+  Source for the Play feature graphic. Rendered, not drawn, so the wording can
+  change without anyone reopening a design tool:
+
+    msedge --headless=new --disable-gpu --hide-scrollbars \
+      --force-device-scale-factor=1 --window-size=1024,500 \
+      --screenshot=feature-graphic.png feature-graphic.html
+
+  The background is `feature-graphic-bg.png`, generated to leave its left side
+  calm and its detail on the right, which is why the type sits left. The
+  typeface is the bundled NotoSans the app screens are already set in, so the
+  banner and the product cannot drift apart.
+
+  Play's constraints, each of which shaped something below:
+    * exactly 1024x500, PNG or JPEG, and no alpha channel at all
+    * edges get cropped when the graphic is adapted, and a play button is
+      overlaid on the centre when a promo video exists
+    * no prices, no "#1", no superlatives, no device frames
+-->
+<style>
+  @font-face {
+    font-family: 'NotoSans';
+    src: url('../../assets/fonts/NotoSans-Regular.ttf') format('truetype');
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { width: 1024px; height: 500px; overflow: hidden; }
+
+  /* The source is 2:1 and this is 2.048:1, so it is scaled to cover and centred
+     rather than squashed. Opaque throughout: alpha is rejected outright. */
+  body {
+    background-image: url('feature-graphic-bg.png');
+    background-size: cover;
+    background-position: center;
+    background-color: #041B4D;
+    font-family: 'NotoSans', sans-serif;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Guarantees contrast under the type instead of trusting the generated image
+     to stay dark on the left. Fades out before the ribbons begin. */
+  .scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(96deg,
+      rgba(3, 18, 54, 0.94) 0%,
+      rgba(3, 18, 54, 0.86) 34%,
+      rgba(3, 18, 54, 0.28) 56%,
+      rgba(3, 18, 54, 0) 68%);
+  }
+
+  /* Centred rather than top-anchored, so the margins Play may crop are equal
+     above and below. Held to the left half, clear of the ribbons. */
+  .content {
+    position: relative;
+    padding-left: 84px;
+    width: 560px;
+  }
+
+  h1 {
+    font-size: 70px;
+    line-height: 1.04;
+    letter-spacing: -1.2px;
+    color: #FFFFFF;
+  }
+
+  p {
+    margin-top: 20px;
+    font-size: 23px;
+    line-height: 1.4;
+    color: #C6D5FF;
+    max-width: 430px;
+  }
+
+  .chips { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 11px; }
+
+  /* Three conversions rather than a feature list: the shape of the product
+     reads faster than a sentence about it. */
+  .chip {
+    padding: 10px 19px;
+    border: 1px solid rgba(163, 189, 255, 0.55);
+    border-radius: 999px;
+    font-size: 20px;
+    color: #FFFFFF;
+    background: rgba(58, 107, 255, 0.30);
+    white-space: nowrap;
+  }
+</style>
+
+<div class="scrim"></div>
+
+<div class="content">
+  <h1>Archonex Converter</h1>
+  <p>Video, audio, images and PDF — converted on your device.</p>
+  <div class="chips">
+    <div class="chip">MP4 → MP3</div>
+    <div class="chip">HEIC → JPG</div>
+    <div class="chip">JPG → PDF</div>
+  </div>
+</div>

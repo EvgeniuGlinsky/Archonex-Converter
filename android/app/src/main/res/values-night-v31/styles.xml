@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Same override for dark mode. Needed as its own file because `night` takes
+         precedence over `v31` when Android picks a resource: without this, a dark
+         mode device on Android 12 would resolve `LaunchTheme` from values-night/
+         and never see `windowSplashScreenBackground` at all. -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <item name="android:windowSplashScreenBackground">@color/splash_background</item>
+        <item name="android:windowBackground">@drawable/launch_background</item>
+    </style>
+</resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Background layer of the adaptive launcher icon, and the colour the
+         foreground layer's plate is baked in — see `docs/store/generate_icons.py`,
+         which holds this value a second time, in pixels.
+
+         Fixed rather than following the light/dark setting: the emblem is dark in
+         both, so a light plate is wrong in both. -->
+    <color name="ic_launcher_background">#1B1F2A</color>
+
+    <!-- Background of the launch screen. An alias, not a second literal: the
+         Android 12 SplashScreen API draws the launcher icon over this colour, so a
+         value that drifted from the icon's own plate would put a visible disc on
+         the launch screen — which is the bug the adaptive icon was added to fix. -->
+    <color name="splash_background">@color/ic_launcher_background</color>
+</resources>
