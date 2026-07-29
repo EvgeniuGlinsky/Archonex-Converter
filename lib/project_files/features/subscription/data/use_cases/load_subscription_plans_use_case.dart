@@ -1,11 +1,11 @@
-import 'package:archonex_converter/project_files/features/subscription/domain/models/subscription_plan.dart';
+import 'package:archonex_converter/project_files/features/subscription/domain/models/plan_catalog.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/subscription_repo.dart';
 
-/// Plans on offer, priced by whichever store answered.
+/// Plans on offer, priced by whichever store answered — or why there are none.
 class LoadSubscriptionPlansUseCase {
   const LoadSubscriptionPlansUseCase(this._repo);
 
   final SubscriptionRepo _repo;
 
-  Future<List<SubscriptionPlan>> call() => _repo.loadPlans();
+  Future<PlanCatalog> call() => _repo.loadPlans();
 }

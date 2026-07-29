@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:archonex_converter/core/constants/app_file_limits.dart';
@@ -73,9 +74,18 @@ void main() {
     )..add(const MediaConverterStarted());
   }
 
-  setUp(buildBloc);
+  setUp(() {
+    // A metered platform, named rather than inherited: `flutter_test` reports
+    // Android, which counts nothing, so the monthly-count group below would
+    // pass while testing a rule that no longer runs there.
+    debugDefaultTargetPlatformOverride = TargetPlatform.windows;
+    buildBloc();
+  });
 
-  tearDown(() => bloc.close());
+  tearDown(() async {
+    await bloc.close();
+    debugDefaultTargetPlatformOverride = null;
+  });
 
   /// Lets the bloc drain its event queue and any awaited futures.
   Future<void> settle() => Future<void>.delayed(Duration.zero);

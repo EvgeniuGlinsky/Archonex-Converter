@@ -32,8 +32,11 @@ class PaywallView extends StatelessWidget {
           builder: (context, state) => AppScreenLayout(
             header: AppScreenHeader(
               title: AppLocalizations.of(context)!.paywallTitle,
+              // The metered number, not this platform's. The screen describes
+              // what a subscription is for; on a platform that never counts, the
+              // platform-aware getter would render the sentinel.
               subtitle: AppLocalizations.of(context)!
-                  .paywallSubtitle(AppQuotaLimits.freeFilesPerMonth),
+                  .paywallSubtitle(AppQuotaLimits.meteredFilesPerMonth),
             ),
             body: PaywallBody(state: state, callbacks: _callbacks(context)),
             // Nothing left to buy once the device is entitled.
@@ -58,6 +61,7 @@ class PaywallView extends StatelessWidget {
       onSubscribePressed: () =>
           _add(context, const PaywallSubscribeRequested()),
       onRestorePressed: () => _add(context, const PaywallRestoreRequested()),
+      onRetryPlansPressed: () => _add(context, const PaywallPlansRetried()),
     );
   }
 

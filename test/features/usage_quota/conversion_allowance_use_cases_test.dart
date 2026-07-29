@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:archonex_converter/core/constants/app_quota_limits.dart';
@@ -15,9 +16,16 @@ void main() {
   late FakeSubscriptionRepo subscriptionRepo;
 
   setUp(() {
+    // A metered platform, named rather than inherited: `flutter_test` reports
+    // Android by default, and Android is the one platform that counts nothing.
+    // Left unpinned, every assertion below would pass by describing a rule that
+    // no longer runs.
+    debugDefaultTargetPlatformOverride = TargetPlatform.windows;
     quotaRepo = FakeUsageQuotaRepo();
     subscriptionRepo = FakeSubscriptionRepo();
   });
+
+  tearDown(() => debugDefaultTargetPlatformOverride = null);
 
   WatchConversionAllowanceUseCase buildWatch() =>
       WatchConversionAllowanceUseCase(
@@ -95,6 +103,29 @@ void main() {
     test('a subscriber is not charged at all', () async {
       subscriptionRepo.activate();
 
+      await buildConsume()(3);
+
+      expect(quotaRepo.consumed, isEmpty);
+    });
+  });
+
+  group('an unmetered platform', () {
+    setUp(() => debugDefaultTargetPlatformOverride = TargetPlatform.android);
+
+    test('converts without a count, and without a subscription to lift one',
+        () async {
+      quotaRepo.setUsed(AppQuotaLimits.meteredFilesPerMonth * 10);
+
+      final ConversionAllowance allowance = await buildWatch()().first;
+
+      expect(allowance.isUnlimited, isTrue);
+      expect(allowance.isExhausted, isFalse);
+      expect(allowance.allows(500), isTrue);
+      expect(subscriptionRepo.statusListenable.value.isActive, isFalse);
+    });
+
+    test('writes nothing to the device for a number nothing will read',
+        () async {
       await buildConsume()(3);
 
       expect(quotaRepo.consumed, isEmpty);

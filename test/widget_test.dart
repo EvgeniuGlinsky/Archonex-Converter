@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:archonex_converter/core/app/archonex_app.dart';
 import 'package:archonex_converter/core/constants/app_durations.dart';
-import 'package:archonex_converter/core/constants/app_file_limits.dart';
 import 'package:archonex_converter/l10n/app_localizations.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/file_size_limit_notice.dart';
 
 const Map<String, Size> _screenSizes = <String, Size>{
   'phone': Size(390, 844),
@@ -61,10 +61,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(en.mediaConverterTitle), findsOneWidget);
-    expect(
-      find.text(en.maxFileSizeNotice(AppFileLimits.maxUploadLabel)),
-      findsOneWidget,
-    );
+    // Android, which `flutter_test` reports by default, bounds neither the source
+    // nor the result, so no screen carries a limits line at all.
+    expect(find.byType(FileSizeLimitNotice), findsNothing);
     // Nothing below the file card exists until a file has been picked.
     expect(find.text(en.convertToTitle), findsNothing);
     expect(find.text(en.qualityTitle), findsNothing);
@@ -95,15 +94,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(en.imageConverterTitle), findsOneWidget);
-    expect(
-      find.text(
-        en.imageLimitsNotice(
-          AppFileLimits.maxBatchFiles,
-          AppFileLimits.maxUploadLabel,
-        ),
-      ),
-      findsOneWidget,
-    );
+    expect(find.byType(FileSizeLimitNotice), findsNothing);
     // Nothing below the batch exists until photos have been added.
     expect(find.text(en.convertToTitle), findsNothing);
     expect(find.text(en.qualityTitle), findsNothing);
@@ -118,15 +109,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(en.pdfConverterTitle), findsOneWidget);
-    expect(
-      find.text(
-        en.pdfSourcesNotice(
-          AppFileLimits.maxBatchFiles,
-          AppFileLimits.maxUploadLabel,
-        ),
-      ),
-      findsOneWidget,
-    );
+    expect(find.byType(FileSizeLimitNotice), findsNothing);
     // The direction is only known once something is picked, so there is no
     // target grid yet.
     expect(find.text(en.convertToTitle), findsNothing);

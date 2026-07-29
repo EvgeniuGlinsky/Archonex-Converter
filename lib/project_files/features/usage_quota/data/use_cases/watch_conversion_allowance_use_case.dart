@@ -49,7 +49,11 @@ class WatchConversionAllowanceUseCase {
   }
 
   ConversionAllowance _allowance() {
-    if (_subscriptionRepo.statusListenable.value.isActive) {
+    // An unmetered platform and a subscriber answer the same way, and the
+    // platform is asked first: on Android there is nothing to sell, so whether
+    // anyone paid is not a question worth having an answer to.
+    if (!AppQuotaLimits.isMetered ||
+        _subscriptionRepo.statusListenable.value.isActive) {
       return const ConversionAllowance.unlimited();
     }
 

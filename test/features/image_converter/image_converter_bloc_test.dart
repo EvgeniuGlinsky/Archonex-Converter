@@ -75,7 +75,7 @@ void main() {
   }
 
   setUp(() {
-    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    debugDefaultTargetPlatformOverride = TargetPlatform.windows;
     buildBloc();
   });
 

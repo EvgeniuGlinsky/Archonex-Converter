@@ -46,13 +46,18 @@ extension ConversionFailureUi on ConversionFailure {
       ConversionCancelledFailure() => l10n.conversionCancelledError,
       InsufficientStorageFailure() => l10n.insufficientStorageError,
       SavePermissionDeniedFailure() => l10n.savePermissionDeniedError,
-      ResultTooLargeToSaveFailure(:final int? actualBytes) =>
-        l10n.resultTooLargeToSave(
-          actualBytes == null
-              ? l10n.unknownSize
-              : FileSizeFormatter.format(actualBytes),
-          AppFileLimits.maxUploadLabel,
-        ),
+      // Two different sentences, because only one of the two paths knows a
+      // ceiling. The pre-check in `SaveConverted*UseCase` measured the file and
+      // compared it against `maxResultBytes`, so it can name both numbers; the
+      // `OutOfMemoryError` `IoFileSaver` catches measured nothing and passed no
+      // ceiling, because there is none — the device simply ran out. Naming one
+      // anyway is how a phone came to report a file as over a 1 TB limit.
+      ResultTooLargeToSaveFailure(:final int? actualBytes) => actualBytes == null
+          ? l10n.resultTooLargeForMemory
+          : l10n.resultTooLargeToSave(
+              FileSizeFormatter.format(actualBytes),
+              AppFileLimits.maxResultLabel,
+            ),
       SaveFailure() => l10n.saveFailedError,
     };
   }

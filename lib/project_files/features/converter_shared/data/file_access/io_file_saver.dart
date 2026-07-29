@@ -10,15 +10,25 @@ import 'package:archonex_converter/project_files/features/converter_shared/domai
 
 /// Writing results out on the platforms that have a real file system.
 ///
-/// Saving takes two different routes, because `file_picker` behaves
+/// Saving takes three different routes, because `file_picker` behaves
 /// differently per platform (verified against file_picker 11.0.2):
 ///
 /// * Desktop — `saveFile` without `bytes` returns the chosen destination and
 ///   writes nothing, so the temp output is copied across by the OS. Memory use
 ///   stays flat no matter how big the result is.
-/// * Android and iOS — `saveFile` throws without `bytes`, so the output has to
-///   be read into memory first. This is the one place where the size of a
-///   conversion result still matters.
+/// * Android — the folder route, the same one [saveAll] uses: the user picks a
+///   directory and the output is copied into it by `dart:io`, so nothing is ever
+///   resident and no result is too large to save.
+/// * iOS, and Android when the folder route is unusable — `saveFile` throws
+///   without `bytes`, so the output has to be read into memory first. This is
+///   the one place left where the size of a conversion result still matters, and
+///   the only thing that still raises `ResultTooLargeToSaveFailure`.
+///
+/// Android used to take the byte route for a single file too, which capped a
+/// save at the 2 GiB a Java `byte[]` can carry — a real ceiling, but one the
+/// platform only has because of how the file was handed over, not because of
+/// anything about the file. Asking for a folder instead of a filename is a worse
+/// dialog and a better outcome.
 class IoFileSaver {
   const IoFileSaver();
 
@@ -27,8 +37,45 @@ class IoFileSaver {
   static const int _firstSuffix = 2;
   static const int _maxSuffix = 1000;
 
-  /// One file through the system save dialog. `null` when the user cancelled.
+  /// One file into wherever the user chooses. `null` when they cancelled.
+  ///
+  /// Android goes through the folder picker first, because handing the platform
+  /// a `byte[]` is what bounds a save at all. Declining that folder is a
+  /// cancelled save and nothing more — asking a second time with a different
+  /// dialog would read as the app not having heard. A folder that turns out to be
+  /// unwritable is the one case that falls through to the byte route, since a
+  /// storage-access URI `dart:io` cannot open leaves no other way out.
   Future<String?> saveOne(ConvertedFile file) async {
+    if (!Platform.isAndroid) {
+      return _saveThroughDialog(file);
+    }
+
+    String? directory;
+
+    try {
+      directory = await FilePicker.getDirectoryPath();
+    } on Exception {
+      // No folder picker here at all, which is not the same as declining one.
+      return _saveThroughDialog(file);
+    }
+
+    if (directory == null) {
+      return null;
+    }
+
+    try {
+      final String destination = await _freePathIn(directory, file.name);
+      await File(file.path).copy(destination);
+
+      return destination;
+    } on Exception {
+      return _saveThroughDialog(file);
+    }
+  }
+
+  /// One file through the system save dialog, carrying its bytes where the
+  /// platform demands them. `null` when the user cancelled.
+  Future<String?> _saveThroughDialog(ConvertedFile file) async {
     final bool needsBytes = Platform.isAndroid || Platform.isIOS;
 
     try {
@@ -145,12 +192,16 @@ class IoFileSaver {
   }
 
   /// One dialog per file, stopping as soon as the user closes one.
+  ///
+  /// Goes straight to the dialog rather than through [saveOne]: the folder route
+  /// is what just failed, and re-offering it once per file would ask thirty times
+  /// for a folder that already did not work.
   Future<SaveResult> _saveOneByOne(List<ConvertedFile> files) async {
     int saved = 0;
     String? lastLocation;
 
     for (final ConvertedFile file in files) {
-      final String? location = await saveOne(file);
+      final String? location = await _saveThroughDialog(file);
 
       if (location == null) {
         break;

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex_converter/core/constants/app_file_limits.dart';
 import 'package:archonex_converter/core/constants/app_radius.dart';
 import 'package:archonex_converter/core/constants/app_spacing.dart';
 import 'package:archonex_converter/core/utils/file_size_formatter.dart';
 import 'package:archonex_converter/l10n/app_localizations.dart';
 import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/mappers/converter_limits_ui.dart';
 import 'package:archonex_converter/project_files/features/pdf_converter/ui/widgets/source_document_tile.dart';
 
 /// The selection: a call to action while empty, the files once filled.
@@ -129,7 +129,7 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         children: <Widget>[
           Text(
-            l10n.noFilesHint(AppFileLimits.maxBatchFiles),
+            ConverterLimitsUi.pdfEmptyHint(context),
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,

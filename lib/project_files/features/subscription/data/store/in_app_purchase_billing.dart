@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 import 'package:archonex_converter/project_files/features/subscription/domain/store_billing.dart';
@@ -30,21 +31,55 @@ class InAppPurchaseBilling implements StoreBilling {
   Future<List<StoreProduct>> queryProducts(Set<String> ids) async {
     final ProductDetailsResponse response = await _store.queryProductDetails(ids);
 
-    _known
-      ..clear()
-      ..addEntries(
-        response.productDetails.map(
-          (ProductDetails details) =>
-              MapEntry<String, ProductDetails>(details.id, details),
-        ),
-      );
+    _logAnswer(response, ids);
 
-    // `notFoundIDs` is the normal answer for a product that exists in the console
-    // but is not yet live in this track, so it is reported rather than thrown.
+    // The store answers with one entry per *offer*, not per product: Play returns
+    // a separate `ProductDetails` for a subscription's base plan and for each
+    // promotional offer on it, all carrying the same product id. First wins here
+    // rather than last, which is what `addEntries` used to do — otherwise `buy`
+    // silently starts whichever offer the store happened to list last, and which
+    // offer a tap purchases changes with the answer's ordering. Duplicates are
+    // still handed upward: which of them to show is `StoreSubscriptionRepo`'s
+    // rule to make, and it is testable there.
+    _known.clear();
+
+    for (final ProductDetails details in response.productDetails) {
+      _known.putIfAbsent(details.id, () => details);
+    }
+
     return <StoreProduct>[
       for (final ProductDetails details in response.productDetails)
         StoreProduct(id: details.id, priceLabel: details.price),
     ];
+  }
+
+  /// What the store actually said, in a debug build.
+  ///
+  /// The only place that knows it. Above this file an unsold product and an
+  /// unreachable store are two words in an enum; here they are a billing response
+  /// code and a list of ids Play did not recognise, which is what tells a missing
+  /// console product apart from an inactive base plan. Silent in release: this is
+  /// diagnosis, not telemetry, and nothing is sent anywhere.
+  void _logAnswer(ProductDetailsResponse response, Set<String> ids) {
+    if (!kDebugMode) {
+      return;
+    }
+
+    final IAPError? error = response.error;
+
+    if (error != null) {
+      debugPrint(
+        'archonex billing: queryProductDetails failed — '
+        '${error.code} ${error.message} ${error.details}',
+      );
+    }
+
+    if (response.notFoundIDs.isNotEmpty) {
+      debugPrint(
+        'archonex billing: the store does not sell ${response.notFoundIDs}. '
+        'Asked for $ids.',
+      );
+    }
   }
 
   @override

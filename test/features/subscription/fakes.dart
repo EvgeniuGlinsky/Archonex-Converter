@@ -10,6 +10,7 @@ import 'package:archonex_converter/project_files/features/subscription/domain/li
 import 'package:archonex_converter/project_files/features/subscription/domain/models/checkout_offer.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/license_check.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/license_record.dart';
+import 'package:archonex_converter/project_files/features/subscription/domain/models/plan_catalog.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_channel.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_outcome.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/subscription_plan.dart';
@@ -25,6 +26,7 @@ class FakeSubscriptionRepo implements SubscriptionRepo {
   FakeSubscriptionRepo({
     this.channel = PurchaseChannel.store,
     this.plans = const <SubscriptionPlan>[],
+    this.emptyCatalogProblem = CatalogProblem.nothingOnSale,
     this.outcome = PurchaseOutcome.succeeded,
     bool isActive = false,
   }) : _status = ValueNotifier<SubscriptionStatus>(
@@ -40,6 +42,11 @@ class FakeSubscriptionRepo implements SubscriptionRepo {
 
   List<SubscriptionPlan> plans;
 
+  /// Which kind of nothing [loadPlans] reports while [plans] is empty. Ignored
+  /// once there is anything to sell, because a catalogue cannot both offer
+  /// something and explain why it offers nothing.
+  CatalogProblem emptyCatalogProblem;
+
   /// What the next purchase, redemption or restore returns.
   PurchaseOutcome outcome;
 
@@ -47,6 +54,7 @@ class FakeSubscriptionRepo implements SubscriptionRepo {
 
   int refreshCallCount = 0;
   int restoreCallCount = 0;
+  int loadPlansCallCount = 0;
   SubscriptionPlan? lastPurchasedPlan;
   String? lastRedeemedKey;
 
@@ -57,7 +65,15 @@ class FakeSubscriptionRepo implements SubscriptionRepo {
   Future<void> refresh() async => refreshCallCount++;
 
   @override
-  Future<List<SubscriptionPlan>> loadPlans() async => plans;
+  Future<PlanCatalog> loadPlans() async {
+    loadPlansCallCount++;
+
+    if (plans.isEmpty) {
+      return PlanCatalog.unavailable(emptyCatalogProblem);
+    }
+
+    return PlanCatalog.offered(plans);
+  }
 
   @override
   Future<PurchaseOutcome> purchase(SubscriptionPlan plan) async {

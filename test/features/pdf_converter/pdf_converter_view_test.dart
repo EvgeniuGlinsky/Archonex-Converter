@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -6,6 +7,7 @@ import 'package:archonex_converter/core/constants/app_file_limits.dart';
 import 'package:archonex_converter/core/theme/app_theme.dart';
 import 'package:archonex_converter/l10n/app_localizations.dart';
 import 'package:archonex_converter/project_files/features/converter_shared/domain/models/source_file.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/file_size_limit_notice.dart';
 import 'package:archonex_converter/project_files/features/pdf_converter/data/use_cases/convert_pdf_use_case.dart';
 import 'package:archonex_converter/project_files/features/pdf_converter/data/use_cases/discard_converted_pdfs_use_case.dart';
 import 'package:archonex_converter/project_files/features/pdf_converter/data/use_cases/get_pdf_converter_availability_use_case.dart';
@@ -106,24 +108,42 @@ void main() {
         matching: find.text(label),
       );
 
-  testWidgets('an empty screen offers nothing but the limits and a picker',
+  testWidgets('an empty screen offers nothing but a picker',
       (WidgetTester tester) async {
     await pumpScreen(tester);
 
     expect(find.text(en.pdfConverterTitle), findsOneWidget);
-    expect(
-      find.text(
-        en.pdfSourcesNotice(
-          AppFileLimits.maxBatchFiles,
-          AppFileLimits.maxUploadLabel,
-        ),
-      ),
-      findsOneWidget,
-    );
+    // Android, the platform `flutter_test` reports: nothing bounds what comes in
+    // and nothing bounds what goes out, so there is no limits line to show.
+    expect(find.byType(FileSizeLimitNotice), findsNothing);
     expect(find.text(en.addFilesLabel), findsOneWidget);
 
     // The direction is unknown until something is picked, so no targets.
     expect(find.text(en.convertToTitle), findsNothing);
+  });
+
+  testWidgets('states the ceiling on the platform that still has one',
+      (WidgetTester tester) async {
+    // Reset inside the body rather than through `addTearDown`: the binding
+    // asserts every foundation debug variable is back to null before the tear
+    // downs run, so a test that leaves it set fails on that instead.
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+
+    try {
+      await pumpScreen(tester);
+
+      expect(
+        find.text(
+          en.pdfSourcesNotice(
+            AppFileLimits.maxBatchFiles,
+            AppFileLimits.maxUploadLabel,
+          ),
+        ),
+        findsOneWidget,
+      );
+    } finally {
+      debugDefaultTargetPlatformOverride = null;
+    }
   });
 
   testWidgets('picking pictures reveals the one target they can reach',

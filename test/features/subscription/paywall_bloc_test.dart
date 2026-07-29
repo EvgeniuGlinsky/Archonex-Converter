@@ -6,6 +6,7 @@ import 'package:archonex_converter/project_files/features/subscription/data/use_
 import 'package:archonex_converter/project_files/features/subscription/data/use_cases/redeem_license_key_use_case.dart';
 import 'package:archonex_converter/project_files/features/subscription/data/use_cases/restore_purchases_use_case.dart';
 import 'package:archonex_converter/project_files/features/subscription/data/use_cases/watch_subscription_status_use_case.dart';
+import 'package:archonex_converter/project_files/features/subscription/domain/models/plan_catalog.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_channel.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_outcome.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/subscription_plan.dart';
@@ -75,6 +76,22 @@ void main() {
       expect(bloc.state.plans, isEmpty);
       expect(bloc.state.selectedPlanId, isNull);
       expect(bloc.state.canSubscribe, isFalse);
+      expect(bloc.state.showsNoPlansNotice, isTrue);
+      // Asking a shop that answered again would only hear the same answer.
+      expect(bloc.state.canRetryPlans, isFalse);
+    });
+
+    test('a store that would not answer is told apart from an empty shop',
+        () async {
+      repo
+        ..plans = const <SubscriptionPlan>[]
+        ..emptyCatalogProblem = CatalogProblem.storeUnreachable;
+      buildBloc();
+      await settle();
+
+      expect(bloc.state.showsStoreUnreachableNotice, isTrue);
+      expect(bloc.state.showsNoPlansNotice, isFalse);
+      expect(bloc.state.canRetryPlans, isTrue);
     });
 
     test('a device that is already subscribed says so', () async {
@@ -84,6 +101,66 @@ void main() {
 
       expect(bloc.state.isSubscribed, isTrue);
       expect(bloc.state.canSubscribe, isFalse);
+    });
+  });
+
+  group('trying the store again', () {
+    setUp(() {
+      repo
+        ..plans = const <SubscriptionPlan>[]
+        ..emptyCatalogProblem = CatalogProblem.storeUnreachable;
+    });
+
+    test('a store that answers the second time fills the screen', () async {
+      buildBloc();
+      await settle();
+
+      repo.plans = <SubscriptionPlan>[monthly, yearly];
+      bloc.add(const PaywallPlansRetried());
+      await settle();
+
+      expect(bloc.state.plans, <SubscriptionPlan>[monthly, yearly]);
+      expect(bloc.state.catalogProblem, isNull);
+      expect(bloc.state.selectedPlanId, yearly.id);
+      expect(bloc.state.canSubscribe, isTrue);
+      expect(bloc.state.status, PaywallStatus.ready);
+    });
+
+    test('a store still silent leaves the retry offered', () async {
+      buildBloc();
+      await settle();
+
+      bloc.add(const PaywallPlansRetried());
+      await settle();
+
+      expect(bloc.state.canRetryPlans, isTrue);
+      expect(repo.loadPlansCallCount, 2);
+    });
+
+    test('an empty shop is never retried, however often it is tapped',
+        () async {
+      repo.emptyCatalogProblem = CatalogProblem.nothingOnSale;
+      buildBloc();
+      await settle();
+
+      bloc.add(const PaywallPlansRetried());
+      await settle();
+
+      // The guard is in the bloc as well as in the widget: a screen that stopped
+      // drawing the button is not what makes the rule true.
+      expect(repo.loadPlansCallCount, 1);
+    });
+
+    test('a screen already showing plans has nothing to retry', () async {
+      repo.plans = <SubscriptionPlan>[monthly, yearly];
+      buildBloc();
+      await settle();
+
+      bloc.add(const PaywallPlansRetried());
+      await settle();
+
+      expect(repo.loadPlansCallCount, 1);
+      expect(bloc.state.selectedPlanId, yearly.id);
     });
   });
 

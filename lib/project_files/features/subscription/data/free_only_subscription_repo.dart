@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import 'package:archonex_converter/project_files/features/subscription/domain/models/plan_catalog.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_channel.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_outcome.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/subscription_plan.dart';
@@ -33,9 +34,15 @@ class FreeOnlySubscriptionRepo implements SubscriptionRepo {
 
   /// No store to price them, and a price written in the app would be a price
   /// the checkout does not honour.
+  ///
+  /// Reported as [CatalogProblem.nothingOnSale] rather than
+  /// [CatalogProblem.storeUnreachable]: nothing here failed, and offering a
+  /// retry button for a shop that will never open would be a lie. The paywall
+  /// prefers its own channel notice over this one anyway — see
+  /// `PaywallState.showsStoreBuildNotice`.
   @override
-  Future<List<SubscriptionPlan>> loadPlans() async =>
-      const <SubscriptionPlan>[];
+  Future<PlanCatalog> loadPlans() async =>
+      const PlanCatalog.unavailable(CatalogProblem.nothingOnSale);
 
   @override
   Future<PurchaseOutcome> purchase(SubscriptionPlan plan) async =>

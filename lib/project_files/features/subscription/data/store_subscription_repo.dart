@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import 'package:archonex_converter/core/constants/app_store_policy.dart';
+import 'package:archonex_converter/project_files/features/subscription/domain/models/plan_catalog.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_channel.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/purchase_outcome.dart';
 import 'package:archonex_converter/project_files/features/subscription/domain/models/subscription_plan.dart';
@@ -95,29 +96,44 @@ class StoreSubscriptionRepo implements SubscriptionRepo {
   }
 
   @override
-  Future<List<SubscriptionPlan>> loadPlans() async {
+  Future<PlanCatalog> loadPlans() async {
     try {
       if (!await _billing.isAvailable()) {
-        return const <SubscriptionPlan>[];
+        return const PlanCatalog.unavailable(CatalogProblem.storeUnreachable);
       }
 
       _products = await _billing.queryProducts(StoreProducts.subscriptionIds);
     } catch (_) {
-      // Nothing shown and nothing invented. The paywall's empty state already
-      // says the shop is not open, which is also the honest thing to say when the
-      // store will not answer.
-      return const <SubscriptionPlan>[];
+      // Nothing shown and nothing invented — but reported as a store that would
+      // not answer rather than a shop with nothing in it. The two look identical
+      // from here and call for opposite things from the user, so the paywall is
+      // told which one this was.
+      return const PlanCatalog.unavailable(CatalogProblem.storeUnreachable);
     }
 
+    // One plan per product id, keeping the first the store named. A store may
+    // answer with the same product more than once — Play lists a subscription's
+    // base plan and every promotional offer on it separately, all under one id —
+    // and a paywall that drew each of them would offer the same subscription
+    // twice at two prices, only one of which `purchase` would then start.
+    final Set<String> seen = <String>{};
     final List<SubscriptionPlan> plans = <SubscriptionPlan>[
       for (final StoreProduct product in _products)
         if (StoreProducts.periodOf(product.id) case final SubscriptionPeriod period)
-          SubscriptionPlan(
-            id: product.id,
-            period: period,
-            priceLabel: product.priceLabel,
-          ),
+          if (seen.add(product.id))
+            SubscriptionPlan(
+              id: product.id,
+              period: period,
+              priceLabel: product.priceLabel,
+            ),
     ];
+
+    if (plans.isEmpty) {
+      // The store spoke and sells none of these. In a Play build that is the
+      // console: products missing, still in draft, their base plan not activated,
+      // or unpriced in this account's country.
+      return const PlanCatalog.unavailable(CatalogProblem.nothingOnSale);
+    }
 
     // Shortest commitment first, whatever order the store answered in. The bloc
     // preselects the yearly plan regardless, so this is about reading order and
@@ -127,7 +143,7 @@ class StoreSubscriptionRepo implements SubscriptionRepo {
           a.period.index.compareTo(b.period.index),
     );
 
-    return plans;
+    return PlanCatalog.offered(plans);
   }
 
   @override

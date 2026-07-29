@@ -14,6 +14,7 @@ final class PaywallState extends Equatable {
     this.status = PaywallStatus.loading,
     this.channel = PurchaseChannel.unavailable,
     this.plans = const <SubscriptionPlan>[],
+    this.catalogProblem,
     this.selectedPlanId,
     this.isSubscribed = false,
     this.licenseKey = '',
@@ -28,6 +29,9 @@ final class PaywallState extends Equatable {
   /// What the store offers, priced by the store. Empty while nothing is on
   /// sale yet, which the screen says rather than papering over.
   final List<SubscriptionPlan> plans;
+
+  /// Why [plans] is empty, when it is. `null` once there is anything to sell.
+  final CatalogProblem? catalogProblem;
 
   final String? selectedPlanId;
 
@@ -72,7 +76,29 @@ final class PaywallState extends Equatable {
 
   /// Where to get the paid version, shown when this platform sells but this copy
   /// of the app cannot buy.
+  ///
+  /// Takes precedence over both notices below: this build was never going to be
+  /// able to buy, so what the store had to say about its shelves is beside the
+  /// point.
   bool get showsStoreBuildNotice => channel == PurchaseChannel.storeBuildOnly;
+
+  /// The store would not answer — which may be nothing worse than a dropped
+  /// connection, so this is the case worth offering a retry for.
+  bool get showsStoreUnreachableNotice =>
+      !showsPlans &&
+      !showsStoreBuildNotice &&
+      catalogProblem == CatalogProblem.storeUnreachable;
+
+  /// The store answered and sells none of this. Trying again changes nothing
+  /// until somebody opens the shop, so no retry is offered.
+  bool get showsNoPlansNotice =>
+      !showsPlans &&
+      !showsStoreBuildNotice &&
+      catalogProblem != CatalogProblem.storeUnreachable;
+
+  /// Only for a store that would not answer, and never while one attempt is
+  /// still running.
+  bool get canRetryPlans => showsStoreUnreachableNotice && isReady;
 
   /// Restoring makes sense wherever an earlier purchase could still be found: a
   /// store keeps the receipt, and a licence key is kept on the device. A build
@@ -90,7 +116,10 @@ final class PaywallState extends Equatable {
     PaywallStatus? status,
     PurchaseChannel? channel,
     List<SubscriptionPlan>? plans,
+    CatalogProblem? catalogProblem,
+    bool clearCatalogProblem = false,
     String? selectedPlanId,
+    bool clearSelectedPlan = false,
     bool? isSubscribed,
     String? licenseKey,
     PurchaseOutcome? outcome,
@@ -100,7 +129,10 @@ final class PaywallState extends Equatable {
       status: status ?? this.status,
       channel: channel ?? this.channel,
       plans: plans ?? this.plans,
-      selectedPlanId: selectedPlanId ?? this.selectedPlanId,
+      catalogProblem:
+          clearCatalogProblem ? null : catalogProblem ?? this.catalogProblem,
+      selectedPlanId:
+          clearSelectedPlan ? null : selectedPlanId ?? this.selectedPlanId,
       isSubscribed: isSubscribed ?? this.isSubscribed,
       licenseKey: licenseKey ?? this.licenseKey,
       outcome: clearOutcome ? null : outcome ?? this.outcome,
@@ -112,6 +144,7 @@ final class PaywallState extends Equatable {
         status,
         channel,
         plans,
+        catalogProblem,
         selectedPlanId,
         isSubscribed,
         licenseKey,

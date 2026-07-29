@@ -15,7 +15,7 @@ void main() {
 
   setUp(() {
     // AppFileLimits reads the platform, so the ceilings have to be pinned.
-    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    debugDefaultTargetPlatformOverride = TargetPlatform.windows;
     repo = FakePdfFileRepo();
     pick = PickPdfSourcesUseCase(repo);
   });

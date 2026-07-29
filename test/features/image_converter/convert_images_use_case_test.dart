@@ -16,7 +16,7 @@ void main() {
   late ConvertImagesUseCase convertImages;
 
   setUp(() {
-    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    debugDefaultTargetPlatformOverride = TargetPlatform.windows;
     repo = FakeImageConverterRepo();
     convertImages = ConvertImagesUseCase(repo);
   });

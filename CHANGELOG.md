@@ -6,7 +6,16 @@ and the versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 Every released version has a [GitHub Release](https://github.com/EvgeniuGlinsky/Archonex-Converter/releases)
 with the installable files attached to it.
 
-## [Unreleased]
+## [1.1.0] — 2026-07-29
+
+### Changed
+
+- **Android converts and saves without a ceiling of any kind, and nothing is sold there.** The
+  monthly count is gone: a cap nobody can pay to lift is worse than no cap, and the paywall it
+  pointed at could never take a payment. The last real limit was the 2 GB a Java `byte[]` carries,
+  which bounded a saved result — saving now asks for a folder and copies the output into it with
+  `dart:io`, so nothing is resident and no result is too large. The subscription and the count stay
+  built and tested behind one switch rather than deleted.
 
 ### Added
 
@@ -27,9 +36,10 @@ with the installable files attached to it.
 
 - **Releases are published, not drafted.** Both earlier tags built successfully and then sat as
   drafts nobody published, while the landing page linked to a Releases page with nothing on it.
-- **The Play bundle is no longer attached to the release.** It is Play-signed and store-enabled — on
-  a download page it is a file nobody can install. It is kept as a workflow artifact named
-  `play-bundle`, which replaces the README asking a human to remember to delete it from the draft.
+- **The Play bundle is no longer attached to the release.** An `.aab` is not installable — it is the
+  archive Play opens to build a per-device APK — so on a download page it is a trap. It is kept as a
+  workflow artifact named `play-bundle`, which replaces the README asking a human to remember to
+  delete it from the draft.
 - Release notes now lead with a table saying which file to take for which machine, instead of only
   the generated commit log.
 - Windows and Linux builds take their version from `pubspec.yaml` like the Android ones already did,
@@ -62,6 +72,6 @@ First public release. Three converters, all running on the device with nothing u
 English, Russian and Chinese throughout. Android, Windows and Linux builds; Linux carries the PDF
 converter only, because no FFmpeg engine ships for it.
 
-[Unreleased]: https://github.com/EvgeniuGlinsky/Archonex-Converter/compare/v1.0.1...HEAD
+[1.1.0]: https://github.com/EvgeniuGlinsky/Archonex-Converter/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/EvgeniuGlinsky/Archonex-Converter/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/EvgeniuGlinsky/Archonex-Converter/releases/tag/v1.0.0

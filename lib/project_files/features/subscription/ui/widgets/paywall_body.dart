@@ -20,10 +20,12 @@ import 'package:archonex_converter/project_files/features/subscription/ui/widget
 /// user buys in a browser and comes back to the same screen to paste what they
 /// were sent.
 ///
-/// When there is nothing on sale the screen says so plainly. That is not a
-/// placeholder to be tidied away later: offering a purchase that cannot be taken
-/// is worse than admitting the shop is shut. The key field stays either way,
-/// because a key bought yesterday still has to be redeemable today.
+/// When there is nothing on sale the screen says so plainly, and says which
+/// nothing it is — a shop that is shut, or a store that would not answer. That
+/// is not a placeholder to be tidied away later: offering a purchase that cannot
+/// be taken is worse than admitting the shop is shut, and only one of those two
+/// is worth asking again about. The key field stays either way, because a key
+/// bought yesterday still has to be redeemable today.
 class PaywallBody extends StatelessWidget {
   const PaywallBody({
     required this.state,
@@ -58,7 +60,21 @@ class PaywallBody extends StatelessWidget {
         ..._plans(context)
       else if (state.showsStoreBuildNotice)
         FileSizeLimitNotice(l10n.paywallStoreBuildOnlyNotice)
-      else
+      else if (state.showsStoreUnreachableNotice) ...<Widget>[
+        FileSizeLimitNotice(l10n.paywallStoreUnreachableNotice),
+        const SizedBox(height: AppSpacing.sm),
+        // Only here. A store that answered with an empty shelf says the same
+        // thing however often it is asked, and a retry button under that notice
+        // would only invite the user to prove it.
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: TextButton(
+            onPressed:
+                state.canRetryPlans ? callbacks.onRetryPlansPressed : null,
+            child: Text(l10n.paywallRetryLabel),
+          ),
+        ),
+      ] else
         FileSizeLimitNotice(l10n.paywallNoPlansNotice),
       if (state.showsLicenseKeyField) ...<Widget>[
         const SizedBox(height: _gap),

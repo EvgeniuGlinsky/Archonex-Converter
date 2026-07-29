@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:archonex_converter/core/constants/app_file_limits.dart';
 import 'package:archonex_converter/core/constants/app_spacing.dart';
 import 'package:archonex_converter/l10n/app_localizations.dart';
 import 'package:archonex_converter/project_files/features/converter_shared/domain/models/conversion_failure.dart';
+import 'package:archonex_converter/project_files/features/converter_shared/ui/mappers/converter_limits_ui.dart';
 import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/conversion_error_banner.dart';
 import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/conversion_progress_indicator.dart';
 import 'package:archonex_converter/project_files/features/converter_shared/ui/widgets/file_size_limit_notice.dart';
@@ -38,15 +38,11 @@ class PdfConverterBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final PdfTarget? target = state.target;
     final AppLocalizations l10n = AppLocalizations.of(context)!;
+    final String? limits = ConverterLimitsUi.forPdf(context);
 
     return ListView(
       children: <Widget>[
-        FileSizeLimitNotice(
-          l10n.pdfSourcesNotice(
-            AppFileLimits.maxBatchFiles,
-            AppFileLimits.maxUploadLabel,
-          ),
-        ),
+        if (limits != null) FileSizeLimitNotice(limits),
         QuotaNotice(
           allowance: state.allowance,
           onUpgradePressed: callbacks.onUpgradePressed,

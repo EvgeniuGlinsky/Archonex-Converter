@@ -160,13 +160,13 @@ jobs:
       # and recoverable from the tag alone — which `verify` has already checked
       # names the same version.
       #
-      # `ARCHONEX_DISTRIBUTION=store` is what turns the store channel on: Play
-      # refuses billing to a build it did not install, so only this artifact may
-      # offer a purchase.
+      # Every artifact here differs only in packaging. Nothing is sold on
+      # Android, so none of them carries `ARCHONEX_DISTRIBUTION=store` — see
+      # `createSubscriptionRepo`, which answers before the define is read there.
+      # It stayed on this step for a while doing nothing, which is worse than its
+      # absence: a build script that names a switch implies the switch matters.
       - name: Build app bundle for Play
-        run: |
-          flutter build appbundle --release \
-            --dart-define=ARCHONEX_DISTRIBUTION=store
+        run: flutter build appbundle --release
 
       # Split by ABI, and copy the results out before anything else runs a Gradle
       # task that could overwrite them.
@@ -195,10 +195,6 @@ jobs:
 
       # The one that runs anywhere, including x86_64 Chromebooks and emulators,
       # kept as the answer to "the other one says it is not compatible".
-      #
-      # Deliberately built *without* the store define, like the split APKs above:
-      # a copy taken from GitHub can never take a payment, and saying so is better
-      # than showing a button that fails.
       - name: Build universal APK
         run: |
           flutter build apk --release
@@ -214,11 +210,12 @@ jobs:
           path: dist/*
           if-no-files-found: error
 
-      # Kept apart from the artifacts above, and out of the release entirely. The
-      # bundle is Play-signed and store-enabled: on a download page it is a file
-      # nobody can install, and one that would offer a purchase if they could.
-      # Previously it was attached to the draft and a line in the README asked a
-      # human to remember to delete it.
+      # Kept apart from the artifacts above, and out of the release entirely. An
+      # `.aab` is not an installable file — it is the archive Play opens to build
+      # one per device — so on a download page it is a trap, and the APKs above
+      # are what the same build produces for people who are not Play. Previously
+      # it was attached to the draft and a line in the README asked a human to
+      # remember to delete it.
       - name: Set the Play bundle aside
         run: |
           mkdir -p play

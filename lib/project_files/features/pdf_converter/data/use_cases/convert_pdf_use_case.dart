@@ -46,7 +46,8 @@ class ConvertPdfUseCase {
       formats.add(format);
     }
 
-    if (sources.length > AppFileLimits.maxBatchFiles) {
+    if (AppFileLimits.isBatchLimited &&
+        sources.length > AppFileLimits.maxBatchFiles) {
       throw TooManyFilesFailure(
         actualCount: sources.length,
         limitCount: AppFileLimits.maxBatchFiles,

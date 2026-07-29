@@ -21,7 +21,8 @@ class ConvertImagesUseCase {
     required ImageFormat target,
     required ImageConversionSettings settings,
   }) {
-    if (sources.length > AppFileLimits.maxBatchFiles) {
+    if (AppFileLimits.isBatchLimited &&
+        sources.length > AppFileLimits.maxBatchFiles) {
       throw TooManyFilesFailure(
         actualCount: sources.length,
         limitCount: AppFileLimits.maxBatchFiles,

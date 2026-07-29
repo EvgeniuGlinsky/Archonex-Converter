@@ -44,7 +44,7 @@ class PickSourceImagesUseCase {
     final int limit = AppFileLimits.maxBatchFiles;
     final int total = alreadySelected + picked.length;
 
-    if (total > limit) {
+    if (AppFileLimits.isBatchLimited && total > limit) {
       throw TooManyFilesFailure(actualCount: total, limitCount: limit);
     }
 
