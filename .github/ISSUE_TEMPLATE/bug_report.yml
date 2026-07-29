@@ -1,0 +1,72 @@
+name: Bug report
+description: Something converts wrong, refuses to convert, or crashes.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The app runs entirely on your machine, so nothing about a failure reaches us on its own —
+        everything below is genuinely needed to reproduce it.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Shown in the app, and in the name of the file you downloaded.
+      placeholder: "1.0.1"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - Windows (installer)
+        - Windows (portable zip)
+        - Android (arm64 APK)
+        - Android (arm32 APK)
+        - Android (universal APK)
+        - Android (Google Play)
+        - Linux (AppImage)
+        - Linux (tarball)
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: "Windows 11 23H2 / Android 14 on a Pixel 7 / Ubuntu 24.04"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you converted, what you expected, and what you got instead.
+      placeholder: |
+        1. Picked a 2 GB .mkv
+        2. Chose MP4, "smaller file"
+        3. It reached 40% and then …
+    validations:
+      required: true
+
+  - type: textarea
+    id: file
+    attributes:
+      label: The file involved
+      description: >
+        Format, rough size, and where it came from — a phone camera, a screen recorder, a download.
+        Do not upload anything private; the shape of the file is usually enough.
+    validations:
+      required: false
+
+  - type: textarea
+    id: message
+    attributes:
+      label: The exact message on screen
+      description: Copied out or photographed. The wording identifies which failure it was.
+    validations:
+      required: false

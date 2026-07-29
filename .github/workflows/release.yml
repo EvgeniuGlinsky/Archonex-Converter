@@ -3,9 +3,17 @@ name: Release
 # Driven by a tag, so what was built is always recoverable from the tag it was
 # built at. Never on a branch push: a release is a decision, not a side effect of
 # committing.
+#
+# `rehearsal-*` builds everything and publishes nothing. It exists because the
+# only honest test of a packaging change is the runner that will run it: whether
+# Inno Setup is on the image, whether appimagetool survives without FUSE and what
+# a split APK actually weighs are all questions no local machine can answer for
+# GitHub's. `publish` below is gated on `v*` alone, so a rehearsal cannot leak.
 on:
   push:
-    tags: ['v*']
+    tags:
+      - 'v*'
+      - 'rehearsal-*'
   workflow_dispatch:
     inputs:
       dry_run:
@@ -31,6 +39,8 @@ jobs:
   verify:
     name: Analyze and test
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v5
       - uses: subosito/flutter-action@v2
@@ -42,10 +52,42 @@ jobs:
       - run: flutter analyze
       - run: flutter test
 
+      # Every job below stamps and names its artifacts from this one number, read
+      # from `pubspec.yaml` and passed down — never from the tag and never from
+      # `GITHUB_RUN_NUMBER`. One source of truth means a rehearsal produces files
+      # named exactly like the release it is rehearsing.
+      - name: Read the version
+        id: version
+        run: |
+          version="$(sed -n 's/^version: *\([^+]*\)+.*$/\1/p' pubspec.yaml)"
+          if [ -z "$version" ]; then
+            echo "::error::could not read a version out of pubspec.yaml."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Building $version"
+
+      # The tag names the release; `pubspec.yaml` names the build. They have to
+      # be the same thing, because the jobs below stamp the artifacts from the
+      # pubspec — and a mismatch would ship `1.0.1` inside a release called
+      # `1.0.2` with nothing to catch it.
+      - name: The tag must match the pubspec version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tagged="${GITHUB_REF_NAME#v}"
+          declared="${{ steps.version.outputs.version }}"
+
+          if [ "$tagged" != "$declared" ]; then
+            echo "::error::Tag v$tagged does not match pubspec version $declared. Bump pubspec.yaml, or retag."
+            exit 1
+          fi
+
   android:
     name: Android
     needs: verify
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.verify.outputs.version }}
     steps:
       - uses: actions/checkout@v5
 
@@ -106,42 +148,87 @@ jobs:
           echo "::error::This tag would publish an unsigned build. Set ANDROID_KEYSTORE_BASE64 and ANDROID_KEYSTORE_PASSWORD."
           exit 1
 
-      # For Google Play. `ARCHONEX_DISTRIBUTION=store` is what turns the store
-      # channel on: Play refuses billing to a build it did not install, so only
-      # this artifact may offer a purchase.
+      # Every Android build takes its version from `pubspec.yaml` and nowhere
+      # else — no `--build-name`, no `--build-number`.
+      #
+      # The number is the reason. It becomes the Android versionCode, and Play
+      # rejects a bundle whose code is not higher than the last one accepted,
+      # permanently. `GITHUB_RUN_NUMBER` used to supply it: a counter of *this
+      # workflow's* runs, unrelated to the tag and to the pubspec, which a
+      # re-run, a rehearsal or a renamed workflow can send backwards. Read from
+      # `pubspec.yaml` the code is in git, reviewable in the diff that bumps it,
+      # and recoverable from the tag alone — which `verify` has already checked
+      # names the same version.
+      #
+      # `ARCHONEX_DISTRIBUTION=store` is what turns the store channel on: Play
+      # refuses billing to a build it did not install, so only this artifact may
+      # offer a purchase.
       - name: Build app bundle for Play
         run: |
           flutter build appbundle --release \
-            --dart-define=ARCHONEX_DISTRIBUTION=store \
-            --build-name=${GITHUB_REF_NAME#v} \
-            --build-number=${GITHUB_RUN_NUMBER}
+            --dart-define=ARCHONEX_DISTRIBUTION=store
 
-      # For GitHub Releases. Deliberately built *without* the store define: this
-      # copy can never take a payment, and its paywall says where the paid version
-      # lives instead of showing a button that fails.
-      - name: Build APK for direct download
+      # Split by ABI, and copy the results out before anything else runs a Gradle
+      # task that could overwrite them.
+      #
+      # Size is the whole reason. FFmpeg ships a native library per architecture,
+      # and a universal APK carries all of them: a quarter of a gigabyte, of which
+      # any given phone uses a third. Play solves this by splitting the bundle per
+      # device; a direct download has nobody to do that for it, so it is done
+      # here. `arm64` is what every phone sold in roughly the last decade runs.
+      - name: Build split APKs for direct download
         run: |
-          flutter build apk --release \
-            --build-name=${GITHUB_REF_NAME#v} \
-            --build-number=${GITHUB_RUN_NUMBER}
-
-      - name: Name the artifacts
-        run: |
-          version="${GITHUB_REF_NAME#v}"
+          flutter build apk --release --split-per-abi
           mkdir -p dist
-          cp build/app/outputs/flutter-apk/app-release.apk "dist/archonex-converter-$version-android.apk"
-          cp build/app/outputs/bundle/release/app-release.aab "dist/archonex-converter-$version-play.aab"
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk \
+             "dist/Archonex-Converter-$VERSION-android-arm64.apk"
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk \
+             "dist/Archonex-Converter-$VERSION-android-arm32.apk"
+
+      # The one that runs anywhere, including x86_64 Chromebooks and emulators,
+      # kept as the answer to "the other one says it is not compatible".
+      #
+      # Deliberately built *without* the store define, like the split APKs above:
+      # a copy taken from GitHub can never take a payment, and saying so is better
+      # than showing a button that fails.
+      - name: Build universal APK
+        run: |
+          flutter build apk --release
+          cp build/app/outputs/flutter-apk/app-release.apk \
+             "dist/Archonex-Converter-$VERSION-android-universal.apk"
+
+      - name: Report the sizes
+        run: ls -lh dist/ | sed 's/^/  /'
 
       - uses: actions/upload-artifact@v4
         with:
-          name: android
+          name: release-android
           path: dist/*
+          if-no-files-found: error
+
+      # Kept apart from the artifacts above, and out of the release entirely. The
+      # bundle is Play-signed and store-enabled: on a download page it is a file
+      # nobody can install, and one that would offer a purchase if they could.
+      # Previously it was attached to the draft and a line in the README asked a
+      # human to remember to delete it.
+      - name: Set the Play bundle aside
+        run: |
+          mkdir -p play
+          cp build/app/outputs/bundle/release/app-release.aab \
+             "play/Archonex-Converter-$VERSION-play.aab"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: play-bundle
+          path: play/*
           if-no-files-found: error
 
   windows:
     name: Windows
     needs: verify
     runs-on: windows-latest
+    env:
+      VERSION: ${{ needs.verify.outputs.version }}
     steps:
       - uses: actions/checkout@v5
 
@@ -217,25 +304,70 @@ jobs:
 
       - name: Build
         shell: bash
-        run: |
-          flutter build windows --release \
-            --build-name=${GITHUB_REF_NAME#v} \
-            --build-number=${GITHUB_RUN_NUMBER}
+        run: flutter build windows --release
 
-      # A zip of the whole bundle, not just the exe: the Flutter runner needs the
-      # DLLs and `data/` beside it, and an exe on its own would fail to start in a
-      # way that looks like a corrupt download.
-      - name: Package
+      # Two shapes of the same bundle, because they answer different questions.
+      #
+      # The installer is what a download page should offer: one file, double
+      # clicked, no administrator rights, a Start Menu entry and an uninstaller.
+      # The zip is for the person who will not run an unsigned installer — neither
+      # is code-signed and SmartScreen warns about both, so refusing to ship the
+      # portable copy would only send that person away with nothing.
+      - name: Package the portable zip
         shell: bash
         run: |
-          version="${GITHUB_REF_NAME#v}"
           mkdir -p dist
           cd build/windows/x64/runner/Release
-          7z a -tzip "$GITHUB_WORKSPACE/dist/archonex-converter-$version-windows-x64.zip" ./*
+          7z a -tzip "$GITHUB_WORKSPACE/dist/Archonex-Converter-$VERSION-windows-x64-portable.zip" ./* > /dev/null
+
+      # Inno Setup ships on the windows runner image. Installing it when it does
+      # not is three lines; discovering it is missing halfway through a release is
+      # not.
+      - name: Find Inno Setup
+        id: iscc
+        shell: pwsh
+        run: |
+          $iscc = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
+          if (-not (Test-Path $iscc)) {
+            Write-Host "::warning::Inno Setup is not on the runner image - installing it."
+            choco install innosetup -y --no-progress
+          }
+          if (-not (Test-Path $iscc)) {
+            Write-Host "::error::Inno Setup is still not at $iscc after installing it."
+            exit 1
+          }
+          "path=$iscc" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      # PowerShell rather than bash: every argument here is a Windows path, and
+      # MSYS bash rewrites both the leading `/D` switches and the paths behind them
+      # on their way to a native executable. Escaping that is possible and
+      # unreadable; not entering it is better.
+      - name: Build the installer
+        shell: pwsh
+        run: |
+          $version = '${{ needs.verify.outputs.version }}'
+          $base = "Archonex-Converter-$version-windows-x64-setup"
+
+          & '${{ steps.iscc.outputs.path }}' `
+            "/DAppVersion=$version" `
+            "/DBundleDir=$env:GITHUB_WORKSPACE\build\windows\x64\runner\Release" `
+            "/DOutputDir=$env:GITHUB_WORKSPACE\dist" `
+            "/DOutputBase=$base" `
+            "$env:GITHUB_WORKSPACE\packaging\windows\archonex.iss"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          if (-not (Test-Path "dist\$base.exe")) {
+            Write-Host "::error::ISCC reported success but produced no dist\$base.exe."
+            exit 1
+          }
+
+      - name: Report the sizes
+        shell: bash
+        run: ls -lh dist/ | sed 's/^/  /'
 
       - uses: actions/upload-artifact@v4
         with:
-          name: windows
+          name: release-windows
           path: dist/*
           if-no-files-found: error
 
@@ -243,6 +375,8 @@ jobs:
     name: Linux
     needs: verify
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.verify.outputs.version }}
     steps:
       - uses: actions/checkout@v5
 
@@ -263,43 +397,98 @@ jobs:
       - run: flutter pub get
 
       - name: Build
-        run: |
-          flutter build linux --release \
-            --build-name=${GITHUB_REF_NAME#v} \
-            --build-number=${GITHUB_RUN_NUMBER}
+        run: flutter build linux --release
 
-      - name: Package
+      - name: Package the tarball
         run: |
-          version="${GITHUB_REF_NAME#v}"
           mkdir -p dist
-          tar -czf "dist/archonex-converter-$version-linux-x64.tar.gz" \
+          tar -czf "dist/Archonex-Converter-$VERSION-linux-x64.tar.gz" \
             -C build/linux/x64/release/bundle .
+
+      # An AppImage for the same reason Windows gets an installer: a tarball is a
+      # file you have to know what to do with. This one is chmod +x and a double
+      # click on any distribution new enough to run the GTK build.
+      # Invoked through `bash` rather than executed: the repository is developed on
+      # Windows, where git records no executable bit, and a script that is not +x
+      # fails here with "permission denied" long after the change that dropped it.
+      - name: Package the AppImage
+        run: bash packaging/linux/build-appimage.sh "$VERSION" dist
+
+      - name: Report the sizes
+        run: ls -lh dist/ | sed 's/^/  /'
 
       - uses: actions/upload-artifact@v4
         with:
-          name: linux
+          name: release-linux
           path: dist/*
           if-no-files-found: error
 
   publish:
-    name: Draft the release
-    needs: [android, windows, linux]
+    name: Publish the release
+    needs: [verify, android, windows, linux]
     # `dry_run` is offered only on a manual dispatch and is absent — so never
-    # `true` — on a tag push. Until it was read here it was a checkbox promising
-    # something the workflow did not honour.
+    # `true` — on a tag push. A `rehearsal-*` tag fails the first condition, which
+    # is what makes a rehearsal safe to run against `main`.
     if: startsWith(github.ref, 'refs/tags/v') && inputs.dry_run != true
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.verify.outputs.version }}
     steps:
+      # `release-*` only. The Play bundle is uploaded under a name this pattern
+      # does not match, so it stays a workflow artifact and never reaches the
+      # release — enforced here rather than asked for in the README.
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
+          pattern: release-*
+          merge-multiple: true
 
-      # A draft, never a live release. Someone has to read the notes and look at
-      # the file list before this is in front of users — and the .aab has to go to
-      # Play rather than here.
+      - name: Checksum every asset
+        working-directory: artifacts
+        run: |
+          sha256sum ./* > SHA256SUMS.txt
+          sed -i 's|\./||' SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      # Written here rather than left to `generate_release_notes` alone, because a
+      # list of commit titles does not tell somebody which of seven files to
+      # click. The generated log is appended below this table by the action.
+      - name: Write the release notes
+        run: |
+          cat > notes.md <<EOF
+          ## Download
+
+          | Platform | File | What to do with it |
+          | --- | --- | --- |
+          | **Windows 10/11** | \`Archonex-Converter-$VERSION-windows-x64-setup.exe\` | Double click it. Windows will say the publisher is unknown — the build is not code-signed; choose **More info → Run anyway**. Installs for your user only, no administrator rights. |
+          | Windows, portable | \`Archonex-Converter-$VERSION-windows-x64-portable.zip\` | Unpack anywhere and run \`archonex_converter.exe\`. Nothing is written outside the folder. |
+          | **Android** | \`Archonex-Converter-$VERSION-android-arm64.apk\` | Every phone and tablet sold in roughly the last decade. Allow installing from your browser when asked. |
+          | Android, older | \`Archonex-Converter-$VERSION-android-arm32.apk\` | 32-bit devices. Try this one if the file above refuses to install. |
+          | Android, anything | \`Archonex-Converter-$VERSION-android-universal.apk\` | Runs everywhere, including x86 Chromebooks and emulators, and is about three times the size. |
+          | **Linux x64** | \`Archonex-Converter-$VERSION-x86_64.AppImage\` | \`chmod +x\` it and run it. No installation, nothing needed beyond GTK 3. |
+          | Linux, tarball | \`Archonex-Converter-$VERSION-linux-x64.tar.gz\` | Unpack and run \`archonex_converter\`. |
+
+          \`SHA256SUMS.txt\` covers every file above.
+
+          ## Before you download
+
+          **Linux converts PDFs only.** No FFmpeg engine ships for it, so the media and image
+          converters report themselves unavailable rather than failing halfway through. Windows and
+          Android run all three.
+
+          Nothing here talks to a network. Conversion happens on your own machine, at the platform's
+          real size ceiling — no upload, no account, no server.
+
+          ---
+          EOF
+          cat notes.md
+
       - uses: softprops/action-gh-release@v2
         with:
-          draft: true
+          name: Archonex Converter ${{ env.VERSION }}
+          body_path: notes.md
           generate_release_notes: true
-          files: artifacts/**/*
+          draft: false
+          make_latest: true
+          files: artifacts/*
           fail_on_unmatched_files: true

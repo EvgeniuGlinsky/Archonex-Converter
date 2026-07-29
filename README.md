@@ -1,7 +1,37 @@
 # Archonex Converter
 
 [![CI](https://github.com/EvgeniuGlinsky/Archonex-Converter/actions/workflows/ci.yml/badge.svg)](https://github.com/EvgeniuGlinsky/Archonex-Converter/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/EvgeniuGlinsky/Archonex-Converter?label=release&color=2f6df6)](https://github.com/EvgeniuGlinsky/Archonex-Converter/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/EvgeniuGlinsky/Archonex-Converter/total?color=2f6df6)](https://github.com/EvgeniuGlinsky/Archonex-Converter/releases)
+[![Platforms](https://img.shields.io/badge/platforms-Windows%20%7C%20Android%20%7C%20Linux-6c757d)](#download)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+
+## Download
+
+### **[⬇ Get the latest release](https://github.com/EvgeniuGlinsky/Archonex-Converter/releases/latest)**
+
+Every file below is attached to that release directly — no mirror, no sign-up, no installer that downloads a second installer.
+
+| You have | Take this file | What to do with it |
+| --- | --- | --- |
+| **Windows 10/11** | `…-windows-x64-setup.exe` | Double click it. Windows will say the publisher is unknown — the build is not code-signed; choose **More info → Run anyway**. Installs for your user only, so there is no administrator prompt. |
+| Windows, no installer | `…-windows-x64-portable.zip` | Unpack anywhere and run `archonex_converter.exe`. Nothing is written outside the folder. |
+| **Android phone or tablet** | `…-android-arm64.apk` | Effectively every device sold in the last decade. Allow installing from your browser when it asks. |
+| Android, older device | `…-android-arm32.apk` | 32-bit devices. Try this one if the file above refuses to install. |
+| Android, anything else | `…-android-universal.apk` | Chromebooks, emulators, and whatever the two above reject. Roughly three times the size, because it carries every architecture at once. |
+| **Linux x64** | `…-x86_64.AppImage` | `chmod +x` it and run it. Nothing to install; GTK 3 is the only thing expected from the system. |
+| Linux, tarball | `…-linux-x64.tar.gz` | Unpack it and run `archonex_converter`. |
+
+`SHA256SUMS.txt` ships with every release and covers all of them.
+
+**Linux converts PDFs only** — no FFmpeg engine exists for it, so the media and image converters say they are unavailable instead of failing halfway. Windows and Android run all three. The rest of what differs per platform is in [Platform support](#platform-support).
+
+<p align="center">
+  <img src="docs/store/01-catalogue.png" alt="The converter catalogue" width="45%">
+  <img src="docs/store/02-media-converter.png" alt="The media converter" width="45%">
+</p>
+
+## What it is
 
 An offline file converter with no artificial size limits — convert files at the full technical ceiling of the platform, not a discounted fraction of it. The free tier is bounded by **how many files** you convert, never by how large they are: ten source files a month, and a subscription lifts the count. Three converters ship today:
 
@@ -204,6 +234,25 @@ The **PDF engine probe** drives the real writer and the real rasteriser, which t
 ## CI
 
 `.github/workflows/ci.yml` runs `flutter analyze` and `flutter test` on every push to `main` and on every pull request.
+
+## Releasing
+
+`.github/workflows/release.yml` builds and publishes everything, driven by a tag, so what shipped is always recoverable from the tag it shipped at.
+
+1. **Write the entry in [`CHANGELOG.md`](CHANGELOG.md)** and bump `pubspec.yaml`. Both halves of the version matter. `1.0.1+2` is the version name and the Android versionCode, and the build number is the one that cannot be got wrong: Play permanently rejects a bundle whose versionCode is not higher than the last one it accepted. Check what is live under *Release → Production* before choosing it — bundles built before the pipeline read the pubspec were stamped from the CI run counter, so the live number is not necessarily the one in git history.
+2. **Tag it `v<version>` and push the tag.** `verify` refuses a tag that does not match the pubspec, because every artifact below is named and stamped from the pubspec alone.
+3. The workflow builds three Android APKs, a Windows installer and portable zip, and a Linux AppImage and tarball, checksums the lot and **publishes the release** — not a draft. The download table in the release notes is written by the workflow; the commit log GitHub generates is appended under it.
+4. **Upload the `.aab` to Play by hand.** It is the one artifact deliberately kept out of the release: it is Play-signed and store-enabled, so on a download page it is a file nobody can install. Find it under the run's artifacts, as `play-bundle`. There is no service-account automation.
+
+Everything a packaging change touches lives in [`packaging/`](packaging) — the Inno Setup script for Windows, and the `.desktop` file and AppImage build script for Linux.
+
+**Rehearse before tagging.** A tag matching `rehearsal-*` runs all three builds and publishes nothing — `publish` is gated on `v*`. It is the only way to find out whether the runner image still has Inno Setup, whether `appimagetool` still downloads, and what the artifacts actually weigh, without spending a version number to learn it:
+
+```bash
+git tag rehearsal-1 && git push origin rehearsal-1
+# read the sizes in the "Report the sizes" step, download the artifacts, then:
+git push --delete origin rehearsal-1 && git tag -d rehearsal-1
+```
 
 ## License
 

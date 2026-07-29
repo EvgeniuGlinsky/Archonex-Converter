@@ -40,6 +40,12 @@
   .card strong { display: block; font-size: 1.4rem; }
   .card span { color: var(--muted); font-size: .9rem; }
   .note { color: var(--muted); font-size: .92rem; }
+  .cta { margin: 1.25rem 0 1.75rem; }
+  .btn {
+    display: inline-block; background: var(--accent); color: #fff; text-decoration: none;
+    padding: .8rem 1.4rem; border-radius: .5rem; font-weight: 600;
+  }
+  .btn:hover { filter: brightness(1.08); }
   footer { margin-top: 3.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem; }
   code { background: rgba(127,127,127,.14); padding: .1rem .35rem; border-radius: .25rem; font-size: .9em; }
 </style>
@@ -111,10 +117,40 @@
 </ul>
 
 <h2>Get it</h2>
-<ul>
-  <li><strong>Android</strong> — from Google Play, or as an APK from <a href="https://github.com/EvgeniuGlinsky/Archonex-Converter/releases">GitHub Releases</a>. The Play version is the one that can take a subscription; Google will not serve billing to an app it did not install.</li>
-  <li><strong>Windows and Linux</strong> — from <a href="https://github.com/EvgeniuGlinsky/Archonex-Converter/releases">GitHub Releases</a>. Free tier for now; a one-time unlock is planned.</li>
-</ul>
+
+<p>
+  Every file is attached to the latest release itself — no mirror, no sign-up, and no installer that
+  downloads a second installer.
+</p>
+
+<p class="cta">
+  <a class="btn" href="https://github.com/EvgeniuGlinsky/Archonex-Converter/releases/latest">Download the latest release</a>
+</p>
+
+<table>
+  <tr><th>You have</th><th>Take this file</th><th>What to do with it</th></tr>
+  <tr>
+    <td><strong>Windows 10/11</strong></td>
+    <td><code>…-windows-x64-setup.exe</code></td>
+    <td>Double click it. Windows will say the publisher is unknown — the build is not code-signed; choose <strong>More info → Run anyway</strong>. It installs for your user only, so there is no administrator prompt. A portable <code>.zip</code> is published beside it.</td>
+  </tr>
+  <tr>
+    <td><strong>Android</strong></td>
+    <td><code>…-android-arm64.apk</code></td>
+    <td>Effectively every phone and tablet sold in the last decade. Allow installing from your browser when it asks. There is an <code>arm32</code> build for older devices and a universal one for everything else.</td>
+  </tr>
+  <tr>
+    <td><strong>Linux x64</strong></td>
+    <td><code>…-x86_64.AppImage</code></td>
+    <td><code>chmod +x</code> it and run it. Nothing to install; GTK 3 is all the system has to provide. A <code>.tar.gz</code> is published beside it.</td>
+  </tr>
+</table>
+
+<p class="note">
+  <code>SHA256SUMS.txt</code> ships with every release and covers all of them. On Android, the Google
+  Play build is the one that can take a subscription — Google will not serve billing to an app it did
+  not install.
+</p>
 
 <footer>
   <p>

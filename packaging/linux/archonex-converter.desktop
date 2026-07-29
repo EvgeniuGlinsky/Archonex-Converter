@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Archonex Converter
+GenericName=File Converter
+Comment=Convert PDFs on your own machine. Nothing is uploaded.
+Exec=archonex_converter
+Icon=archonex-converter
+Terminal=false
+Categories=Utility;Office;
+Keywords=convert;pdf;image;document;
+StartupWMClass=archonex_converter

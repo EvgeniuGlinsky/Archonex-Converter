@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Downloads
+    url: https://github.com/EvgeniuGlinsky/Archonex-Converter/releases/latest
+    about: The installer, the APKs and the AppImage are attached to the latest release.
+  - name: Privacy policy
+    url: https://evgeniuglinsky.github.io/Archonex-Converter/privacy.html
+    about: What the app stores, and what it never sends anywhere.

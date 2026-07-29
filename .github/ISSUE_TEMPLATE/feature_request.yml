@@ -1,0 +1,43 @@
+name: Feature request
+description: A format, a converter or a setting that is missing.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Two things are already decided and are not open questions, so that nobody writes them up twice:
+
+        - **Office documents (DOCX, XLSX, PPTX) will not be supported.** There is no mature offline
+          Dart path with any layout fidelity; every alternative is a cloud API or a bundled
+          LibreOffice, and the first breaks the promise the app is built on.
+        - **HEIC and AVIF can be read, not written.** No encoder for them ships in the bundled FFmpeg.
+
+        Everything else is fair game — the roadmap in the README lists what is being considered.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What you want to do
+      description: The task, not the implementation — what you are trying to convert, and why.
+    validations:
+      required: true
+
+  - type: textarea
+    id: today
+    attributes:
+      label: What you do today instead
+      description: Another tool, a workaround, or nothing. This is what says how much it is worth.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Where you would use it
+      multiple: true
+      options:
+        - Windows
+        - Android
+        - Linux
+    validations:
+      required: false

@@ -89,11 +89,11 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
+            VALUE "CompanyName", "Archonex" "\0"
             VALUE "FileDescription", "Archonex Converter" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "archonex_converter" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.example. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 Archonex. Apache License 2.0." "\0"
             VALUE "OriginalFilename", "archonex_converter.exe" "\0"
             VALUE "ProductName", "Archonex Converter" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
