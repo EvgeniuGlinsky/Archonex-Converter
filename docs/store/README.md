@@ -26,7 +26,8 @@ stays the NotoSans the app screens are already set in.
 Everything comes out of `icon-master.png` in one pass: the Android adaptive icon
 layers, the iOS and macOS asset catalogues, and the web icons. Two files it does
 **not** touch, on purpose — `icon-512.png`, which Play wants uploaded by hand, and
-`mipmap-*/ic_launcher.png`, the legacy PNGs only API 21–25 still reads, where
+`mipmap-*/ic_launcher.png`, the legacy PNGs only API 24–25 still reads — Flutter's
+`minSdkVersion` is 24, so that window is two releases wide — where
 nothing masks the icon and edge-to-edge is the right thing to hand over.
 
 Each platform gets the master shaped the way that platform expects:

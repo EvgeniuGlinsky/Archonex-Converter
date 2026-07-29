@@ -240,7 +240,7 @@ sharing, no location, no purchases of loot boxes. Digital purchases: **Yes** (th
 | Category | Tools |
 | Tags | File manager, Video, Photo |
 | Website | `https://evgeniuglinsky.github.io/Archonex-Converter/` |
-| Support email | *your address* |
+| Support email | `evgeniuglinsky@gmail.com` |
 | Privacy policy | `https://evgeniuglinsky.github.io/Archonex-Converter/privacy.html` |
 
 ---
