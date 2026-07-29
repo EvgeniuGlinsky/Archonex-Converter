@@ -176,6 +176,14 @@ jobs:
       # any given phone uses a third. Play solves this by splitting the bundle per
       # device; a direct download has nobody to do that for it, so it is done
       # here. `arm64` is what every phone sold in roughly the last decade runs.
+      #
+      # One surprise these carry: `--split-per-abi` rewrites the versionCode,
+      # prefixing it per architecture — `1.0.1+2` becomes 1002 on armeabi-v7a and
+      # 2002 on arm64-v8a, while the universal APK keeps the 2 the pubspec asked
+      # for. Harmless here, because these are a distribution channel of their own:
+      # Play re-signs with its own app signing key, so a Play build and a
+      # downloaded one can never replace each other regardless of the number. It
+      # is written down because the numbers look wrong and are not.
       - name: Build split APKs for direct download
         run: |
           flutter build apk --release --split-per-abi
